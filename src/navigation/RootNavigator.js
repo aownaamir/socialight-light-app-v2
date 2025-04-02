@@ -1,41 +1,49 @@
-import { createStackNavigator } from "@react-navigation/stack";
-import AuthNavigator from "./AuthNavigator.js";
-import TabNavigator from "./TabNavigator.js";
-import { useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+// RootNavigator.js
+import React, { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { useAuth } from '../store/context/authContext';
+import { createStackNavigator } from '@react-navigation/stack';
+import AuthNavigator from './AuthNavigator';
+import TabNavigator from './TabNavigator';
 
 const Stack = createStackNavigator();
 
+
 const RootNavigator = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const { isAuthenticated, loading } = useAuth();
+  const isAuthenticated=useAuth().isAuthenticated;
 
-//   useEffect(() => {
-//     // Check if user is authenticated on app load
-//     const checkAuthStatus = async () => {
-//       const authStatus = await checkIfUserIsAuthenticated();
-//       setIsAuthenticated(authStatus);
-//       setIsLoading(false);
-//     };
-    
-//     checkAuthStatus();
-//   }, []);
+  useEffect(()=>{console.log(isAuthenticated)},[isAuthenticated])
 
-//   if (isLoading) {
-//     return null; // Or a loading component
-//   }
+  // Show loading spinner while checking auth state
+  // if (loading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" color="#0000ff" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* {!isAuthenticated ? ( */}
-            <Stack.Screen name="Auth" component={AuthNavigator} />
-        {/* ) : ( */}
-            <Stack.Screen name="Main" component={TabNavigator} />
-        {/* )} */}
-      </Stack.Navigator>
+    {!isAuthenticated ?  <AuthNavigator /> :  <TabNavigator />}
     </NavigationContainer>
-  );
+       
+    )
 };
+
+
+{/* <NavigationContainer>
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    {!isAuthenticated ? (
+        <Stack.Screen name="Auth" component={AuthNavigator} />
+     ) : ( 
+        <Stack.Screen name="Main" component={TabNavigator} />
+     )} 
+  </Stack.Navigator>
+</NavigationContainer> */}
+
+
 
 export default RootNavigator;

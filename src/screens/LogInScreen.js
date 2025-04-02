@@ -9,10 +9,13 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../store/context/authContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,25 +25,71 @@ const LogInScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Get auth context functions
+  const { login, error, clearError, isAuthenticated } = useAuth();
 
-  // Simulating login validation
-  const handleLogin = () => {
-    // Reset errors
-    setEmailError('');
-    setPasswordError('');
-    
-    // Simple validation example
-    if (email === 'beritbenios@gmail.com') {
-      setEmailError('The email you entered does not belong to any account');
+  // Handle login with API call
+ // Handle login with API call
+const handleLogin = async () => {
+  // Reset errors
+  setEmailError('');
+  setPasswordError('');
+  clearError();
+  
+  // Basic validation
+  let isValid = true;
+  
+  if (!email || !email.includes('@')) {
+      setEmailError('Please enter a valid email address');
+      isValid = false;
+  }
+  
+  if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+  }
+  
+  if (!isValid) return;
+  
+  // Proceed with login API call
+  try {
+      setIsLoading(true);
+      
+      const userData = await login(email, password);
+      
+  } catch (err) {
+      // Handle specific errors
+      if (err.response && err.response.status === 401) {
+          setPasswordError('The email or password you entered is incorrect');
+      } else if (err.response && err.response.status === 404) {
+          setEmailError('The email you entered does not belong to any account');
+      } else {
+          Alert.alert(
+              'Login Error',
+              'An error occurred while trying to log in. Please try again later.'
+          );
+      }
+  } finally {
+      setIsLoading(false);
+  }
+};
+
+  // Effect to navigate after successful login
+  // React.useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigation.navigate('Main');
+  //   }
+  // }, [isAuthenticated, navigation]);
+
+  // Effect to handle auth errors
+  React.useEffect(() => {
+    if (error) {
+      Alert.alert('Authentication Error', error);
+      clearError();
     }
-    
-    if (password.length > 0) {
-      setPasswordError('The password you entered is incorrect. Please try again to reset your password');
-    }
-    
-    // If no errors, would proceed to actual login
-    navigation.navigate('Main');
-  };
+  }, [error, clearError]);
 
   return (
     <LinearGradient
@@ -58,7 +107,6 @@ const LogInScreen = ({ navigation }) => {
               style={styles.logo}
               resizeMode="contain"
             />
-            {/* <Text style={styles.brandName}>SOCIALIGHT</Text> */}
           </View>
 
           <View style={styles.formContainer}>
@@ -72,6 +120,7 @@ const LogInScreen = ({ navigation }) => {
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
+                editable={!isLoading}
               />
               {emailError ? (
                 <Text style={styles.errorText}>{emailError}</Text>
@@ -87,10 +136,12 @@ const LogInScreen = ({ navigation }) => {
                   autoCapitalize="none"
                   value={password}
                   onChangeText={setPassword}
+                  editable={!isLoading}
                 />
                 <Pressable
                   style={styles.eyeIcon}
                   onPress={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                 >
                   <Ionicons
                     name={showPassword ? "eye-off-outline" : "eye-outline"}
@@ -106,16 +157,33 @@ const LogInScreen = ({ navigation }) => {
 
             {/* Login button */}
             <Pressable 
-              style={styles.loginButton}
+              style={[styles.loginButton, isLoading && styles.disabledButton]}
               onPress={handleLogin}
+              disabled={isLoading}
             >
-              <Text style={styles.loginButtonText}>Login</Text>
+              {isLoading ? (
+                <ActivityIndicator color={colors.background} size="small" />
+              ) : (
+                <Text style={styles.loginButtonText}>Login</Text>
+              )}
+            </Pressable>
+
+            {/* Forgot password link */}
+            <Pressable 
+              style={styles.forgotPasswordContainer}
+              onPress={() => navigation.navigate('ForgotPassword')}
+              disabled={isLoading}
+            >
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             </Pressable>
 
             {/* Signup link */}
             <View style={styles.signupContainer}>
               <Text style={styles.signupText}>New to Socialight? </Text>
-              <Pressable onPress={() => navigation.navigate('UserType')}>
+              <Pressable 
+                onPress={() => navigation.navigate('UserType')}
+                disabled={isLoading}
+              >
                 <Text style={styles.signupLink}>Sign up</Text>
               </Pressable>
             </View>
@@ -129,7 +197,6 @@ const LogInScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingTop: 12,
   },
   safeArea: {
     flex: 1,
@@ -148,13 +215,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     resizeMode: "contain",
-  },
-  brandName: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '500',
-    letterSpacing: 2,
-    marginTop: 5,
   },
   formContainer: {
     width: '100%',
@@ -212,14 +272,27 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     marginTop: 10,
-    marginBottom: 30,
+    marginBottom: 15,
+    height: 50,
+  },
+  disabledButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
   loginButtonText: {
     color: colors.background,
     fontSize: 16,
     fontWeight: '600',
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: colors.accent,
+    fontSize: 14,
   },
   signupContainer: {
     flexDirection: 'row',

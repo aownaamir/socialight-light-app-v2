@@ -4,15 +4,16 @@ import SignUpChooseScreen from "../screens/SignUpChooseScreen";
 import LogInScreen from "../screens/LogInScreen";
 import SignUpInfluencerScreen from "../screens/SignUpInfluencerScreen";
 import SignUpVenuesScreen from "../screens/SignUpVenuesScreen";
+import { NavigationContainer } from "@react-navigation/native";
 
 const Stack = createStackNavigator();
 
 const AuthNavigator=()=>{
     return (
-    <Stack.Navigator 
+        <Stack.Navigator 
         initialRouteName="Loading"
         screenOptions={{ headerShown: false }}
-      >
+        >
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="UserType" component={SignUpChooseScreen} />
         <Stack.Screen name="Login" component={LogInScreen} />

@@ -25,15 +25,18 @@ import WaitlistScreen from './src/screens/WaitlistScreen';
 import { StatusBar } from 'expo-status-bar';
 import AppNavigator from './src/navigation/AppNavigator';
 import RootNavigator from './src/navigation/RootNavigator';
+import { AuthProvider } from './src/store/context/authContext';
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+<AuthProvider>
+
+<SafeAreaProvider>
       <StatusBar style='light' />
-      {/* <AppNavigator /> */}
       <RootNavigator />
       
     </SafeAreaProvider>
+</AuthProvider>
   );
 }
 

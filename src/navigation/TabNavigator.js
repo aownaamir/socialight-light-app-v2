@@ -11,6 +11,7 @@ import EventAnalyticsScreen from "../screens/EventAnalyticsScreen";
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+
   return <Tab.Navigator
   screenOptions={({ route }) => ({
     tabBarIcon: ({ focused, color, size }) => {
@@ -48,6 +49,7 @@ const TabNavigator = () => {
     header: (props) => <CustomHeader {...props} />,
   })}
   >
+
     <Tab.Screen name="Home" component={HomeScreen} />
     <Tab.Screen name="Events" component={EventsScreen} />
     <Tab.Screen name="MyEvents" component={MyEventsScreen} />
