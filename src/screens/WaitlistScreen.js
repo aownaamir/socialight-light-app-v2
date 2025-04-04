@@ -12,7 +12,7 @@ import {
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const WaitlistScreen = ({ navigation }) => {
   return (
@@ -39,8 +39,8 @@ const WaitlistScreen = ({ navigation }) => {
               />
             </View>
             
-            <TouchableOpacity style={styles.reviewButton}>
-              <Text style={styles.reviewButtonText}>Bertt</Text>
+            <TouchableOpacity style={styles.statusButton}>
+              <Text style={styles.statusButtonText}>Bertt</Text>
             </TouchableOpacity>
             
             <View style={styles.divider} />
@@ -50,10 +50,10 @@ const WaitlistScreen = ({ navigation }) => {
             </Text>
             
             <TouchableOpacity 
-              style={styles.continueButton}
+              style={styles.primaryButton}
               onPress={() => navigation.navigate('Home')}
             >
-              <Text style={styles.continueButtonText}>Continue</Text>
+              <Text style={styles.primaryButtonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     height: '80%',
     borderRadius: width * 0.24,
   },
-  reviewButton: {
+  statusButton: {
     flexDirection: 'row',
     backgroundColor: 'transparent',
     borderWidth: 1,
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
   },
-  reviewButtonText: {
+  statusButtonText: {
     color: colors.textPrimary,
     fontSize: 14,
     fontWeight: '500',
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     lineHeight: 22,
   },
-  continueButton: {
+  primaryButton: {
     backgroundColor: colors.accent,
     paddingVertical: 13,
     borderRadius: 25,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginBottom: 15,
   },
-  continueButtonText: {
+  primaryButtonText: {
     color: colors.textPrimary,
     fontSize: 16,
     fontWeight: '600',

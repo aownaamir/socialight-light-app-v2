@@ -33,7 +33,7 @@ const CustomHeader = ({ navigation }) => {
         {showPhotoIcon ? (
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
             <Image
-              source={require('../../assets/images/profile.png')}
+              source={require('../../assets/images/company-image.png')}
               style={styles.profileIcon}
               resizeMode="cover"
             />

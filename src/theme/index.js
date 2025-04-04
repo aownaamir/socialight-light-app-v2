@@ -13,8 +13,4 @@ export const colors = {
   accent: '#056562',
   mapOverlay: '#153B3B',
   
-  // Additional UI colors
-  // border: '#2C4141',
-  // inactive: '#4A6363',
-  // shadow: '#000000',
 };

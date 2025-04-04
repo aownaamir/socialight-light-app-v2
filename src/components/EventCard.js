@@ -1,3 +1,6 @@
+
+
+
 import React from 'react';
 import {
   View,
@@ -17,7 +20,7 @@ const { width } = Dimensions.get('window');
 
 const EventCard = ({ event, variant = 'horizontal' }) => {
 
-  const navigation=useNavigation()
+  const navigation = useNavigation()
 
   const handleEventPress = (id) => {
     // Navigate to event details screen
@@ -35,7 +38,7 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
           imageStyle={styles.horizontalImageStyle}
         >
           {event.date && (
-            <View style={styles.horizontalDateChip}>
+            <View style={styles.dateChip}>
               <Text style={styles.dateText}>
                 {event.date.includes('at') ? event.date.split(' at')[0] : event.date}
               </Text>
@@ -43,8 +46,9 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
           )}
           
           {event.status === 'Active' && (
-            <View style={styles.horizontalActiveChip}>
-              <Text style={styles.activeText}>{event.status}</Text>
+            <View style={styles.statusChip}>
+              <View style={styles.statusDot} />
+              <Text style={styles.statusText}>{event.status}</Text>
             </View>
           )}
           
@@ -52,7 +56,7 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
             <Text style={styles.eventName}>{event.title}</Text>
             {event.location && (
               <View style={styles.locationContainer}>
-                <Ionicons name="location" size={12} color={colors.textSecondary} />
+                <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
                 <Text style={styles.locationText}>{event.location}</Text>
               </View>
             )}
@@ -77,11 +81,11 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
         colors={['transparent', 'rgba(0,0,0,0.7)']}
         style={styles.verticalGradient}
       >
-        <View style={styles.verticalDateContainer}>
+        <View style={styles.dateChip}>
           <Text style={styles.dateText}>{event.date}</Text>
         </View>
 
-        <View style={styles.verticalStatusContainer}>
+        <View style={styles.statusChip}>
           <View style={styles.statusDot} />
           <Text style={styles.statusText}>{event.status}</Text>
         </View>
@@ -102,10 +106,10 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
 };
 
 const styles = StyleSheet.create({
-  // Horizontal card styles (from original EventCard)
+  // Horizontal card styles
   horizontalCard: {
-    width: width * 0.6,
-    height: 180,
+    width: width * 0.8,
+    height: 200,
     marginRight: 15,
     borderRadius: 15,
     overflow: 'hidden',
@@ -118,29 +122,13 @@ const styles = StyleSheet.create({
   horizontalImageStyle: {
     borderRadius: 15,
   },
-  horizontalDateChip: {
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  horizontalActiveChip: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    backgroundColor: 'rgba(22, 160, 133, 0.8)',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
   horizontalEventInfo: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 10,
     padding: 8,
   },
   
-  // Vertical card styles (from EventsScreen)
+  // Vertical card styles
   verticalCard: {
     height: 200,
     marginHorizontal: 20,
@@ -158,41 +146,35 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 15,
   },
-  verticalDateContainer: {
-    alignSelf: 'flex-end',
-    backgroundColor: colors.accent,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-  },
-  verticalStatusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    position: 'absolute',
-    top: 15,
-    left: 15,
-  },
   verticalInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   
-  // Shared styles
+  // Unified styles for common elements
+  dateChip: {
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  statusChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(22, 160, 133, 0.8)',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
   dateText: {
     color: colors.textPrimary,
     fontSize: 12,
     fontWeight: '600',
-  },
-  activeText: {
-    color: colors.textPrimary,
-    fontSize: 11,
-    fontWeight: '500',
   },
   statusDot: {
     width: 6,
@@ -203,8 +185,8 @@ const styles = StyleSheet.create({
   },
   statusText: {
     color: colors.textPrimary,
-    fontSize: 10,
-    fontWeight: '400',
+    fontSize: 11,
+    fontWeight: '500',
   },
   eventName: {
     color: colors.textPrimary,

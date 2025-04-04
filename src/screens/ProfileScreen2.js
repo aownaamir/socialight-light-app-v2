@@ -17,8 +17,6 @@ import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { logoutApi } from '../apis/auth';
-import { useAuth } from '../store/context/authContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,15 +25,9 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen2 = ({ navigation }) => {
   const [activeSection, setActiveSection] = useState(null);
-  const logout=useAuth().logoutAuth
-
-  const handleLogout=()=>{
-    logoutApi();
-    logout()
-    return
-  }
+  const isAuthenticated=useAuth().isAuthenticated;
 
   const toggleSection = (sectionName) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -55,7 +47,9 @@ const ProfileScreen = ({ navigation }) => {
       <View style={styles.collapsibleSection}>
         <Pressable style={styles.menuItem} onPress={() => toggleSection(name)}>
           <View style={styles.menuItemLeft}>
-            <Ionicons name={icon} size={22} color={colors.textPrimary} style={styles.menuIcon} />
+            <View style={styles.menuIcon}>
+              <Ionicons name={icon} size={22} color={colors.textPrimary} />
+            </View>
             <Text style={styles.menuText}>{title}</Text>
           </View>
           <Ionicons 
@@ -73,7 +67,6 @@ const ProfileScreen = ({ navigation }) => {
       </View>
     );
   };
-
   // Account Settings Content Component
   const AccountSettingsContent = () => (
     <View style={styles.settingsContent}>
@@ -314,7 +307,7 @@ const SupportContent = () => (
           </View>
 
           {/* Logout Button */}
-          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+          <Pressable style={styles.logoutButton}>
             <Text style={styles.logoutText}>Logout</Text>
           </Pressable>
         </ScrollView>
@@ -330,7 +323,7 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? 10 : 40, // Added extra padding to avoid navbar
+    paddingTop: Platform.OS === 'android' ? 10 : 40,
   },
   scrollContent: {
     flexGrow: 1,
@@ -420,9 +413,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
+  
+  // Updated dropdown styles to match the screenshot
   collapsibleSection: {
-    marginBottom: 10,
-    borderRadius: 10,
+    marginBottom: 15,
+    borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     borderWidth: 1,
@@ -441,10 +436,17 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     marginRight: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   menuText: {
     color: colors.textPrimary,
-    fontSize: 15,
+    fontSize: 16,
+    fontWeight: '500',
   },
   collapsibleContent: {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -611,7 +613,9 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 13,
     lineHeight: 20,
-  },// Support specific styles
+  },
+  
+  // Support specific styles
   supportContent: {
     padding: 15,
   },
@@ -633,4 +637,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default ProfileScreen2;

@@ -27,18 +27,14 @@ const LogInScreen = ({ navigation }) => {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Get auth context functions
   const { login, error, clearError, isAuthenticated } = useAuth();
 
-  // Handle login with API call
- // Handle login with API call
 const handleLogin = async () => {
-  // Reset errors
+  
   setEmailError('');
   setPasswordError('');
   clearError();
   
-  // Basic validation
   let isValid = true;
   
   if (!email || !email.includes('@')) {
@@ -53,14 +49,15 @@ const handleLogin = async () => {
   
   if (!isValid) return;
   
-  // Proceed with login API call
+
   try {
       setIsLoading(true);
       
       const userData = await login(email, password);
       
   } catch (err) {
-      // Handle specific errors
+     
+
       if (err.response && err.response.status === 401) {
           setPasswordError('The email or password you entered is incorrect');
       } else if (err.response && err.response.status === 404) {
@@ -155,7 +152,6 @@ const handleLogin = async () => {
               ) : null}
             </View>
 
-            {/* Login button */}
             <Pressable 
               style={[styles.loginButton, isLoading && styles.disabledButton]}
               onPress={handleLogin}
@@ -168,7 +164,6 @@ const handleLogin = async () => {
               )}
             </Pressable>
 
-            {/* Forgot password link */}
             <Pressable 
               style={styles.forgotPasswordContainer}
               onPress={() => navigation.navigate('ForgotPassword')}
@@ -177,7 +172,6 @@ const handleLogin = async () => {
               <Text style={styles.forgotPasswordText}>Forgot password?</Text>
             </Pressable>
 
-            {/* Signup link */}
             <View style={styles.signupContainer}>
               <Text style={styles.signupText}>New to Socialight? </Text>
               <Pressable 

@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
-const SignUpInfluencerScreen = ({ navigation }) => {
+const Ssiiggnn = ({ navigation }) => {
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [additionalPhotos, setAdditionalPhotos] = useState([null, null, null]);
@@ -391,9 +391,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     width: '30%',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)', // Add border like back button
-    marginTop: 20, // Add margin top like back button
   },
   nextButtonText: {
     color: colors.textPrimary,
@@ -480,4 +477,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpInfluencerScreen;
+export default Ssiiggnn;

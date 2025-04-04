@@ -43,19 +43,6 @@ const CreateEventScreen = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* <View style={styles.header}>
-            <TouchableOpacity 
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Create a event</Text>
-            <TouchableOpacity style={styles.helpButton}>
-              <Ionicons name="help-circle-outline" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-          </View> */}
-
           {/* Cover Photo Area */}
           <TouchableOpacity 
             style={styles.coverPhotoContainer}
@@ -104,39 +91,45 @@ const CreateEventScreen = ({ navigation }) => {
               />
             </View>
             
-            <View style={styles.inputWithIcon}>
+            <View style={styles.inputWrapper}>
               <TextInput
-                style={styles.inputWithIconText}
+                style={[styles.input, styles.inputWithIcon]}
                 placeholder="Dress code"
                 placeholderTextColor="#9E9E9E"
                 value={eventSeats}
                 onChangeText={setEventSeats}
                 keyboardType="number-pad"
               />
-              <Ionicons name="people-outline" size={20} color={colors.textSecondary} />
+              <View style={styles.iconContainer}>
+                <Ionicons name="people-outline" size={18} color={colors.textSecondary} />
+              </View>
             </View>
             
-            <View style={styles.inputWithIcon}>
+            <View style={styles.inputWrapper}>
               <TextInput
-                style={styles.inputWithIconText}
+                style={[styles.input, styles.inputWithIcon]}
                 placeholder="Age"
                 placeholderTextColor="#9E9E9E"
                 value={ageLimit}
                 onChangeText={setAgeLimit}
                 keyboardType="number-pad"
               />
-              <Ionicons name="person-outline" size={20} color={colors.textSecondary} />
+              <View style={styles.iconContainer}>
+                <Ionicons name="person-outline" size={18} color={colors.textSecondary} />
+              </View>
             </View>
             
-            <View style={styles.inputWithIcon}>
+            <View style={styles.inputWrapper}>
               <TextInput
-                style={styles.inputWithIconText}
+                style={[styles.input, styles.inputWithIcon]}
                 placeholder="Mention"
                 placeholderTextColor="#9E9E9E"
                 value={mention}
                 onChangeText={setMention}
               />
-              <Ionicons name="at-outline" size={20} color={colors.textSecondary} />
+              <View style={styles.iconContainer}>
+                <Ionicons name="at-outline" size={18} color={colors.textSecondary} />
+              </View>
             </View>
           </View>
 
@@ -212,15 +205,17 @@ const CreateEventScreen = ({ navigation }) => {
               <Text style={styles.radioText}>Table with drinks & food</Text>
             </View>
             
-            <View style={styles.inputWithIcon}>
+            <View style={styles.inputWrapper}>
               <TextInput
-                style={styles.inputWithIconText}
+                style={[styles.input, styles.inputWithIcon]}
                 placeholder="Location"
                 placeholderTextColor="#9E9E9E"
                 value={location}
                 onChangeText={setLocation}
               />
-              <Ionicons name="location-outline" size={20} color={colors.textSecondary} />
+              <View style={styles.iconContainer}>
+                <Ionicons name="location-outline" size={18} color={colors.textSecondary} />
+              </View>
             </View>
           </View>
 
@@ -304,23 +299,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     marginBottom: 10,
+    height: 45, // Fixed height for all inputs
   },
   inputWithIcon: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: 25,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    marginBottom: 10,
+    paddingRight: 40, // Make room for the icon
   },
-  inputWithIconText: {
-    flex: 1,
-    color: colors.textPrimary,
-    paddingRight: 10,
+  inputWrapper: {
+    position: 'relative',
+    marginBottom: 0,
+  },
+  iconContainer: {
+    position: 'absolute',
+    right: 20,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    pointerEvents: 'none',
   },
   placeholderText: {
     color: '#9E9E9E',
@@ -328,6 +322,7 @@ const styles = StyleSheet.create({
   timeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 10, // Add gap between time inputs
   },
   timeInput: {
     width: '48%',

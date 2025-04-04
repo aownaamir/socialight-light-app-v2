@@ -6,6 +6,7 @@ import { useAuth } from '../store/context/authContext';
 import { createStackNavigator } from '@react-navigation/stack';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
+import LoadingScreen from '../screens/LoadingScreen';
 
 const Stack = createStackNavigator();
 
@@ -13,8 +14,6 @@ const Stack = createStackNavigator();
 const RootNavigator = () => {
   // const { isAuthenticated, loading } = useAuth();
   const isAuthenticated=useAuth().isAuthenticated;
-
-  useEffect(()=>{console.log(isAuthenticated)},[isAuthenticated])
 
   // Show loading spinner while checking auth state
   // if (loading) {
@@ -28,6 +27,7 @@ const RootNavigator = () => {
   return (
     <NavigationContainer>
     {!isAuthenticated ?  <AuthNavigator /> :  <TabNavigator />}
+    {/* <TabNavigator /> */}
     </NavigationContainer>
        
     )

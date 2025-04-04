@@ -8,11 +8,14 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { eventDetails, eventsArray } from '../data/data';
+import ContactSection from '../components/ContactSection';
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,11 +23,8 @@ const EventDetailsScreen = ({ navigation, route }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isInterested, setIsInterested] = useState(false);
   
-  // const event=eventsArray[0]
-  const id=route.params.id;
-  const event=eventsArray.find(event => event.id === id);
-  
-  // console.log(id)
+  const id = route.params.id;
+  const event = eventsArray.find(event => event.id === id);
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -39,26 +39,12 @@ const EventDetailsScreen = ({ navigation, route }) => {
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
     >
+      <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with back button and avatar */}
-          {/* <View style={styles.header}>
-            <Pressable 
-              style={styles.backButton} 
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
-            </Pressable>
-            <Text style={styles.headerTitle}>Events Details</Text>
-            <Image 
-              source={event.organizer.avatar} 
-              style={styles.organizerAvatar} 
-            />
-          </View> */}
-
           {/* Event Cover Image */}
           <View style={styles.coverImageContainer}>
             <Image 
@@ -110,9 +96,10 @@ const EventDetailsScreen = ({ navigation, route }) => {
           </View>
 
           {/* Event Details Card */}
-          <View style={styles.detailsCard}>
-            <Text style={styles.cardTitle}>Events Details</Text>
+          <View style={styles.cardContainer}>
+            <Text style={styles.sectionTitle}>Events Details</Text>
             
+            {/* Modified these rows to better handle long text */}
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
                 <Ionicons name="calendar-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
@@ -124,15 +111,16 @@ const EventDetailsScreen = ({ navigation, route }) => {
               </View>
             </View>
             
-            <View style={styles.detailsRow}>
-              <View style={styles.detailItem}>
-                <Ionicons name="location-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
-                <Text style={styles.detailText}>{event.location}</Text>
-              </View>
-              <View style={styles.detailItem}>
-                <Ionicons name="map-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
-                <Text style={styles.detailText}>{event.fullAddress}</Text>
-              </View>
+            {/* Location gets its own full-width row */}
+            <View style={styles.detailFullRow}>
+              <Ionicons name="location-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+              <Text style={styles.detailText}>{event.location}</Text>
+            </View>
+            
+            {/* Address gets its own full-width row */}
+            <View style={styles.detailFullRow}>
+              <Ionicons name="map-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+              <Text style={styles.detailText} numberOfLines={2}>{event.fullAddress}</Text>
             </View>
             
             <View style={styles.descriptionContainer}>
@@ -142,32 +130,32 @@ const EventDetailsScreen = ({ navigation, route }) => {
           </View>
 
           {/* Event Rules Card */}
-          <View style={styles.rulesCard}>
-            <Text style={styles.cardTitle}>Event Rules</Text>
+          <View style={styles.cardContainer}>
+            <Text style={styles.sectionTitle}>Event Rules</Text>
             
             {event.rules.map((rule, index) => (
-              <View key={`rule-${index}`} style={styles.ruleItem}>
+              <View key={`rule-${index}`} style={styles.bulletItem}>
                 <View style={styles.bulletPoint} />
-                <Text style={styles.ruleText}>{rule}</Text>
+                <Text style={styles.bulletText}>{rule}</Text>
               </View>
             ))}
           </View>
 
           {/* Offer to applicants Card */}
-          <View style={styles.offersCard}>
-            <Text style={styles.cardTitle}>Offer to applicants</Text>
+          <View style={styles.cardContainer}>
+            <Text style={styles.sectionTitle}>Offer to applicants</Text>
             
             {event.offers.map((offer, index) => (
-              <View key={`offer-${index}`} style={styles.offerItem}>
+              <View key={`offer-${index}`} style={styles.bulletItem}>
                 <View style={styles.bulletPoint} />
-                <Text style={styles.offerText}>{offer}</Text>
+                <Text style={styles.bulletText}>{offer}</Text>
               </View>
             ))}
           </View>
 
           {/* Location Map */}
-          <View style={styles.locationContainer}>
-            <Text style={styles.cardTitle}>Location</Text>
+          <View style={styles.locationSection}>
+            <Text style={styles.sectionTitle}>Location</Text>
             <View style={styles.mapContainer}>
               <Image 
                 source={require('../../assets/images/map-placeholder.png')} 
@@ -185,7 +173,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
                 {event.attendees.map((attendee, index) => (
                   <Image 
                     key={`attendee-${index}`}
-                    source={attendee} 
+                    source={attendee.avatar} 
                     style={[
                       styles.attendeeAvatar,
                       { left: index * 20 }
@@ -211,6 +199,9 @@ const EventDetailsScreen = ({ navigation, route }) => {
               </Pressable>
             </View>
           </View>
+
+          {/* Contact Section - Replicated from base screens */}
+          {/* <ContactSection /> */}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -220,33 +211,15 @@ const EventDetailsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
   safeArea: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? 10 : 0,
   },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 30,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  organizerAvatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
   },
   coverImageContainer: {
     width: width,
@@ -312,6 +285,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 20,
   },
   organizerInfo: {
     flexDirection: 'row',
@@ -343,16 +317,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  detailsCard: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 10,
+  // Card containers - synced with base screens
+  cardContainer: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 12,
     padding: 15,
-    margin: 15,
-    marginTop: 5,
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
-  cardTitle: {
+  // Section titles - synced with base screens
+  sectionTitle: {
     color: colors.textPrimary,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: 15,
   },
@@ -366,12 +342,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '48%',
   },
+  // New style for full-width detail items
+  detailFullRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    width: '100%',
+  },
   detailIcon: {
     marginRight: 8,
+    minWidth: 18, // Fixed width for alignment
   },
   detailText: {
     color: colors.textSecondary,
     fontSize: 14,
+    flex: 1, // Allow text to take remaining space
+    flexWrap: 'wrap', // Ensure text wraps properly
   },
   descriptionContainer: {
     marginTop: 5,
@@ -387,14 +373,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  rulesCard: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 10,
-    padding: 15,
-    margin: 15,
-    marginTop: 0,
-  },
-  ruleItem: {
+  // Bullet items - standardized
+  bulletItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
@@ -403,36 +383,21 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'white',
+    backgroundColor: colors.textPrimary,
     marginRight: 10,
   },
-  ruleText: {
+  bulletText: {
     color: colors.textSecondary,
     fontSize: 14,
+    flex: 1, // Allow text to wrap properly
   },
-  offersCard: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 10,
-    padding: 15,
-    margin: 15,
-    marginTop: 0,
-  },
-  offerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  offerText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  locationContainer: {
-    margin: 15,
-    marginTop: 0,
+  locationSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   mapContainer: {
     height: 180,
-    borderRadius: 10,
+    borderRadius: 12,
     overflow: 'hidden',
     position: 'relative',
     marginBottom: 15,
@@ -452,6 +417,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 20,
   },
   avatarStack: {
     flexDirection: 'row',
@@ -467,13 +433,17 @@ const styles = StyleSheet.create({
     borderColor: colors.background,
     position: 'absolute',
   },
+  // Interest button - synced with other buttons
   interestedButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: colors.accent,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   interestedActiveButton: {
     backgroundColor: colors.accent,
@@ -485,6 +455,56 @@ const styles = StyleSheet.create({
   },
   interestedActiveButtonText: {
     color: colors.textPrimary,
+  },
+  // Contact section - copied from base screens
+  contactSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  contactCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+    padding: 15,
+    marginTop: 15,
+  },
+  contactContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoLarge: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  logoLargeText: {
+    color: colors.textPrimary,
+    fontSize: 32,
+    fontWeight: '700',
+  },
+  contactInfo: {
+    flex: 1,
+  },
+  contactLabel: {
+    color: colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 5,
+  },
+  contactText: {
+    color: colors.textSecondary,
+    fontSize: 13,
+    marginBottom: 3,
+  },
+  tagline: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginTop: 5,
   },
 });
 

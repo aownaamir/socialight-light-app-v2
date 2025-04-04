@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons"; 
 import { colors } from "../theme";
+import { useNavigation } from "@react-navigation/native";
 
 
 const LoadingScreen = ({navigation}) => {

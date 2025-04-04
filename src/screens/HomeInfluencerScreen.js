@@ -24,14 +24,14 @@ import ContactSection from '../components/ContactSection';
 
 const { width, height } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
+const HomeInfluencerScreen = ({ navigation }) => {
   // Events filtering by status
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
   const upcomingEvents = eventsArray;
 
-  const handleCreateEvent = () => {
+  const handleRequestVenue = () => {
     navigation.navigate('Events',{
-      screen: 'CreateEvent'
+      screen: 'RequestVenue'
     })
     console.log('Create event pressed');
   };
@@ -61,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
             {/* Create event Button */}
             <TouchableOpacity 
               style={styles.createEventButton}
-              onPress={handleCreateEvent}
+              onPress={handleRequestVenue}
             >
               <LinearGradient
                 colors={[colors.accent, '#034946']}
@@ -70,7 +70,7 @@ const HomeScreen = ({ navigation }) => {
                 end={{ x: 1, y: 1 }}
               >
                 <Feather name="plus" size={16} color={colors.textPrimary} />
-                <Text style={styles.createEventText}>Create event</Text>
+                <Text style={styles.createEventText}>Request venue</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -334,4 +334,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeInfluencerScreen;

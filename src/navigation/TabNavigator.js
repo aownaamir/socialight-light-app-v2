@@ -1,62 +1,71 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
-import MyEventsScreen from "../screens/MyEventsScreen";
+import EventsScreen from "../screens/EventsScreen";
+import EventDetailsScreen from "../screens/EventDetailsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { colors } from "../theme";
 import CustomHeader from "../components/CustomHeader";
 import { Ionicons } from "@expo/vector-icons";
-import EventsScreen from "../screens/EventsScreen";
-import EventDetailsScreen from "../screens/EventDetailsScreen";
+import { View, StyleSheet } from "react-native";
+
+
+import MyEventsScreen from "../screens/MyEventsScreen";
 import EventAnalyticsScreen from "../screens/EventAnalyticsScreen";
+import OTPScreen from "../screens/OTPScreen";
+import RejectedScreen from "../screens/RejectedScreen";
+import WaitlistScreen from "../screens/WaitlistScreen";
+import ProfileScreen2 from "../screens/ProfileScreen2";
+import ProfileUserScreen from "../screens/ProfileUserScreen";
+import VenueProfileScreen from "../screens/VenueProfileScreen";
+import CreateEventsScreen from "../screens/CreateEventsScreen";
+import VenueRequestScreen from "../screens/VenueRequestScreen";
+import LoadingScreen from "../screens/LoadingScreen";
+import TiltedCarousel from "../chat/TiltedCarousel";
+import Carousel2 from "../chat/Carousel2";
+import StylishCarousel from "../chat/StylishCarousel";
+// import HomeNavigator from "./HomeNavigator";
+// import EventsNavigator from "./EventsNavigator";
+// import ProfileNavigator from "./ProfileNavigator";
+import { useAuth } from "../store/context/authContext";
+import InfluencerTabNavigator from "./InfluencerTabNavigator";
+import VenueTabNavigator from "./VenueTabNavigator";
+
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const user=useAuth().user
+    return (
+        user.role==="influencer" ? <InfluencerTabNavigator />:<VenueTabNavigator />
+);
+};
 
-  return <Tab.Navigator
-  screenOptions={({ route }) => ({
-    tabBarIcon: ({ focused, color, size }) => {
-      let iconName;
-
-      if (route.name === 'Home') {
-        iconName = focused ? 'home' : 'home-outline';
-      } else if (route.name === 'Explore') {
-        iconName = focused ? 'compass' : 'compass-outline';
-      } else if (route.name === 'Notifications') {
-        iconName = focused ? 'notifications' : 'notifications-outline';
-      } else if (route.name === 'Profile') {
-        iconName = focused ? 'person' : 'person-outline';
-      } else if (route.name === 'MyEvents') {
-        iconName = focused ? 'calendar' : 'calendar-outline';
-      }
-
-      // Reduced size from the default (which is likely 24-28)
-      return <Ionicons name={iconName} size={20} color={color} />;
-    },
-    tabBarActiveTintColor: colors.primary,
-    tabBarInactiveTintColor: colors.textSecondary,
-    tabBarStyle: {
-      backgroundColor: colors.background,
-      borderTopWidth: 0, // Remove the top border completely
-      height: 60,
-      paddingBottom: 10,
-      elevation: 0, // Remove shadow on Android
-      shadowOpacity: 0, // Remove shadow on iOS
-    },
-    tabBarLabelStyle: {
-      fontSize: 12,
-    },
-    // Set the header for each screen in the tab navigator
-    header: (props) => <CustomHeader {...props} />,
-  })}
-  >
-
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Events" component={EventsScreen} />
-    <Tab.Screen name="MyEvents" component={MyEventsScreen} />
-    <Tab.Screen name="Details" component={EventDetailsScreen} />
-    <Tab.Screen name="Analytics" component={EventAnalyticsScreen} />
-    <Tab.Screen name="Profile" component={ProfileScreen} />
-  </Tab.Navigator>
-}
+const styles = StyleSheet.create({
+  tabIconContainer: {
+    paddingTop: 17,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  iconWrapper: {
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dotWrapper: {
+    height: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: -13,
+  },
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#4BE0C2',
+  }
+});
 
 export default TabNavigator;

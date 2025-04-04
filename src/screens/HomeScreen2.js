@@ -17,24 +17,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import EventCard from '../components/EventCard';
-import PopularEventsCarousel from '../components/PopularEventsCarousel'; // Import the new carousel
 import { eventsArray } from '../data/data';
-import { BlurView } from 'expo-blur';
+import { BlurView } from 'expo-blur'; // Add this import
 import ContactSection from '../components/ContactSection';
 
 const { width, height } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
+
+const HomeScreen2 = ({ navigation }) => {
   // Events filtering by status
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
   const upcomingEvents = eventsArray;
 
-  const handleCreateEvent = () => {
-    navigation.navigate('Events',{
-      screen: 'CreateEvent'
-    })
-    console.log('Create event pressed');
-  };
+  
 
   return (
     <LinearGradient
@@ -46,33 +41,15 @@ const HomeScreen = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Search Bar with Create event Button */}
-          <View style={styles.searchAndButtonContainer}>
-            <View style={styles.searchContainer}>
-              <Ionicons name="search" size={20} color={colors.textSecondary} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search here..."
-                placeholderTextColor={colors.textSecondary}
-              />
-              <Ionicons name="mic" size={20} color={colors.textSecondary} />
-            </View>
-            
-            {/* Create event Button */}
-            <TouchableOpacity 
-              style={styles.createEventButton}
-              onPress={handleCreateEvent}
-            >
-              <LinearGradient
-                colors={[colors.accent, '#034946']}
-                style={styles.createEventGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <Feather name="plus" size={16} color={colors.textPrimary} />
-                <Text style={styles.createEventText}>Create event</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <Ionicons name="search" size={20} color={colors.textSecondary} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search here..."
+              placeholderTextColor={colors.textSecondary}
+            />
+            <Ionicons name="mic" size={20} color={colors.textSecondary} />
           </View>
 
           {/* Most Popular Events Section */}
@@ -83,8 +60,20 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          {/* New tilting Popular Events Carousel */}
-          <PopularEventsCarousel events={activeEvents} navigation={navigation} />
+          {/* Popular Events Horizontal Scroll - Dynamic */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.eventsScroll}
+          >
+            {activeEvents.map(event => (
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                variant="horizontal" // Optional since it's the default
+              />
+            ))}
+          </ScrollView>
 
           {/* Upcoming Events Section */}
           <View style={styles.sectionHeader}>
@@ -94,7 +83,7 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           
-          {/* Original Upcoming Events Horizontal Scroll - Dynamic */}
+          {/* Upcoming Events Horizontal Scroll - Dynamic */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -146,7 +135,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Contact Section */}
+          {/* Contact Section - Updated with BlurView */}
           <ContactSection />
 
         </ScrollView>
@@ -191,17 +180,14 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
   },
-  searchAndButtonContainer: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 25,
+    marginHorizontal: 20,
     paddingHorizontal: 15,
-    marginBottom: 12,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     height: 45,
@@ -211,30 +197,6 @@ const styles = StyleSheet.create({
     height: 45,
     paddingLeft: 10,
     color: colors.textPrimary,
-  },
-  createEventButton: {
-    borderRadius: 25,
-    overflow: 'hidden',
-    height: 45,
-    elevation: 3,
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
-  createEventGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 15,
-    height: '100%',
-    borderRadius: 25,
-  },
-  createEventText: {
-    color: colors.textPrimary,
-    fontWeight: '600',
-    marginLeft: 6,
-    fontSize: 15,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -281,7 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     marginLeft: 10,
   },
-  // Contact Section Styles with BlurView
+  // Updated Contact Section Styles with BlurView
   contactSection: {
     paddingHorizontal: 20,
     marginBottom: 20,
@@ -291,9 +253,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginTop: 15,
     backgroundColor: 'rgba(0, 0, 0, 0.24)'
+    
   },
   contactCard: {
     padding: 15,
+    // backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fallback in case BlurView doesn't work
   },
   contactContent: {
     flexDirection: 'row',
@@ -334,4 +298,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeScreen2;

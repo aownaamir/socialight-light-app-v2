@@ -19,7 +19,7 @@ const { width, height } = Dimensions.get('window');
 const EventAnalyticsScreen = ({ navigation, route }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   
-  const event=eventsArray[0]
+  const event = eventsArray[0];
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -108,49 +108,56 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
         <View style={styles.accountSection}>
           <Text style={styles.sectionTitle}>Account</Text>
           
-          {/* First Attendee */}
-          <View style={styles.attendeeItem}>
-            <View style={styles.attendeeInfo}>
-              <Image 
-                source={event.attendees[0].avatar} 
-                style={styles.attendeeAvatar} 
-              />
-              <View>
-                <Text style={styles.attendeeName}>{event.attendees[0].name}</Text>
-                <Text style={styles.attendeeUsername}>{event.attendees[0].username}</Text>
+          {/* First Attendee Card */}
+          <View style={styles.attendeeCard}>
+            <View style={styles.attendeeHeader}>
+              <View style={styles.attendeeInfo}>
+                <Image 
+                  source={event.attendees[0].avatar} 
+                  style={styles.attendeeAvatar} 
+                />
+                <View>
+                  <Text style={styles.attendeeName}>Bert Berišaj</Text>
+                  <Text style={styles.attendeeUsername}>@__bertt</Text>
+                </View>
+              </View>
+              <View style={styles.attendedBadge}>
+                <Text style={styles.badgeText}>Attended</Text>
               </View>
             </View>
-            <View style={styles.attendedBadge}>
-              <Text style={styles.badgeText}>Attended</Text>
+            
+            <View style={styles.divider} />
+            
+            <View style={styles.profileActions}>
+              <Text style={styles.actionLink}>View Profile</Text>
+              <Text style={styles.actionLink}>Reviewed!</Text>
             </View>
           </View>
           
-          {/* Second Attendee */}
-          <View style={styles.attendeeItem}>
-            <View style={styles.attendeeInfo}>
-              <Image 
-                source={event.attendees[1].avatar} 
-                style={styles.attendeeAvatar} 
-              />
-              <View>
-                <Text style={styles.attendeeName}>{event.attendees[1].name}</Text>
-                <Text style={styles.attendeeUsername}>{event.attendees[1].username}</Text>
+          {/* Second Attendee Card */}
+          <View style={styles.attendeeCard}>
+            <View style={styles.attendeeHeader}>
+              <View style={styles.attendeeInfo}>
+                <Image 
+                  source={event.attendees[1].avatar} 
+                  style={styles.attendeeAvatar} 
+                />
+                <View>
+                  <Text style={styles.attendeeName}>Bert Berišaj</Text>
+                  <Text style={styles.attendeeUsername}>@__bertt</Text>
+                </View>
+              </View>
+              <View style={styles.acceptedBadge}>
+                <Text style={styles.badgeText}>Accepted</Text>
               </View>
             </View>
-            <View style={styles.acceptedBadge}>
-              <Text style={styles.badgeText}>Accepted</Text>
+            
+            <View style={styles.divider} />
+            
+            <View style={styles.profileActions}>
+              <Text style={styles.actionLink}>View Profile</Text>
+              <Text style={styles.actionLink}>View OTP</Text>
             </View>
-          </View>
-          
-          {/* Profile Actions */}
-          <View style={styles.profileActions}>
-            <Text style={styles.actionLink}>View Profile</Text>
-            <Text style={styles.actionLink}>Blacklisted</Text>
-          </View>
-          
-          <View style={styles.profileActions}>
-            <Text style={styles.actionLink}>View Profile</Text>
-            <Text style={styles.actionLink}>View QTR</Text>
           </View>
         </View>
 
@@ -298,11 +305,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  attendeeItem: {
+  attendeeCard: {
+    marginBottom: 16,
+    backgroundColor: 'rgba(10, 31, 31, 0.3)',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  attendeeHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    padding: 16,
   },
   attendeeInfo: {
     flexDirection: 'row',
@@ -317,7 +330,7 @@ const styles = StyleSheet.create({
   attendeeName: {
     color: colors.textPrimary,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   attendeeUsername: {
     color: colors.textSecondary,
@@ -341,21 +354,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    width: '100%',
+  },
   profileActions: {
     flexDirection: 'row',
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   actionLink: {
     color: colors.textSecondary,
     fontSize: 14,
-    marginRight: 20,
   },
   editButton: {
     backgroundColor: colors.accent,
     marginHorizontal: 16,
     marginTop: 10,
     paddingVertical: 16,
-    borderRadius: 8,
+    borderRadius: 30,
     alignItems: 'center',
   },
   editButtonText: {

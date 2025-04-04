@@ -12,12 +12,15 @@ import {
   Platform,
   LayoutAnimation,
   UIManager,
+  TouchableOpacity,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
+import { logoutApi } from '../apis/auth';
+import { useAuth } from '../store/context/authContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,6 +30,21 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const VenueProfileScreen = ({ navigation }) => {
+      const logout=useAuth().logoutAuth
+  
+  const handleMyEvents = () => {
+    // Navigate to My Events screen when implemented
+    navigation.navigate('EventsScreen');
+    console.log('My Events pressed');
+  };
+  const handleLogout = () => {
+     
+          logoutApi();
+          logout()
+          return
+        
+    };
+
   return (
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
@@ -90,6 +108,21 @@ const VenueProfileScreen = ({ navigation }) => {
             </View>
           </View>
 
+          {/* My Events Button */}
+          <View style={styles.myEventsContainer}>
+            <TouchableOpacity onPress={handleMyEvents} style={styles.myEventsButton}>
+              <LinearGradient
+                colors={[colors.accent, '#034946']}
+                style={styles.myEventsGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="calendar" size={16} color={colors.textPrimary} />
+                <Text style={styles.myEventsText}>My Events</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
           {/* Account Info Section */}
           <View style={styles.accountSection}>
             <Text style={styles.sectionTitle}>Account</Text>
@@ -149,7 +182,7 @@ const VenueProfileScreen = ({ navigation }) => {
           </View>
 
           {/* Logout Button */}
-          <Pressable style={styles.logoutButton}>
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </Pressable>
           
@@ -219,7 +252,7 @@ const styles = StyleSheet.create({
   },
   venueInfoContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   venueName: {
     color: colors.textPrimary,
@@ -256,6 +289,36 @@ const styles = StyleSheet.create({
     width: 1,
     height: 25,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  // My Events Button
+  myEventsContainer: {
+    alignItems: 'center',
+    marginTop: 25,
+    marginBottom: 25,
+  },
+  myEventsButton: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    width: '40%',
+  },
+  myEventsGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  myEventsText: {
+    color: colors.textPrimary,
+    fontWeight: '500',
+    fontSize: 14,
+    marginLeft: 6,
   },
   accountSection: {
     paddingHorizontal: 20,

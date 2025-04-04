@@ -8,6 +8,7 @@ import {
   Image,
   SafeAreaView,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
@@ -15,12 +16,10 @@ import { colors } from '../theme/index';
 
 const { width } = Dimensions.get('window');
 
-const OTPVerificationScreen = ({ navigation, route }) => {
+const OTPScreen = ({ navigation, route }) => {
   const [otp, setOtp] = useState('97272');
-  // Assume user data is passed through route params
-  const { userName, userType } = 
-//   route.params ||
-   { 
+  // User data can be passed through route params
+  const { userName, userType } = route?.params || { 
     userName: 'Bert Berišaj', 
     userType: 'Influencer' 
   };
@@ -40,62 +39,58 @@ const OTPVerificationScreen = ({ navigation, route }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        {/* <View style={styles.header}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>OTP</Text>
-          <View style={styles.logoContainer}>
-            <Image
-              source={require("../../assets/images/logo.png")}
-              style={styles.smallLogo}
-              resizeMode="contain"
-            />
-          </View>
-        </View> */}
-
-        <View style={styles.contentContainer}>
-          <View style={styles.profileContainer}>
-            <View style={styles.circularFrameWrapper}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.contentContainer}>
+            <Text style={styles.titleText}>OTP Verification</Text>
+            
+            <View style={styles.imageContainer}>
+              <View style={styles.circularBorder1} />
+              <View style={styles.circularBorder2} />
+              <View style={styles.circularBorder3} />
               <Image
-                source={require("../../assets/images/profile-pic.png")}
+                source={require('../../assets/images/profile-pic.png')}
                 style={styles.profileImage}
                 resizeMode="cover"
               />
-              <View style={[styles.circleOutline, styles.circleOutline1]} />
-              <View style={[styles.circleOutline, styles.circleOutline2]} />
-              <View style={[styles.circleOutline, styles.circleOutline3]} />
             </View>
-
-            <Text style={styles.userName}>{userName}</Text>
-            <Text style={styles.userType}>{userType}</Text>
+            
+            <TouchableOpacity style={styles.statusButton}>
+              <Text style={styles.statusButtonText}>{userName}</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.divider} />
+            
+            <Text style={styles.messageText}>
+              {userType}
+            </Text>
+            
+            <View style={styles.otpContainer}>
+              <Text style={styles.otpLabel}>OTP</Text>
+              <TextInput
+                style={styles.otpInput}
+                value={otp}
+                onChangeText={setOtp}
+                keyboardType="numeric"
+                maxLength={5}
+                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+              />
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              onPress={handleVerify}
+            >
+              <Text style={styles.primaryButtonText}>Verify</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.supportButton}>
+              <Text style={styles.supportButtonText}>Need help? Contact support</Text>
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.otpContainer}>
-            <Text style={styles.otpLabel}>OTP</Text>
-            <TextInput
-              style={styles.otpInput}
-              value={otp}
-              onChangeText={setOtp}
-              keyboardType="numeric"
-              maxLength={5}
-              placeholderTextColor="rgba(255, 255, 255, 0.5)"
-            />
-          </View>
-        </View>
-
-        <View style={styles.footerContainer}>
-          <TouchableOpacity 
-            style={styles.verifyButton}
-            onPress={handleVerify}
-          >
-            <Text style={styles.verifyButtonText}>Verify</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.helpContainer}>
-            <Text style={styles.helpText}>Need help? Contact support</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -107,104 +102,105 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: 20,
-    justifyContent: 'space-between',
   },
-  header: {
-    flexDirection: 'row',
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '500',
-  },
-  logoContainer: {
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  smallLogo: {
-    width: 25,
-    height: 25,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
   },
   contentContainer: {
-    flex: 1,
+    width: '100%',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -40, // Adjust to center content
   },
-  profileContainer: {
-    alignItems: 'center',
+  titleText: {
+    color: colors.textPrimary,
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 30,
+    paddingHorizontal: 20,
   },
-  circularFrameWrapper: {
-    width: 160,
-    height: 160,
-    justifyContent: 'center',
-    alignItems: 'center',
+  imageContainer: {
     position: 'relative',
+    width: width * 0.6,
+    height: width * 0.6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 30,
   },
-  profileImage: {
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-  },
-  circleOutline: {
+  circularBorder1: {
     position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: width * 0.3,
     borderWidth: 2,
     borderColor: colors.accent,
-    borderRadius: 100,
-  },
-  circleOutline1: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  circleOutline2: {
-    width: 170,
-    height: 170,
-    borderRadius: 85,
     borderStyle: 'dashed',
-    transform: [{ rotate: '45deg' }],
   },
-  circleOutline3: {
-    width: 190,
-    height: 190,
-    borderRadius: 95,
-    borderStyle: 'dashed',
-    opacity: 0.6,
-    transform: [{ rotate: '-45deg' }],
+  circularBorder2: {
+    position: 'absolute',
+    width: '90%',
+    height: '90%',
+    borderRadius: width * 0.27,
+    borderWidth: 2,
+    borderColor: colors.accent,
   },
-  userName: {
+  circularBorder3: {
+    position: 'absolute',
+    width: '85%',
+    height: '85%',
+    borderRadius: width * 0.255,
+    borderWidth: 3,
+    borderColor: colors.accent,
+  },
+  profileImage: {
+    width: '80%',
+    height: '80%',
+    borderRadius: width * 0.24,
+  },
+  statusButton: {
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.accent,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  statusButtonText: {
     color: colors.textPrimary,
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 20,
-  },
-  userType: {
-    color: 'rgba(255, 255, 255, 0.6)',
     fontSize: 14,
-    marginTop: 5,
+    fontWeight: '500',
+  },
+  divider: {
+    width: '80%',
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: 20,
+  },
+  messageText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 22,
   },
   otpContainer: {
-    marginTop: 40,
-    alignItems: 'center',
     width: '100%',
+    alignItems: 'center',
+    marginBottom: 30,
   },
   otpLabel: {
     color: colors.textPrimary,
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 10,
-    alignSelf: 'center',
   },
   otpInput: {
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
@@ -218,30 +214,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 2,
   },
-  footerContainer: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  verifyButton: {
+  primaryButton: {
     backgroundColor: colors.accent,
-    paddingVertical: 15,
+    paddingVertical: 13,
     borderRadius: 25,
     alignItems: 'center',
-    width: '100%',
+    width: '80%',
     marginBottom: 15,
   },
-  verifyButtonText: {
+  primaryButtonText: {
     color: colors.textPrimary,
     fontSize: 16,
     fontWeight: '600',
   },
-  helpContainer: {
+  supportButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 10,
     alignItems: 'center',
+    width: '100%',
   },
-  helpText: {
-    color: colors.accent,
-    fontSize: 12,
+  supportButtonText: {
+    color: colors.textTertiary,
+    fontSize: 14,
   },
 });
 
-export default OTPVerificationScreen;
+export default OTPScreen;

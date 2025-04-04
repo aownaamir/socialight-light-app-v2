@@ -18,6 +18,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  useEffect(()=>{
+    console.log('User:', user);
+  },[user])
   // Initialize auth state by checking for saved token
 //   useEffect(() => {
 //     const loadStoredAuth = async () => {
@@ -69,7 +72,12 @@ const login = async (email, password) => {
     } finally {
         setLoading(false);
     }
+  
 };
+
+const logoutAuth=()=>{
+  setIsAuthenticated(false);
+}
   ///////////////////////////////////////
 //   extra code
   ///////////////////////////////////////
@@ -83,6 +91,7 @@ const login = async (email, password) => {
     loading,
     error,
     isAuthenticated,
+    logoutAuth,
     // login,
     // logout,
     // getCurrentUser,

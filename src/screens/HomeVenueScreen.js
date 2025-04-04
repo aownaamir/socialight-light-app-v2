@@ -24,7 +24,7 @@ import ContactSection from '../components/ContactSection';
 
 const { width, height } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
+const HomeVenueScreen = ({ navigation }) => {
   // Events filtering by status
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
   const upcomingEvents = eventsArray;
@@ -334,4 +334,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeVenueScreen;

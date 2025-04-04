@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   SafeAreaView,
   Image,
   Dimensions,
@@ -14,7 +13,7 @@ import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const RejectedScreen = ({ navigation }) => {
   return (
@@ -41,8 +40,8 @@ const RejectedScreen = ({ navigation }) => {
               />
             </View>
             
-            <TouchableOpacity style={styles.rejectedButton}>
-              <Text style={styles.rejectedButtonText}>Rejected</Text>
+            <TouchableOpacity style={styles.statusButton}>
+              <Text style={styles.statusButtonText}>Rejected</Text>
               <Ionicons name="close" size={18} color="#FFFFFF" />
             </TouchableOpacity>
             
@@ -54,10 +53,10 @@ const RejectedScreen = ({ navigation }) => {
             </Text>
             
             <TouchableOpacity 
-              style={styles.okayButton}
+              style={styles.primaryButton}
               onPress={() => navigation.navigate('Home')}
             >
-              <Text style={styles.okayButtonText}>Okay</Text>
+              <Text style={styles.primaryButtonText}>Okay</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
     height: '80%',
     borderRadius: width * 0.24,
   },
-  rejectedButton: {
+  statusButton: {
     flexDirection: 'row',
     backgroundColor: 'transparent',
     borderWidth: 1,
@@ -150,7 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
   },
-  rejectedButtonText: {
+  statusButtonText: {
     color: colors.textPrimary,
     fontSize: 14,
     fontWeight: '500',
@@ -169,7 +168,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     lineHeight: 22,
   },
-  okayButton: {
+  primaryButton: {
     backgroundColor: colors.accent,
     paddingVertical: 13,
     borderRadius: 25,
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginBottom: 15,
   },
-  okayButtonText: {
+  primaryButtonText: {
     color: colors.textPrimary,
     fontSize: 16,
     fontWeight: '600',

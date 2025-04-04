@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { eventsArray } from '../data/data';
-import EventCard from '../components/EventCard'; // Import the EventCard component
+import EventCard from '../components/EventCard';
+import ContactSection from '../components/ContactSection';
 
 const EventsScreen = ({ navigation }) => {
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
@@ -44,7 +46,9 @@ const EventsScreen = ({ navigation }) => {
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.sectionTitle}>Your events</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Your events</Text>
+          </View>
 
           {/* Event Cards - Using the modified EventCard component with 'vertical' variant */}
           {activeEvents.map((event) => (
@@ -57,26 +61,7 @@ const EventsScreen = ({ navigation }) => {
           ))}
 
           {/* Contact Information */}
-          <View style={styles.contactContainer}>
-            <Text style={styles.contactTitle}>Contact us</Text>
-            
-            <View style={styles.logoContainer}>
-              <Image
-                source={require("../../assets/images/logo-text.png")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-            </View>
-
-            <View style={styles.contactInfoContainer}>
-              <Text style={styles.contactInfoTitle}>Contact information</Text>
-              <Text style={styles.contactInfoText}>info@socialight.vip</Text>
-              <Text style={styles.contactInfoText}>www.socialight.vip</Text>
-              <Text style={styles.contactInfoText}>Athens, Greece</Text>
-            </View>
-
-            <Text style={styles.tagline}>Unlock Exclusive Experiences with Socialight</Text>
-          </View>
+          <ContactSection />
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -86,9 +71,11 @@ const EventsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
   safeArea: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? 10 : 0,
   },
   createEventButton: {
     flexDirection: 'row',
@@ -101,6 +88,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    height: 45,
   },
   createEventText: {
     color: colors.textPrimary,
@@ -111,42 +99,59 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  sectionTitle: {
-    color: colors.textPrimary,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginHorizontal: 20,
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 10,
     marginBottom: 15,
   },
-  contactContainer: {
-    padding: 20,
-    paddingTop: 10,
-  },
-  contactTitle: {
+  sectionTitle: {
     color: colors.textPrimary,
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 20,
   },
-  logoContainer: {
+  contactSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    paddingTop: 10,
+  },
+  contactCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+    padding: 15,
+    marginTop: 15,
+  },
+  contactContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
   },
-  logo: {
-    width: 40,
-    height: 40,
+  logoLarge: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
   },
-  contactInfoContainer: {
-    marginBottom: 20,
+  logoLargeText: {
+    color: colors.textPrimary,
+    fontSize: 32,
+    fontWeight: '700',
   },
-  contactInfoTitle: {
+  contactInfo: {
+    flex: 1,
+  },
+  contactLabel: {
     color: colors.textPrimary,
     fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: 5,
   },
-  contactInfoText: {
+  contactText: {
     color: colors.textSecondary,
     fontSize: 13,
     marginBottom: 3,
@@ -155,7 +160,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 14,
     fontStyle: 'italic',
-    marginBottom: 30,
+    marginTop: 5,
   },
 });
 

@@ -1,8 +1,9 @@
 // auth.js
 
 import axios from "axios";
+import { useAuth } from "../store/context/authContext";
 // Set your base API URL here
-const API_URL = 'http://192.168.10.3:8080';
+const API_URL = 'http://192.168.10.7:8080';
 
 // Configure axios defaults
 const api = axios.create({
@@ -24,8 +25,9 @@ export const setAuthToken = (token) => {
 export const loginApi = async (email, password) => {
     console.log('here1')
     try {
-        const response = await api.post('/auth/login', { email, password });   
-        
+      const response = await api.post('/auth/login', { email, password });   
+      console.log('here2')
+      
         if (response.data && response.data.res && response.data.res.token) {
             setAuthToken(response.data.res.token);
         }
@@ -48,6 +50,7 @@ export const signupInfluencerApi = async (userData) => {
 export const signupVenueApi = async (venueData) => {
   try {
     const response = await api.post('/auth/register/venue', venueData);
+    console.log('response ttatined')
     return response.data;
   } catch (error) {
     throw handleApiError(error);
@@ -56,6 +59,7 @@ export const signupVenueApi = async (venueData) => {
 
 export const logoutApi = () => {
   setAuthToken(null);
+  // isAithenticated=false
 };
 
 const handleApiError = (error) => {

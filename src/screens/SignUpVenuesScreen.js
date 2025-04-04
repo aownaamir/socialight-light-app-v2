@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,28 +11,168 @@ import {
   ScrollView,
   StatusBar,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../store/context/authContext';
+import { signupVenueApi } from '../apis/auth';
 
 const { width, height } = Dimensions.get('window');
 
 const SignUpVenuesScreen = ({ navigation }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [emailError, setEmailError] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [venueName, setVenueName] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [phoneNumberError, setPhoneNumberError] = useState('');
+  const [venueNameError, setVenueNameError] = useState('');
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { signup, error, clearError, isAuthenticated } = useAuth();
 
   const validateEmail = (text) => {
     setEmail(text);
-    // Simple validation - just showing the error message from the screenshot
-    if (text.length > 0) {
-      setEmailError('This user has not been onboarded yet');
-    } else {
-      setEmailError('');
+    // Clear error when user starts typing again
+    setEmailError('');
+  };
+
+  const handleImagePicker = () => {
+    Alert.alert(
+      "Profile Picture",
+      "Choose or take a photo for your venue profile",
+      [
+        {
+          text: "Choose from Gallery",
+          onPress: () => console.log("Gallery option selected")
+        },
+        {
+          text: "Take a Photo",
+          onPress: () => console.log("Camera option selected")
+        },
+        {
+          text: "Cancel",
+          style: "cancel"
+        }
+      ]
+    );
+  };
+
+  const handleSignup = async () => {
+    // Clear previous errors
+    setFirstNameError('');
+    setLastNameError('');
+    setEmailError('');
+    setPasswordError('');
+    setPhoneNumberError('');
+    setVenueNameError('');
+    clearError();
+    
+    let isValid = true;
+    
+    // Validate first name
+    if (!firstName.trim()) {
+      setFirstNameError('First name is required');
+      isValid = false;
+    }
+    
+    // Validate last name
+    if (!lastName.trim()) {
+      setLastNameError('Last name is required');
+      isValid = false;
+    }
+    
+    // Validate email
+    if (!email || !email.includes('@')) {
+      setEmailError('Please enter a valid email address');
+      isValid = false;
+    }
+    
+    // Validate password
+    if (!password || password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      isValid = false;
+    }
+    
+    // Validate phone number
+    if (!phoneNumber.trim()) {
+      setPhoneNumberError('Phone number is required');
+      isValid = false;
+    }
+    
+    // Validate venue name
+    if (!venueName.trim()) {
+      setVenueNameError('Venue name is required');
+      isValid = false;
+    }
+    
+    // Validate terms agreement
+    if (!agreeToTerms) {
+      Alert.alert('Terms & Conditions', 'Please agree to the terms and conditions to continue.');
+      isValid = false;
+    }
+    
+    if (!isValid) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Call signup function from auth context with new fields
+      const userData = await signupVenueApi({
+        firstName, 
+        lastName, 
+        email, 
+        password, 
+        phoneNumber,
+        venueName,
+        profilePicture,
+        agreeToTerms
+      });
+      
+      // If successful, navigation would happen through the effect that watches isAuthenticated
+      navigation.navigate('UserType');
+      
+    } catch (err) {
+      if (err.response && err.response.status === 409) {
+        setEmailError('This email is already registered');
+      } else if (err.response && err.response.status === 400) {
+        setEmailError('This user has not been onboarded yet');
+      } else {
+        Alert.alert(
+          'Signup Error',
+          'An error occurred while trying to sign up. Please try again later.'
+        );
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Effect to navigate after successful signup
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigation.navigate('Main');
+  //   }
+  // }, [isAuthenticated, navigation]);
+
+  // Effect to handle auth errors
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Authentication Error', error);
+      clearError();
+    }
+  }, [error, clearError]);
 
   return (
     <LinearGradient
@@ -62,18 +202,65 @@ const SignUpVenuesScreen = ({ navigation }) => {
               </Pressable>
             </View>
 
+            {/* Profile Picture */}
+            <Pressable style={styles.profilePictureContainer} onPress={handleImagePicker}>
+              <View style={styles.profilePicturePlaceholder}>
+                {profilePicture ? (
+                  <Image source={{ uri: profilePicture }} style={styles.profilePictureImage} />
+                ) : (
+                  <Ionicons name="camera" size={30} color={colors.accent} />
+                )}
+              </View>
+              <Text style={styles.profilePictureText}>Profile Picture</Text>
+            </Pressable>
+
             {/* Form fields */}
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
                 placeholder="First name"
                 placeholderTextColor="#9E9E9E"
+                value={firstName}
+                onChangeText={(text) => {
+                  setFirstName(text);
+                  setFirstNameError('');
+                }}
+                editable={!isLoading}
               />
+              {firstNameError ? (
+                <Text style={styles.errorText}>{firstNameError}</Text>
+              ) : null}
+              
               <TextInput
                 style={styles.input}
                 placeholder="Last name"
                 placeholderTextColor="#9E9E9E"
+                value={lastName}
+                onChangeText={(text) => {
+                  setLastName(text);
+                  setLastNameError('');
+                }}
+                editable={!isLoading}
               />
+              {lastNameError ? (
+                <Text style={styles.errorText}>{lastNameError}</Text>
+              ) : null}
+              
+              <TextInput
+                style={styles.input}
+                placeholder="Venue name"
+                placeholderTextColor="#9E9E9E"
+                value={venueName}
+                onChangeText={(text) => {
+                  setVenueName(text);
+                  setVenueNameError('');
+                }}
+                editable={!isLoading}
+              />
+              {venueNameError ? (
+                <Text style={styles.errorText}>{venueNameError}</Text>
+              ) : null}
+              
               <TextInput
                 style={styles.input}
                 placeholder="E-mail"
@@ -82,10 +269,28 @@ const SignUpVenuesScreen = ({ navigation }) => {
                 autoCapitalize="none"
                 value={email}
                 onChangeText={validateEmail}
+                editable={!isLoading}
               />
               {emailError ? (
                 <Text style={styles.errorText}>{emailError}</Text>
               ) : null}
+              
+              <TextInput
+                style={styles.input}
+                placeholder="Phone number"
+                placeholderTextColor="#9E9E9E"
+                keyboardType="phone-pad"
+                value={phoneNumber}
+                onChangeText={(text) => {
+                  setPhoneNumber(text);
+                  setPhoneNumberError('');
+                }}
+                editable={!isLoading}
+              />
+              {phoneNumberError ? (
+                <Text style={styles.errorText}>{phoneNumberError}</Text>
+              ) : null}
+              
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={styles.passwordInput}
@@ -93,10 +298,17 @@ const SignUpVenuesScreen = ({ navigation }) => {
                   placeholderTextColor="#9E9E9E"
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setPasswordError('');
+                  }}
+                  editable={!isLoading}
                 />
                 <Pressable
                   style={styles.eyeIcon}
                   onPress={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                 >
                   <Ionicons
                     name={showPassword ? "eye-off-outline" : "eye-outline"}
@@ -105,6 +317,9 @@ const SignUpVenuesScreen = ({ navigation }) => {
                   />
                 </Pressable>
               </View>
+              {passwordError ? (
+                <Text style={styles.errorText}>{passwordError}</Text>
+              ) : null}
             </View>
 
             {/* Terms agreement */}
@@ -112,6 +327,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
               <Pressable 
                 style={styles.checkboxContainer}
                 onPress={() => setAgreeToTerms(!agreeToTerms)}
+                disabled={isLoading}
               >
                 <Ionicons
                   name={agreeToTerms ? "checkmark-circle" : "ellipse-outline"}
@@ -125,21 +341,42 @@ const SignUpVenuesScreen = ({ navigation }) => {
             </View>
 
             {/* Signup button */}
-            <Pressable style={styles.signupButton}>
-              <Text style={styles.signupButtonText}>Signup</Text>
+            <Pressable 
+              style={[styles.signupButton, isLoading && styles.disabledButton]}
+              onPress={handleSignup}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={colors.background} size="small" />
+              ) : (
+                <Text style={styles.signupButtonText}>Signup</Text>
+              )}
             </Pressable>
             
             {/* Request participation button */}
-            <Pressable style={styles.requestButton}
-             onPress={()=>navigation.navigate('Main')}>            >
+            <Pressable 
+              style={[styles.requestButton, isLoading && styles.disabledRequest]}
+              onPress={handleSignup}
+              disabled={isLoading}
+            >
               <Text style={styles.requestButtonText}>Request participation</Text>
             </Pressable>
+
+            {/* Back button */}
+              <Pressable 
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+                disabled={isLoading}
+              >
+                <Text style={styles.backButtonText}>Back</Text>
+              </Pressable>
 
             {/* Login link */}
             <View style={styles.loginLinkContainer}>
               <Text style={styles.loginLinkText}>Already have an account? </Text>
               <Pressable
                 onPress={() => navigation.navigate('Login')}
+                disabled={isLoading}
               >
                 <Text style={styles.loginText}>Login</Text>
               </Pressable>
@@ -203,6 +440,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  profilePictureContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profilePicturePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.accent,
+    marginBottom: 8,
+  },
+  profilePictureImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+  },
+  profilePictureText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
   inputContainer: {
     width: '100%',
     marginBottom: 15,
@@ -265,8 +526,13 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     marginBottom: 15,
+    height: 50,
+  },
+  disabledButton: {
+    backgroundColor: 'rgba(255, 150, 0, 0.5)', // Assuming colors.accent is orange-ish
   },
   signupButtonText: {
     color: colors.textPrimary,
@@ -278,10 +544,15 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     marginBottom: 20,
     borderWidth: 1,
     borderColor: colors.accent,
+    height: 50,
+  },
+  disabledRequest: {
+    borderColor: 'rgba(255, 150, 0, 0.5)', // Matching disabled button color
   },
   requestButtonText: {
     color: colors.textPrimary,
@@ -300,6 +571,23 @@ const styles = StyleSheet.create({
   loginText: {
     color: colors.accent,
     fontSize: 14,
+  },
+  backButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 13,
+    borderRadius: 25,
+    alignItems: 'center',
+    width: '35%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    marginBottom: 20,
+    height: 50,
+    alignSelf: 'center',
+  },
+  backButtonText: {
+    color: colors.textPrimary,
+    fontSize: 16,
+    fontWeight: '400',
   },
 });
 
