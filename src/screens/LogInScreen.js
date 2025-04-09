@@ -53,6 +53,7 @@ const handleLogin = async () => {
   try {
       setIsLoading(true);
       
+      //  the context login function
       const userData = await login(email, password);
       
   } catch (err) {

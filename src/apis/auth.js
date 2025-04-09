@@ -1,11 +1,7 @@
 // auth.js
-
+import API_URL from "./apiURL"
 import axios from "axios";
-import { useAuth } from "../store/context/authContext";
-// Set your base API URL here
-const API_URL = 'http://192.168.10.7:8080';
 
-// Configure axios defaults
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -13,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Set auth token for requests
 export const setAuthToken = (token) => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -23,10 +18,8 @@ export const setAuthToken = (token) => {
 };
 
 export const loginApi = async (email, password) => {
-    console.log('here1')
     try {
       const response = await api.post('/auth/login', { email, password });   
-      console.log('here2')
       
         if (response.data && response.data.res && response.data.res.token) {
             setAuthToken(response.data.res.token);
@@ -38,24 +31,29 @@ export const loginApi = async (email, password) => {
     }
 };
 
-export const signupInfluencerApi = async (userData) => {
+export const signupInfluencerApi = async (userData, formData) => {
   try {
+    // console.log('userData:', userData)
     const response = await api.post('/auth/register/influencer', userData);
+    return response.data;
+
+    //saparate api call for files
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const signupVenueApi = async (venueData ,formData) => {
+
+
+  try {
+    const response = await api.post('/auth/register/venue', venueData);
     return response.data;
   } catch (error) {
     throw handleApiError(error);
   }
 };
 
-export const signupVenueApi = async (venueData) => {
-  try {
-    const response = await api.post('/auth/register/venue', venueData);
-    console.log('response ttatined')
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error);
-  }
-};
 
 export const logoutApi = () => {
   setAuthToken(null);

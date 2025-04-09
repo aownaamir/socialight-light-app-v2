@@ -24,14 +24,14 @@ const Ssiiggnn = ({ navigation }) => {
 
   const handleProfilePhotoUpload = () => {
     // Implement photo upload functionality
-    console.log("Upload profile photo");
+    // console.log("Upload profile photo");
     // This would normally connect to image picker
     setProfilePhoto({ uri: 'https://example.com/temp-photo.jpg' });
   };
 
   const handleAdditionalPhotoUpload = (index) => {
     // Implement additional photo upload functionality
-    console.log(`Upload additional photo at index ${index}`);
+    // console.log(`Upload additional photo at index ${index}`);
     // This would normally connect to image picker
     const newPhotos = [...additionalPhotos];
     newPhotos[index] = { uri: 'https://example.com/temp-photo.jpg' };

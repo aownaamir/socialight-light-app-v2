@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,30 +11,68 @@ import {
   TouchableOpacity,
   Platform,
   Linking,
+  Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import EventCard from '../components/EventCard';
-import PopularEventsCarousel from '../components/PopularEventsCarousel'; // Import the new carousel
-import { eventsArray } from '../data/data';
-import { BlurView } from 'expo-blur';
+import PopularEventsCarousel from '../components/PopularEventsCarousel';
+import { getEventsApi } from '../apis/events';
+import { useAuth } from '../store/context/authContext';
 import ContactSection from '../components/ContactSection';
 
 const { width, height } = Dimensions.get('window');
 
 const HomeInfluencerScreen = ({ navigation }) => {
-  // Events filtering by status
-  const activeEvents = eventsArray.filter(event => event.status === 'Active');
-  const upcomingEvents = eventsArray;
+  const [activeEvents, setActiveEvents] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0
+  });
+  const { token } = useAuth();
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async (searchParams = {}) => {
+    setLoading(true);
+    try {
+      // You can pass any query parameters based on user filters
+      const result = await getEventsApi(token, {
+        page: searchParams.page || pagination.page,
+        limit: searchParams.limit || pagination.limit,
+      });
+      setActiveEvents(result.events.filter(event => event.status === 'published'));
+      setUpcomingEvents(result.events);
+      setPagination(result.pagination);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRequestVenue = () => {
-    navigation.navigate('Events',{
-      screen: 'RequestVenue'
+    navigation.navigate('EventsTab', {
+      screen: 'EventsRequestVenue'
     })
-    console.log('Create event pressed');
+    // console.log('Create event pressed');
   };
+
+  // Content placeholder while loading
+  const renderLoadingPlaceholder = () => (
+    <View style={styles.loadingPlaceholder}>
+      <ActivityIndicator size="large" color={colors.accent} />
+    </View>
+  );
 
   return (
     <LinearGradient
@@ -57,9 +95,9 @@ const HomeInfluencerScreen = ({ navigation }) => {
               />
               <Ionicons name="mic" size={20} color={colors.textSecondary} />
             </View>
-            
-            {/* Create event Button */}
-            <TouchableOpacity 
+
+            {/* Request venue Button */}
+            <TouchableOpacity
               style={styles.createEventButton}
               onPress={handleRequestVenue}
             >
@@ -78,13 +116,21 @@ const HomeInfluencerScreen = ({ navigation }) => {
           {/* Most Popular Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Most popular event</Text>
-            <TouchableOpacity>
+            <Pressable onPress={() => navigation.navigate('HomeAllEvents')}>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          {/* New tilting Popular Events Carousel */}
-          <PopularEventsCarousel events={activeEvents} navigation={navigation} />
+          {/* Popular Events Carousel with Loading State */}
+          {loading ? (
+            renderLoadingPlaceholder()
+          ) : activeEvents.length > 0 ? (
+            <PopularEventsCarousel events={activeEvents} navigation={navigation} />
+          ) : (
+            <View style={styles.noEventsContainer}>
+              <Text style={styles.noEventsText}>No popular events found</Text>
+            </View>
+          )}
 
           {/* Upcoming Events Section */}
           <View style={styles.sectionHeader}>
@@ -93,20 +139,30 @@ const HomeInfluencerScreen = ({ navigation }) => {
               <Text style={styles.viewAllText}>view all</Text>
             </TouchableOpacity>
           </View>
-          
-          {/* Original Upcoming Events Horizontal Scroll - Dynamic */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.eventsScroll}
-          >
-            {upcomingEvents.map(event => (
-              <EventCard 
-                key={event.id} 
-                event={event} 
-              />
-            ))}
-          </ScrollView>
+
+          {/* Upcoming Events Horizontal Scroll with Loading State */}
+          {loading ? (
+            renderLoadingPlaceholder()
+          ) : (
+            upcomingEvents.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.eventsScroll}
+              >
+                {upcomingEvents.map(event => (
+                  <EventCard
+                    key={event._id || event.id}
+                    event={event}
+                  />
+                ))}
+              </ScrollView>
+            ) : (
+              <View style={styles.noEventsContainer}>
+                <Text style={styles.noEventsText}>No upcoming events found</Text>
+              </View>
+            )
+          )}
 
           {/* Partners Section */}
           <View style={styles.partnersSection}>
@@ -167,6 +223,25 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 30,
+  },
+  loadingPlaceholder: {
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  noEventsContainer: {
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginBottom: 15,
+  },
+  noEventsText: {
+    color: colors.textSecondary,
+    fontSize: 16,
   },
   header: {
     flexDirection: 'row',

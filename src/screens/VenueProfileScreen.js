@@ -30,20 +30,20 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const VenueProfileScreen = ({ navigation }) => {
-      const logout=useAuth().logoutAuth
-  
+  const logout = useAuth().logoutAuth
+
   const handleMyEvents = () => {
     // Navigate to My Events screen when implemented
-    navigation.navigate('EventsScreen');
-    console.log('My Events pressed');
+    navigation.navigate('ProfileEvents');
+    // console.log('My Events pressed');
   };
   const handleLogout = () => {
-     
-          logoutApi();
-          logout()
-          return
-        
-    };
+
+    logoutApi();
+    logout()
+    return
+
+  };
 
   return (
     <LinearGradient
@@ -52,7 +52,7 @@ const VenueProfileScreen = ({ navigation }) => {
     >
       <StatusBar style="light" />
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -69,15 +69,15 @@ const VenueProfileScreen = ({ navigation }) => {
 
           {/* Cover Photo with Profile Image */}
           <View style={styles.coverContainer}>
-            <Image 
-              source={require('../../assets/images/sunset-profile.jpg')} 
+            <Image
+              source={require('../../assets/images/sunset-profile.jpg')}
               style={styles.coverPhoto}
               resizeMode="cover"
             />
             <View style={styles.profileImageWrapper}>
               <View style={styles.profileImageContainer}>
-                <Image 
-                  source={require('../../assets/images/company-image.png')} 
+                <Image
+                  source={require('../../assets/images/company-image.png')}
                   style={styles.profileImage}
                   resizeMode="contain"
                 />
@@ -89,7 +89,7 @@ const VenueProfileScreen = ({ navigation }) => {
           <View style={styles.venueInfoContainer}>
             <Text style={styles.venueName}>Zeus</Text>
             <Text style={styles.venueType}>Venue</Text>
-            
+
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>53.2k</Text>
@@ -126,7 +126,7 @@ const VenueProfileScreen = ({ navigation }) => {
           {/* Account Info Section */}
           <View style={styles.accountSection}>
             <Text style={styles.sectionTitle}>Account</Text>
-            
+
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
@@ -134,7 +134,7 @@ const VenueProfileScreen = ({ navigation }) => {
                 placeholderTextColor="#9E9E9E"
               />
             </View>
-            
+
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
@@ -142,7 +142,7 @@ const VenueProfileScreen = ({ navigation }) => {
                 placeholderTextColor="#9E9E9E"
               />
             </View>
-            
+
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
@@ -151,7 +151,7 @@ const VenueProfileScreen = ({ navigation }) => {
                 keyboardType="email-address"
               />
             </View>
-            
+
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
@@ -185,7 +185,7 @@ const VenueProfileScreen = ({ navigation }) => {
           <Pressable style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </Pressable>
-          
+
           {/* Support Text */}
           <Text style={styles.supportText}>Need help? Contact support</Text>
         </ScrollView>

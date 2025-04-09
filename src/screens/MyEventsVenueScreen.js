@@ -18,8 +18,9 @@ import EventCard from '../components/EventCard';
 import ContactSection from '../components/ContactSection';
 import { useAuth } from '../store/context/authContext';
 import { getVenueEventsApi } from '../apis/events';
+import VenueEventCard from '../components/VenueEventCard';
 
-const EventsScreen = ({ navigation }) => {
+const MyEventsVenueScreen = ({ navigation }) => {
   const { token } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,16 +53,16 @@ const EventsScreen = ({ navigation }) => {
       <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.safeArea}>
         {/* Create Event Button */}
-        <Pressable 
+        <Pressable
           style={styles.createEventButton}
-          onPress={() => navigation.navigate('EventsTab',{screen:"EventsCreate"})}
+          onPress={() => navigation.navigate('EventsTab', { screen: "EventsCreate" })}
         >
           <Text style={styles.createEventText}>Create a new event</Text>
           <Ionicons name="add-outline" size={20} color={colors.textPrimary} />
         </Pressable>
 
         {/* Events List */}
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
@@ -87,7 +88,7 @@ const EventsScreen = ({ navigation }) => {
             <View style={styles.errorContainer}>
               <Ionicons name="alert-circle-outline" size={40} color={colors.error || '#ff4d4d'} />
               <Text style={styles.errorText}>{error}</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.retryButton}
                 onPress={fetchEvents}
               >
@@ -101,7 +102,7 @@ const EventsScreen = ({ navigation }) => {
             <View style={styles.emptyContainer}>
               <Ionicons name="calendar-outline" size={48} color={colors.textSecondary} />
               <Text style={styles.emptyText}>You don't have any active events</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.createEventButton, styles.emptyCreateButton]}
                 onPress={() => navigation.navigate('CreateEvent')}
               >
@@ -112,7 +113,8 @@ const EventsScreen = ({ navigation }) => {
           )}
 
           {!loading && !error && events.map((event) => (
-            <EventCard 
+            <VenueEventCard
+              source='my'
               key={event._id}
               event={event}
               variant="vertical" // Specify the vertical variant
@@ -222,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventsScreen;
+export default MyEventsVenueScreen;

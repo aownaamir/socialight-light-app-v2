@@ -33,7 +33,7 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate('Events',{
       screen: 'CreateEvent'
     })
-    console.log('Create event pressed');
+    // console.log('Create event pressed');
   };
 
   return (

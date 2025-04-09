@@ -7,7 +7,7 @@ import { colors } from "../theme";
 import CustomHeader from "../components/CustomHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { View, StyleSheet } from "react-native";
-import MyEventsScreen from "../screens/MyEventsScreen";
+import MyEventsScreen from "../screens/MyEventsInfluencerScreen";
 import EventAnalyticsScreen from "../screens/EventAnalyticsScreen";
 import OTPScreen from "../screens/OTPScreen";
 import RejectedScreen from "../screens/RejectedScreen";
@@ -37,11 +37,11 @@ const VenueTabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'HomeTab') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Events') {
+          } else if (route.name === 'EventsTab') {
             iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'Profile') {
+          } else if (route.name === 'ProfileTab') {
             iconName = focused ? 'person' : 'person-outline';
           }
 
@@ -69,13 +69,14 @@ const VenueTabNavigator = () => {
         },
         header: (props) => <CustomHeader {...props} />,
       })}
+      initialRouteName="HomeTab"
     >
       {/* <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Events" component={EventsScreen} />
       <Tab.Screen name="Profile" component={ProfileUserScreen} /> */}
-       <Tab.Screen name="Home" component={HomeVenueNavigator} />
-      <Tab.Screen name="Events" component={EventsVenueNavigator} />
-      <Tab.Screen name="Profile" component={ProfileVenueNavigator} />
+      <Tab.Screen name="HomeTab" component={HomeVenueNavigator} />
+      <Tab.Screen name="EventsTab" component={EventsVenueNavigator} />
+      <Tab.Screen name="ProfileTab" component={ProfileVenueNavigator} />
     </Tab.Navigator>
   );
 };

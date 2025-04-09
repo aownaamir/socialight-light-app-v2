@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/index';
+import { useAuth } from '../store/context/authContext';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.7; // Main card width
@@ -17,6 +18,7 @@ const ITEM_HEIGHT = 230; // Card height
 const SPACING = -14; // Space between cards
 
 const PopularEventsCarousel = ({ events, navigation }) => {
+  const user=useAuth().user;
   // Create a duplicated array to enable the infinite scrolling effect
   const duplicatedEvents = [...events, ...events, ...events]; // Triple the array
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -25,6 +27,12 @@ const PopularEventsCarousel = ({ events, navigation }) => {
   // Calculate the initial scroll position to start in the middle section
   const initialScrollIndex = events.length;
   const initialScrollPosition = initialScrollIndex * (ITEM_WIDTH + SPACING);
+
+  const handleNavigate = (item)=>{
+
+    const navigateTo=user.role==="influencer"?'HomeDetails':"HomeCreate"
+    navigation.navigate(navigateTo, { id: item._id })
+  }
   
   useEffect(() => {
     // Set initial scroll position to the middle section
@@ -128,7 +136,7 @@ const PopularEventsCarousel = ({ events, navigation }) => {
             >
               <Pressable 
                 style={styles.card}
-                onPress={() => navigation.navigate('Details', { id: item.id })}
+                onPress={() => handleNavigate(item)                }
               >
                 <ImageBackground
                   source={imageSource}
@@ -155,7 +163,9 @@ const PopularEventsCarousel = ({ events, navigation }) => {
                     {item.location && (
                       <View style={styles.locationContainer}>
                         <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
-                        <Text style={styles.locationText}>{item.location}</Text>
+                        <Text style={styles.locationText}>
+                          {item.location.address}
+                        </Text>
                       </View>
                     )}
                   </View>

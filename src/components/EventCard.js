@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import {
   View,
@@ -15,17 +12,28 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from '../theme/index';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../store/context/authContext';
 
 const { width } = Dimensions.get('window');
 
-const EventCard = ({ event, variant = 'horizontal' }) => {
-
+const EventCard = ({ event, variant = 'horizontal',source='home' }) => {
+// console.log('event',event._id)
   const navigation = useNavigation()
+  const user=useAuth().user;
+  const id=event._id
+  // console.log('idddddddd',id)
+  
+  
+  const handleEventPress = () => {
+    
+    if(user.role==='influencer' && source==='home') navigation.navigate('HomeTab', {screen:'HomeDetails',params:{ id }});
+    // if(user.role==='influencer' && source==='my') navigation.navigate('HomeTab', {screen:'HomeDetails',params:{ id }});  not even rendering
+    if(user.role==='venue' && source==='home') navigation.navigate('HomeTab', {screen:'HomeCreate',params:{ id }});
+    if(user.role==='venue' && source==='my') navigation.navigate('ProfileTab', {screen:'ProfileEventsDetails',params:{ id }});
 
-  const handleEventPress = (id) => {
-    // Navigate to event details screen
-    navigation.navigate('Details', { id: event.id });
-    // console.log(id)
+    // const navigateTo=user.role==="influencer"?'HomeDetails':"HomeCreate"
+    // navigation.navigate('HomeTab', {screen:navigateTo,params:{ id }});
+    
   };
 
   // Horizontal card (used in HomeScreen)
@@ -33,7 +41,7 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
     return (
       <Pressable style={styles.horizontalCard} onPress={handleEventPress}>
         <ImageBackground
-          source={event.coverImage || event.image}
+          source={event.eventPhotos}
           style={styles.horizontalImage}
           imageStyle={styles.horizontalImageStyle}
         >
@@ -57,7 +65,9 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
             {event.location && (
               <View style={styles.locationContainer}>
                 <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
-                <Text style={styles.locationText}>{event.location}</Text>
+                <Text style={styles.locationText}>
+                  {event.location.address}
+                </Text>
               </View>
             )}
           </View>
@@ -95,7 +105,9 @@ const EventCard = ({ event, variant = 'horizontal' }) => {
             <Text style={styles.eventName}>{event.title}</Text>
             <View style={styles.locationContainer}>
               <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
-              <Text style={styles.locationText}>{event.location}</Text>
+              <Text style={styles.locationText}>
+                {typeof event.location === 'string' ? event.location : event.location.address}
+              </Text>
             </View>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textPrimary} />

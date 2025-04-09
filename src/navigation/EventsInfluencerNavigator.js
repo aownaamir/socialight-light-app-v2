@@ -9,10 +9,10 @@ const Stack = createNativeStackNavigator();
 
 const EventsInfluencerNavigator = () => {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="RequestVenue" component={VenueRequestScreen}  />
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="EventsRequestVenue">
+            <Stack.Screen name="EventsRequestVenue" component={VenueRequestScreen} />
         </Stack.Navigator>
-);
+    );
 }
 
 export default EventsInfluencerNavigator;

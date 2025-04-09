@@ -1,31 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/HomeScreen";
-import EventsScreen from "../screens/EventsScreen";
-import EventDetailsScreen from "../screens/EventDetailsScreen";
-import ProfileScreen from "../screens/ProfileScreen";
-import { colors } from "../theme";
 import CustomHeader from "../components/CustomHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { View, StyleSheet } from "react-native";
 
-
-import MyEventsScreen from "../screens/MyEventsScreen";
-import EventAnalyticsScreen from "../screens/EventAnalyticsScreen";
-import OTPScreen from "../screens/OTPScreen";
-import RejectedScreen from "../screens/RejectedScreen";
-import WaitlistScreen from "../screens/WaitlistScreen";
-import ProfileScreen2 from "../screens/ProfileScreen2";
-import ProfileUserScreen from "../screens/ProfileUserScreen";
-import VenueProfileScreen from "../screens/VenueProfileScreen";
-import CreateEventsScreen from "../screens/CreateEventsScreen";
-import VenueRequestScreen from "../screens/VenueRequestScreen";
-import LoadingScreen from "../screens/LoadingScreen";
-import TiltedCarousel from "../chat/TiltedCarousel";
-import Carousel2 from "../chat/Carousel2";
-import StylishCarousel from "../chat/StylishCarousel";
 import HomeInfluencerNavigator from "./HomeInfluencerNavigator";
 import EventsInfluencerNavigator from "./EventsInfluencerNavigator";
 import ProfileInfluencerNavigator from "./ProfileInfluencerNavigator";
+import { colors } from "../theme";
 
 
 const Tab = createBottomTabNavigator();
@@ -38,11 +19,11 @@ const InfluencerTabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'HomeTab') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Events') {
+          } else if (route.name === 'EventsTab') {
             iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'Profile') {
+          } else if (route.name === 'ProfileTab') {
             iconName = focused ? 'person' : 'person-outline';
           }
 
@@ -70,13 +51,14 @@ const InfluencerTabNavigator = () => {
         },
         header: (props) => <CustomHeader {...props} />,
       })}
+      initialRouteName="HomeTab"
     >
       {/* <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Events" component={EventsScreen} />
       <Tab.Screen name="Profile" component={ProfileUserScreen} /> */}
-      <Tab.Screen name="Home" component={HomeInfluencerNavigator} />
-      <Tab.Screen name="Events" component={EventsInfluencerNavigator} />
-      <Tab.Screen name="Profile" component={ProfileInfluencerNavigator} />
+      <Tab.Screen name="HomeTab" component={HomeInfluencerNavigator} />
+      <Tab.Screen name="EventsTab" component={EventsInfluencerNavigator} />
+      <Tab.Screen name="ProfileTab" component={ProfileInfluencerNavigator} />
     </Tab.Navigator>
   );
 };

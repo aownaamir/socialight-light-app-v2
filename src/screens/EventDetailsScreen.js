@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,71 +8,185 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  Platform,
-  StatusBar,
+  Alert,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
-import { eventDetails, eventsArray } from '../data/data';
-import ContactSection from '../components/ContactSection';
+import { useAuth } from '../store/context/authContext';
+import { getEventByIdApi } from '../apis/events';
+import { applyToEventApi, checkApplicationStatusApi } from '../apis/application';
+import { useRoute } from '@react-navigation/native';
+import { getMe } from '../apis/user';
 
 const { width, height } = Dimensions.get('window');
 
 const EventDetailsScreen = ({ navigation, route }) => {
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isInterested, setIsInterested] = useState(false);
-  
-  const id = route.params.id;
-  const event = eventsArray.find(event => event.id === id);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [applying, setApplying] = useState(false);
+  const { token, user } = useAuth();
+
+  const eventId = route.params.id;
+  useEffect(() => {
+    fetchEventDetails();
+    // checkIfApplied();
+  }, []);
+
+  const fetchEventDetails = async () => {
+    setLoading(true);
+    try {
+      const result = await getEventByIdApi(token, eventId);
+      setEvent(result.event);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      Alert.alert('Error', 'Failed to load event details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const checkIfApplied = async () => {
+  //   try {
+  //     const result = await checkApplicationStatusApi(token, id);
+  //     setHasApplied(result.applied);
+  //   } catch (error) {
+  //     console.error('Error checking application status:', error);
+  //     // Don't show an alert here as this is just a status check
+  //   }
+  // };
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
 
-  const toggleInterested = () => {
-    setIsInterested(!isInterested);
+  const handleApply = async () => {
+    // if (hasApplied) {
+    //   // If already applied, maybe show a message or navigate to application status
+    //   Alert.alert(
+    //     'Already Applied',
+    //     'You have already applied to this event. Check your applications for status updates.',
+    //     [{ text: 'OK' }]
+    //   );
+    //   return;
+    // }
+
+    // Only influencers can apply
+    if (user.role !== 'influencer') {
+      Alert.alert(
+        'Not Allowed',
+        'Only influencers can apply to events.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    setApplying(true);
+    try {
+      const me = await getMe(token)
+      // console.log(me)
+      await applyToEventApi(token, eventId, me._id);
+      setHasApplied(true);
+      Alert.alert(
+        'Success!',
+        'Your application has been submitted successfully.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Error applying to event:', error);
+      // If the error is because user already applied
+      if (error.status === 400 && error.message.includes('already applied')) {
+        setHasApplied(true);
+        Alert.alert(
+          'Already Applied',
+          'You have already applied to this event.',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Alert.alert(
+          'Application Failed',
+          'There was an error submitting your application. Please try again.',
+          [{ text: 'OK' }]
+        );
+      }
+    } finally {
+      setApplying(false);
+    }
   };
+
+  // Return loading state
+  if (loading || !event) {
+    return (
+      <LinearGradient
+        colors={[colors.background, colors.mapOverlay]}
+        style={styles.loadingContainer}
+      >
+        <Text style={styles.loadingText}>Loading event details...</Text>
+      </LinearGradient>
+    );
+  }
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  // Default placeholder image for organizer avatar
+  const placeholderAvatar = require('../../assets/images/organizer-avatar.png');
+  // Default placeholder for event cover
+  const placeholderCover = require('../../assets/images/fashion-event.jpg');
+  // Placeholder attendees (since API doesn't include this info)
+  const placeholderAttendees = [
+    require('../../assets/images/attendee1.png'),
+    require('../../assets/images/attendee2.png'),
+    require('../../assets/images/attendee3.png'),
+    require('../../assets/images/attendee4.png'),
+  ];
 
   return (
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
     >
-      <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {/* Event Cover Image */}
           <View style={styles.coverImageContainer}>
-            <Image 
-              source={event.coverImage} 
-              style={styles.coverImage} 
+            <Image
+              source={placeholderCover}
+              style={styles.coverImage}
               resizeMode="cover"
             />
-            
+
             {/* Event title and details overlay */}
             <View style={styles.eventOverlay}>
               <View style={styles.eventTitleContainer}>
                 <Text style={styles.eventTitle}>{event.title}</Text>
                 <View style={styles.eventStatusContainer}>
-                  <View style={styles.statusDot} />
-                  <Text style={styles.eventStatus}>{event.status}</Text>
-                  <Text style={styles.eventDate}>{event.date}</Text>
+                  <View style={[styles.statusDot,
+                  { backgroundColor: event.status === 'published' ? '#4CAF50' : '#FFC107' }]} />
+                  <Text style={styles.eventStatus}>
+                    {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                  </Text>
+                  <Text style={styles.eventDate}>{formatDate(event.date)}</Text>
                 </View>
-                <Text style={styles.eventTime}>{event.time}</Text>
+                <Text style={styles.eventTime}>{event.start_time} - {event.end_time}</Text>
               </View>
-              
-              <Pressable 
+
+              <Pressable
                 style={styles.favoriteButton}
                 onPress={toggleFavorite}
               >
-                <Ionicons 
-                  name={isFavorite ? "heart" : "heart-outline"} 
-                  size={24} 
-                  color={isFavorite ? "#FF4d4d" : colors.textPrimary} 
+                <Ionicons
+                  name={isFavorite ? "heart" : "heart-outline"}
+                  size={24}
+                  color={isFavorite ? "#FF4d4d" : colors.textPrimary}
                 />
               </Pressable>
             </View>
@@ -81,12 +195,12 @@ const EventDetailsScreen = ({ navigation, route }) => {
           {/* Organizer info */}
           <View style={styles.organizerContainer}>
             <View style={styles.organizerInfo}>
-              <Image 
-                source={event.organizer.avatar} 
-                style={styles.organizerSmallAvatar} 
+              <Image
+                source={placeholderAvatar}
+                style={styles.organizerSmallAvatar}
               />
               <View>
-                <Text style={styles.organizerName}>{event.organizer.name}</Text>
+                <Text style={styles.organizerName}>{event.venue.venue_name}</Text>
                 <Text style={styles.organizerLabel}>Organizer</Text>
               </View>
             </View>
@@ -96,69 +210,90 @@ const EventDetailsScreen = ({ navigation, route }) => {
           </View>
 
           {/* Event Details Card */}
-          <View style={styles.cardContainer}>
-            <Text style={styles.sectionTitle}>Events Details</Text>
-            
-            {/* Modified these rows to better handle long text */}
+          <View style={styles.detailsCard}>
+            <Text style={styles.cardTitle}>Events Details</Text>
+
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
                 <Ionicons name="calendar-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
-                <Text style={styles.detailText}>24 March, 2025</Text>
+                <Text style={styles.detailText}>{formatDate(event.date)}</Text>
               </View>
               <View style={styles.detailItem}>
                 <Ionicons name="time-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
-                <Text style={styles.detailText}>5 PM - 8 PM</Text>
+                <Text style={styles.detailText}>{event.start_time} - {event.end_time}</Text>
               </View>
             </View>
-            
-            {/* Location gets its own full-width row */}
-            <View style={styles.detailFullRow}>
-              <Ionicons name="location-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
-              <Text style={styles.detailText}>{event.location}</Text>
+
+            <View style={styles.detailsRow}>
+              <View style={styles.detailItem}>
+                <Ionicons name="location-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+                <Text style={styles.detailText}>{event.venue.venue_name}</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Ionicons name="map-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+                <Text style={styles.detailText}>{event.location.address}</Text>
+              </View>
             </View>
-            
-            {/* Address gets its own full-width row */}
-            <View style={styles.detailFullRow}>
-              <Ionicons name="map-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
-              <Text style={styles.detailText} numberOfLines={2}>{event.fullAddress}</Text>
-            </View>
-            
+
             <View style={styles.descriptionContainer}>
               <Text style={styles.descriptionTitle}>Event Description</Text>
               <Text style={styles.descriptionText}>{event.description}</Text>
             </View>
           </View>
 
+          {/* Additional details */}
+          <View style={styles.detailsCard}>
+            <Text style={styles.cardTitle}>Additional Details</Text>
+
+            <View style={styles.detailsRow}>
+              <View style={styles.detailItem}>
+                <Ionicons name="person-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+                <Text style={styles.detailText}>Age: {event.age_restriction}+</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Ionicons name="shirt-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+                <Text style={styles.detailText}>Dress Code: {event.dress_code}</Text>
+              </View>
+            </View>
+
+            <View style={styles.detailsRow}>
+              <View style={styles.detailItem}>
+                <Ionicons name="logo-instagram" size={18} color={colors.textSecondary} style={styles.detailIcon} />
+                <Text style={styles.detailText}>{event.insta_handle}</Text>
+              </View>
+            </View>
+          </View>
+
           {/* Event Rules Card */}
-          <View style={styles.cardContainer}>
-            <Text style={styles.sectionTitle}>Event Rules</Text>
-            
+          <View style={styles.rulesCard}>
+            <Text style={styles.cardTitle}>Event Rules</Text>
+
             {event.rules.map((rule, index) => (
-              <View key={`rule-${index}`} style={styles.bulletItem}>
+              <View key={`rule-${index}`} style={styles.ruleItem}>
                 <View style={styles.bulletPoint} />
-                <Text style={styles.bulletText}>{rule}</Text>
+                <Text style={styles.ruleText}>{rule}</Text>
               </View>
             ))}
           </View>
 
-          {/* Offer to applicants Card */}
-          <View style={styles.cardContainer}>
-            <Text style={styles.sectionTitle}>Offer to applicants</Text>
-            
-            {event.offers.map((offer, index) => (
-              <View key={`offer-${index}`} style={styles.bulletItem}>
+          {/* Influencer Requirements Card */}
+          <View style={styles.offersCard}>
+            <Text style={styles.cardTitle}>Influencer Requirements</Text>
+
+            {event.influencer_requirements.map((requirement, index) => (
+              <View key={`requirement-${index}`} style={styles.offerItem}>
                 <View style={styles.bulletPoint} />
-                <Text style={styles.bulletText}>{offer}</Text>
+                <Text style={styles.offerText}>{requirement}</Text>
               </View>
             ))}
           </View>
 
           {/* Location Map */}
-          <View style={styles.locationSection}>
-            <Text style={styles.sectionTitle}>Location</Text>
+          <View style={styles.locationContainer}>
+            <Text style={styles.cardTitle}>Location</Text>
             <View style={styles.mapContainer}>
-              <Image 
-                source={require('../../assets/images/map-placeholder.png')} 
+              <Image
+                source={require('../../assets/images/map-placeholder.png')}
                 style={styles.mapImage}
                 resizeMode="cover"
               />
@@ -166,42 +301,40 @@ const EventDetailsScreen = ({ navigation, route }) => {
                 <Ionicons name="location" size={24} color="#FF4d4d" />
               </View>
             </View>
-            
+
             {/* Attendees */}
             <View style={styles.attendeesContainer}>
               <View style={styles.avatarStack}>
-                {event.attendees.map((attendee, index) => (
-                  <Image 
+                {placeholderAttendees.map((attendee, index) => (
+                  <Image
                     key={`attendee-${index}`}
-                    source={attendee.avatar} 
+                    source={attendee}
                     style={[
                       styles.attendeeAvatar,
                       { left: index * 20 }
-                    ]} 
+                    ]}
                   />
                 ))}
               </View>
-              
-              {/* Interested Button */}
-              <Pressable 
+
+              {/* Application Button */}
+              <Pressable
                 style={[
                   styles.interestedButton,
-                  isInterested && styles.interestedActiveButton
+                  hasApplied ? styles.interestedActiveButton : null
                 ]}
-                onPress={toggleInterested}
+                onPress={handleApply}
+                disabled={applying}
               >
                 <Text style={[
                   styles.interestedButtonText,
-                  isInterested && styles.interestedActiveButtonText
+                  hasApplied ? styles.interestedActiveButtonText : null
                 ]}>
-                  I am Interested
+                  {applying ? 'Applying...' : hasApplied ? 'Applied' : 'Apply to Event'}
                 </Text>
               </Pressable>
             </View>
           </View>
-
-          {/* Contact Section - Replicated from base screens */}
-          {/* <ContactSection /> */}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -211,15 +344,42 @@ const EventDetailsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: colors.textPrimary,
+    fontSize: 16,
   },
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? 10 : 0,
   },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 30,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  backButton: {
+    padding: 5,
+  },
+  headerTitle: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  organizerAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
   },
   coverImageContainer: {
     width: width,
@@ -285,7 +445,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
-    marginBottom: 20,
   },
   organizerInfo: {
     flexDirection: 'row',
@@ -317,18 +476,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  // Card containers - synced with base screens
-  cardContainer: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 12,
+  detailsCard: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 10,
     padding: 15,
-    marginHorizontal: 20,
-    marginBottom: 20,
+    margin: 15,
+    marginTop: 5,
   },
-  // Section titles - synced with base screens
-  sectionTitle: {
+  cardTitle: {
     color: colors.textPrimary,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     marginBottom: 15,
   },
@@ -342,22 +499,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '48%',
   },
-  // New style for full-width detail items
-  detailFullRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-    width: '100%',
-  },
   detailIcon: {
     marginRight: 8,
-    minWidth: 18, // Fixed width for alignment
   },
   detailText: {
     color: colors.textSecondary,
     fontSize: 14,
-    flex: 1, // Allow text to take remaining space
-    flexWrap: 'wrap', // Ensure text wraps properly
   },
   descriptionContainer: {
     marginTop: 5,
@@ -373,8 +520,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  // Bullet items - standardized
-  bulletItem: {
+  rulesCard: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 10,
+    padding: 15,
+    margin: 15,
+    marginTop: 0,
+  },
+  ruleItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
@@ -383,21 +536,36 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.textPrimary,
+    backgroundColor: 'white',
     marginRight: 10,
   },
-  bulletText: {
+  ruleText: {
     color: colors.textSecondary,
     fontSize: 14,
-    flex: 1, // Allow text to wrap properly
   },
-  locationSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+  offersCard: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 10,
+    padding: 15,
+    margin: 15,
+    marginTop: 0,
+  },
+  offerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  offerText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  locationContainer: {
+    margin: 15,
+    marginTop: 0,
   },
   mapContainer: {
     height: 180,
-    borderRadius: 12,
+    borderRadius: 10,
     overflow: 'hidden',
     position: 'relative',
     marginBottom: 15,
@@ -417,7 +585,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
   avatarStack: {
     flexDirection: 'row',
@@ -433,17 +600,13 @@ const styles = StyleSheet.create({
     borderColor: colors.background,
     position: 'absolute',
   },
-  // Interest button - synced with other buttons
   interestedButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: colors.accent,
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    height: 45,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   interestedActiveButton: {
     backgroundColor: colors.accent,
@@ -455,56 +618,6 @@ const styles = StyleSheet.create({
   },
   interestedActiveButtonText: {
     color: colors.textPrimary,
-  },
-  // Contact section - copied from base screens
-  contactSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  contactCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 12,
-    padding: 15,
-    marginTop: 15,
-  },
-  contactContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoLarge: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  logoLargeText: {
-    color: colors.textPrimary,
-    fontSize: 32,
-    fontWeight: '700',
-  },
-  contactInfo: {
-    flex: 1,
-  },
-  contactLabel: {
-    color: colors.textPrimary,
-    fontSize: 15,
-    fontWeight: '500',
-    marginBottom: 5,
-  },
-  contactText: {
-    color: colors.textSecondary,
-    fontSize: 13,
-    marginBottom: 3,
-  },
-  tagline: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginTop: 5,
   },
 });
 

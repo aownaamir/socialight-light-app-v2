@@ -19,6 +19,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../store/context/authContext';
 import { signupVenueApi } from '../apis/auth';
+import * as ImagePicker from 'expo-image-picker';
 
 const { width, height } = Dimensions.get('window');
 
@@ -39,8 +40,9 @@ const SignUpVenuesScreen = ({ navigation }) => {
   const [venueNameError, setVenueNameError] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [isUploading, setIsUploading] = useState(false);
   const { signup, error, clearError, isAuthenticated } = useAuth();
+  const formData = new FormData();
 
   const validateEmail = (text) => {
     setEmail(text);
@@ -48,19 +50,69 @@ const SignUpVenuesScreen = ({ navigation }) => {
     setEmailError('');
   };
 
-  const handleImagePicker = () => {
+  const handleImagePicker = async () => {
     Alert.alert(
       "Profile Picture",
       "Choose or take a photo for your venue profile",
       [
         {
           text: "Choose from Gallery",
-          onPress: () => console.log("Gallery option selected")
+          onPress: async () => {
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            
+            if (permissionResult.granted === false) {
+              Alert.alert("Permission Required", "You need to allow access to your photos");
+              return;
+            }
+            
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.8,
+            });
+            
+            if (!result.canceled) {
+              setProfilePicture(result.assets[0].uri);
+              // uploadProfilePicture(result.assets[0].uri);
+              
+              ////////////////////////////// from uploadProfilePicture
+              
+              const filename = imageUri.split('/').pop();
+              const match = /\.(\w+)$/.exec(filename);
+              const type = match ? `image/${match[1]}` : `image`;
+              ////////////////////////////// from uploadProfilePicture
+              
+              formData.append('file', {
+                uri: imageUri,
+                name: filename,
+                type,
+              });
+            }
+          }
         },
-        {
-          text: "Take a Photo",
-          onPress: () => console.log("Camera option selected")
-        },
+        // {
+        //   text: "Take a Photo",
+        //   onPress: async () => {
+        //     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+            
+        //     if (permissionResult.granted === false) {
+        //       Alert.alert("Permission Required", "You need to allow access to your camera");
+        //       return;
+        //     }
+            
+        //     const result = await ImagePicker.launchCameraAsync({
+        //       allowsEditing: true,
+        //       aspect: [1, 1],
+        //       quality: 0.8,
+        //     });
+            
+        //     if (!result.canceled) {
+        //       setProfilePicture(result.assets[0].uri);
+        //       uploadProfilePicture(result.assets[0].uri);
+        //     }
+        //   }
+        // },
         {
           text: "Cancel",
           style: "cancel"
@@ -68,6 +120,53 @@ const SignUpVenuesScreen = ({ navigation }) => {
       ]
     );
   };
+
+  // const uploadProfilePicture = async (imageUri) => {
+  //   try {
+  //     // Create form data
+  //     const formData = new FormData();
+  //     const filename = imageUri.split('/').pop();
+  //     const match = /\.(\w+)$/.exec(filename);
+  //     const type = match ? `image/${match[1]}` : `image`;
+      
+  //     formData.append('file', {
+  //       uri: imageUri,
+  //       name: filename,
+  //       type,
+  //     });
+      
+  //     // Set loading state for upload if needed
+  //     setIsUploading(true);
+      
+  //     // Replace with your actual upload API endpoint
+  //     const response = await fetch('YOUR_UPLOAD_API_ENDPOINT', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //       body: formData,
+  //     });
+      
+  //     const responseData = await response.json();
+      
+  //     if (response.ok) {
+  //       // Store the URL or ID returned from the server to use in the next API call
+  //       // This assumes your API returns something like { fileUrl: 'https://example.com/uploads/image.jpg' }
+  //       setProfilePicture(responseData.fileUrl); // Update to use the URL from your server
+  //       Alert.alert('Success', 'Profile picture uploaded successfully!');
+  //     } else {
+  //       throw new Error(responseData.message || 'Failed to upload image');
+  //     }
+  //   } catch (error) {
+  //     Alert.alert(
+  //       'Upload Error',
+  //       'Failed to upload profile picture. Please try again.',
+  //     );
+  //     console.error('Error uploading image:', error);
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // };
 
   const handleSignup = async () => {
     // Clear previous errors
@@ -129,16 +228,28 @@ const SignUpVenuesScreen = ({ navigation }) => {
       setIsLoading(true);
       
       // Call signup function from auth context with new fields
-      const userData = await signupVenueApi({
-        firstName, 
-        lastName, 
-        email, 
-        password, 
-        phoneNumber,
-        venueName,
-        profilePicture,
-        agreeToTerms
-      });
+
+      // formData.append('firstName', firstName);
+      // formData.append('lastName', lastName);
+      // formData.append('email', email);
+      // formData.append('password', password);
+      // formData.append('phoneNumber', phoneNumber);
+      // formData.append('venueName', venueName);
+      // formData.append('agreeToTerms', agreeToTerms);
+
+        const data={
+          firstName, 
+          lastName, 
+          email, 
+          password, 
+          phoneNumber,
+          venueName,
+          profilePicture:"pic",
+          agreeToTerms
+        }
+        // console.log(data)
+
+      const userData = await signupVenueApi(data, formData);
       
       // If successful, navigation would happen through the effect that watches isAuthenticated
       navigation.navigate('UserType');
@@ -205,7 +316,9 @@ const SignUpVenuesScreen = ({ navigation }) => {
             {/* Profile Picture */}
             <Pressable style={styles.profilePictureContainer} onPress={handleImagePicker}>
               <View style={styles.profilePicturePlaceholder}>
-                {profilePicture ? (
+                {isUploading ? (
+                  <ActivityIndicator color={colors.accent} size="large" />
+                ) : profilePicture ? (
                   <Image source={{ uri: profilePicture }} style={styles.profilePictureImage} />
                 ) : (
                   <Ionicons name="camera" size={30} color={colors.accent} />

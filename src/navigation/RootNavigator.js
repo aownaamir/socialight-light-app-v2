@@ -7,6 +7,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
 import LoadingScreen from '../screens/LoadingScreen';
+import InfluencerTabNavigator from './InfluencerTabNavigator';
+import VenueTabNavigator from './VenueTabNavigator';
+import CreateEventsLiveScreen from '../screens/CreateEventsLiveScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,8 +29,19 @@ const RootNavigator = () => {
 
   return (
     <NavigationContainer>
+
     {!isAuthenticated ?  <AuthNavigator /> :  <TabNavigator />}
+    {/* set auth user null */}
+    {/* is user is dummy influencer then render only influencerNavigator */}
+    {/* is user is dummy venue then render only venueNavigator */}
+
+
     {/* <TabNavigator /> */}
+    {/* <InfluencerTabNavigator /> */}
+    {/* <VenueTabNavigator /> */}
+    {/* <CreateEventsLiveScreen /> */}
+
+
     </NavigationContainer>
        
     )

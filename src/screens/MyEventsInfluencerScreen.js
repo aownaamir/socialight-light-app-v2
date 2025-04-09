@@ -12,9 +12,9 @@ import {
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
 import { eventsArray } from '../data/data';
-import MyEventCard from '../components/MyEventCard';
+import EventHeader from '../components/EventHeader';
 
-const MyEventsScreen = ({ navigation }) => {
+const MyEventsInfluencerScreen = ({ navigation }) => {
   // Extract first 2 events as new events
   const newEvents = eventsArray.slice(0, 2);
   
@@ -35,7 +35,7 @@ const MyEventsScreen = ({ navigation }) => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>New</Text>
             {newEvents.map((event) => (
-              <MyEventCard 
+              <EventHeader 
                 key={event.id} 
                 event={event} 
                 onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
@@ -46,7 +46,7 @@ const MyEventsScreen = ({ navigation }) => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Recent</Text>
             {recentEvents.map((event) => (
-              <MyEventCard 
+              <EventHeader 
                 key={event.id} 
                 event={event}
                 onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MyEventsScreen;
+export default MyEventsInfluencerScreen;

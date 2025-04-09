@@ -35,8 +35,8 @@ const UserProfileScreen = ({ navigation }) => {
   
   
   const handleMyEvents = () => {
-    navigation.navigate('MyEvents');
-    console.log('My Events pressed');
+    navigation.navigate('ProfileEvents');
+    // console.log('My Events pressed');
   };
   
   const handleLogout = () => {

@@ -25,7 +25,7 @@ const VenueRequestScreen = ({ navigation }) => {
 
   const handleSendRequest = () => {
     // Handle the request submission logic here
-    console.log('Request submitted with:', { fullName, venueName, email, phoneNumber });
+    // console.log('Request submitted with:', { fullName, venueName, email, phoneNumber });
     // Navigate to confirmation or next screen
   };
 
