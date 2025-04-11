@@ -8,6 +8,8 @@ import VenueProfileScreen from "../screens/VenueProfileScreen";
 import MyEventsVenueScreen from "../screens/MyEventsVenueScreen";
 import MyVenueEventDetailsScreen from "../screens/MyVenueEventDetailsScreen";
 import VenueApplicationsScreen from "../screens/VenueApplicationsScreen";
+import UserShortProfileScreen from "../screens/UserShortProfileScreen";
+import EditVenueProfileScreen from "../screens/EditVenueProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +20,8 @@ const ProfileVenueNavigator = () => {
             <Stack.Screen name="ProfileEvents" component={MyEventsVenueScreen} />
             <Stack.Screen name="ProfileEventsDetails" component={MyVenueEventDetailsScreen} />
             <Stack.Screen name="ProfileApplications" component={VenueApplicationsScreen} />
+            <Stack.Screen name="ProfileInfluencerProfile" component={UserShortProfileScreen} />
+            <Stack.Screen name="ProfileEditVenueProfile" component={EditVenueProfileScreen} />
         </Stack.Navigator>
     );
 }

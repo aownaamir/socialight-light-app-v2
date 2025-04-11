@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// VenueProfileScreen modifications - Edit button side by side with My Events
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +14,7 @@ import {
   LayoutAnimation,
   UIManager,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,7 +22,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
 import { logoutApi } from '../apis/auth';
+import { getCurrentUserApi } from '../apis/user';
 import { useAuth } from '../store/context/authContext';
+import apiURL from '../apis/apiURL';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -30,20 +35,85 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const VenueProfileScreen = ({ navigation }) => {
-  const logout = useAuth().logoutAuth
+  const { token } = useAuth();
+  const logout = useAuth().logoutAuth;
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const data = await getCurrentUserApi(token);
+        setUserData(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        setError('Failed to load profile data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [token]);
 
   const handleMyEvents = () => {
     // Navigate to My Events screen when implemented
     navigation.navigate('ProfileEvents');
     // console.log('My Events pressed');
   };
-  const handleLogout = () => {
 
+  const handleLogout = () => {
     logoutApi();
     logout()
     return
-
   };
+
+  const handleEditProfile = () => {
+    navigation.navigate('ProfileEditVenueProfile');
+    // console.log('Edit Profile pressed');
+  };
+
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={[colors.background, colors.mapOverlay]}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={styles.loadingText}>Loading profile...</Text>
+      </LinearGradient>
+    );
+  }
+
+  if (error) {
+    return (
+      <LinearGradient
+        colors={[colors.background, colors.mapOverlay]}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => {
+            getCurrentUserApi(token)
+              .then(data => {
+                setUserData(data);
+                setError(null);
+              })
+              .catch(err => {
+                console.error('Error retrying user data fetch:', err);
+                setError('Failed to load profile data');
+              });
+          }}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -56,17 +126,6 @@ const VenueProfileScreen = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
-          {/* <View style={styles.header}>
-            <Pressable onPress={() => navigation.goBack()}>
-              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-            </Pressable>
-            <Text style={styles.headerTitle}>Profile</Text>
-            <Pressable>
-              <Ionicons name="grid-outline" size={24} color={colors.textPrimary} />
-            </Pressable>
-          </View> */}
-
           {/* Cover Photo with Profile Image */}
           <View style={styles.coverContainer}>
             <Image
@@ -74,11 +133,11 @@ const VenueProfileScreen = ({ navigation }) => {
               style={styles.coverPhoto}
               resizeMode="cover"
             />
+
             <View style={styles.profileImageWrapper}>
               <View style={styles.profileImageContainer}>
                 <Image
-                  source={require('../../assets/images/company-image.png')}
-                  style={styles.profileImage}
+                  source={{ uri: `${apiURL}/uploads/${userData.profile_picture}` }} style={styles.profileImage}
                   resizeMode="contain"
                 />
               </View>
@@ -87,7 +146,7 @@ const VenueProfileScreen = ({ navigation }) => {
 
           {/* Venue Info */}
           <View style={styles.venueInfoContainer}>
-            <Text style={styles.venueName}>Zeus</Text>
+            <Text style={styles.venueName}>{userData?.venue_name || 'Venue'}</Text>
             <Text style={styles.venueType}>Venue</Text>
 
             <View style={styles.statsContainer}>
@@ -108,17 +167,31 @@ const VenueProfileScreen = ({ navigation }) => {
             </View>
           </View>
 
-          {/* My Events Button */}
-          <View style={styles.myEventsContainer}>
-            <TouchableOpacity onPress={handleMyEvents} style={styles.myEventsButton}>
+          {/* Action Buttons - Edit Profile and My Events side by side */}
+          <View style={styles.actionButtonsContainer}>
+            {/* Edit Profile Button */}
+            <TouchableOpacity onPress={handleEditProfile} style={styles.actionButton}>
               <LinearGradient
                 colors={[colors.accent, '#034946']}
-                style={styles.myEventsGradient}
+                style={styles.actionButtonGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="pencil-outline" size={16} color={colors.textPrimary} />
+                <Text style={styles.actionButtonText}>Edit Profile</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            {/* My Events Button */}
+            <TouchableOpacity onPress={handleMyEvents} style={styles.actionButton}>
+              <LinearGradient
+                colors={[colors.accent, '#034946']}
+                style={styles.actionButtonGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
                 <Ionicons name="calendar" size={16} color={colors.textPrimary} />
-                <Text style={styles.myEventsText}>My Events</Text>
+                <Text style={styles.actionButtonText}>My Events</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -132,6 +205,8 @@ const VenueProfileScreen = ({ navigation }) => {
                 style={styles.input}
                 placeholder="Venue name"
                 placeholderTextColor="#9E9E9E"
+                editable={false}
+                value={userData?.venue_name || ''}
               />
             </View>
 
@@ -140,6 +215,8 @@ const VenueProfileScreen = ({ navigation }) => {
                 style={styles.input}
                 placeholder="Location"
                 placeholderTextColor="#9E9E9E"
+                editable={false}
+                value="Miami, FL" // Keep this as-is since location isn't in the API response
               />
             </View>
 
@@ -149,6 +226,8 @@ const VenueProfileScreen = ({ navigation }) => {
                 placeholder="E-mail"
                 placeholderTextColor="#9E9E9E"
                 keyboardType="email-address"
+                editable={false}
+                value={userData?.email || ''}
               />
             </View>
 
@@ -158,6 +237,8 @@ const VenueProfileScreen = ({ navigation }) => {
                 placeholder="Website"
                 placeholderTextColor="#9E9E9E"
                 keyboardType="url"
+                editable={false}
+                value="www.zeus-club.com" // Keep this as-is since website isn't in the API response
               />
             </View>
           </View>
@@ -197,6 +278,33 @@ const VenueProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: colors.textPrimary,
+    marginTop: 10,
+    fontSize: 16,
+  },
+  errorText: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  retryButton: {
+    backgroundColor: colors.accent,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 15,
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontSize: 14,
+    fontWeight: '500',
   },
   safeArea: {
     flex: 1,
@@ -252,7 +360,7 @@ const styles = StyleSheet.create({
   },
   venueInfoContainer: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   venueName: {
     color: colors.textPrimary,
@@ -290,13 +398,17 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-  // My Events Button
-  myEventsContainer: {
+  // Action Buttons Container (Edit Profile + My Events)
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 25,
+    paddingHorizontal: 20,
     marginBottom: 25,
+    gap: 15, // Space between buttons
   },
-  myEventsButton: {
+  actionButton: {
+    flex: 1,
     borderRadius: 20,
     overflow: 'hidden',
     elevation: 3,
@@ -304,17 +416,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    width: '40%',
   },
-  myEventsGradient: {
+  actionButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 20,
   },
-  myEventsText: {
+  actionButtonText: {
     color: colors.textPrimary,
     fontWeight: '500',
     fontSize: 14,

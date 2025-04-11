@@ -13,27 +13,28 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from '../theme/index';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../store/context/authContext';
+import apiURL from '../apis/apiURL';
 
 const { width } = Dimensions.get('window');
 
-const EventCard = ({ event, variant = 'horizontal',source='home' }) => {
-// console.log('event',event._id)
+const EventCard = ({ event, variant = 'horizontal', source = 'home' }) => {
+  // console.log('event',event._id)
   const navigation = useNavigation()
-  const user=useAuth().user;
-  const id=event._id
+  const user = useAuth().user;
+  const id = event._id
   // console.log('idddddddd',id)
-  
-  
+
+
   const handleEventPress = () => {
-    
-    if(user.role==='influencer' && source==='home') navigation.navigate('HomeTab', {screen:'HomeDetails',params:{ id }});
+
+    if (user.role === 'influencer' && source === 'home') navigation.navigate('HomeTab', { screen: 'HomeDetails', params: { id } });
     // if(user.role==='influencer' && source==='my') navigation.navigate('HomeTab', {screen:'HomeDetails',params:{ id }});  not even rendering
-    if(user.role==='venue' && source==='home') navigation.navigate('HomeTab', {screen:'HomeCreate',params:{ id }});
-    if(user.role==='venue' && source==='my') navigation.navigate('ProfileTab', {screen:'ProfileEventsDetails',params:{ id }});
+    if (user.role === 'venue' && source === 'home') navigation.navigate('HomeTab', { screen: 'HomeCreate', params: { id } });
+    if (user.role === 'venue' && source === 'my') navigation.navigate('ProfileTab', { screen: 'ProfileEventsDetails', params: { id } });
 
     // const navigateTo=user.role==="influencer"?'HomeDetails':"HomeCreate"
     // navigation.navigate('HomeTab', {screen:navigateTo,params:{ id }});
-    
+
   };
 
   // Horizontal card (used in HomeScreen)
@@ -41,7 +42,7 @@ const EventCard = ({ event, variant = 'horizontal',source='home' }) => {
     return (
       <Pressable style={styles.horizontalCard} onPress={handleEventPress}>
         <ImageBackground
-          source={event.eventPhotos}
+          source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }}
           style={styles.horizontalImage}
           imageStyle={styles.horizontalImageStyle}
         >
@@ -52,14 +53,14 @@ const EventCard = ({ event, variant = 'horizontal',source='home' }) => {
               </Text>
             </View>
           )}
-          
+
           {event.status === 'Active' && (
             <View style={styles.statusChip}>
               <View style={styles.statusDot} />
               <Text style={styles.statusText}>{event.status}</Text>
             </View>
           )}
-          
+
           <View style={styles.horizontalEventInfo}>
             <Text style={styles.eventName}>{event.title}</Text>
             {event.location && (
@@ -71,7 +72,7 @@ const EventCard = ({ event, variant = 'horizontal',source='home' }) => {
               </View>
             )}
           </View>
-          
+
           <Pressable style={styles.favoriteButton}>
             <Ionicons name="heart-outline" size={18} color={colors.textPrimary} />
           </Pressable>
@@ -82,7 +83,7 @@ const EventCard = ({ event, variant = 'horizontal',source='home' }) => {
 
   // Vertical card (used in EventsScreen) 
   return (
-    <Pressable 
+    <Pressable
       style={styles.verticalCard}
       onPress={handleEventPress}
     >
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 8,
   },
-  
+
   // Vertical card styles
   verticalCard: {
     height: 200,
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  
+
   // Unified styles for common elements
   dateChip: {
     alignSelf: 'flex-end',

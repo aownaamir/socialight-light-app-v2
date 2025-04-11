@@ -9,6 +9,12 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+const apiFile = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
 
 // This ensures the auth token is applied to all requests from this file too
 // You can import setAuthToken from auth.js if needed
@@ -21,10 +27,17 @@ export const setAuthToken = (token) => {
 };
 
 // Create a new event - for venues only
-export const createEventApi = async (eventData, token) => {
+export const createEventApi = async (token, eventData, formData) => {
 
   setAuthToken(token);
   try {
+
+    // new
+    const responseMultipleFile = await apiFile.post('/upload-multiple', formData);
+    const eventPhotoFilenames = responseMultipleFile.data.files.map(file => file.filename);
+    eventData.eventPhotos = eventPhotoFilenames;
+    // new
+    // const responseFile = await apiFile.post('/upload', formData);
     const response = await api.post('/events', eventData);
     return response.data;
   } catch (error) {
@@ -83,10 +96,16 @@ export const getEventByIdApi = async (token, eventId) => {
 };
 
 // Update a specific event - for venues only
-export const updateEventApi = async (token, eventId, eventData) => {
+export const updateEventApi = async (token, eventId, eventData, formData) => {
   try {
     setAuthToken(token);
-    console.log('till here')
+
+    // new
+    const responseMultipleFile = await apiFile.post('/upload-multiple', formData);
+    const eventPhotoFilenames = responseMultipleFile.data.files.map(file => file.filename);
+    eventData.eventPhotos = eventPhotoFilenames;
+    // new  
+
     const response = await api.put(`events/${eventId}`, eventData);
     return response.data;
   } catch (error) {

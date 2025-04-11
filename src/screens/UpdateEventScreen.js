@@ -12,6 +12,7 @@ import {
     Alert,
     Platform,
     Image,
+    FlatList,
 } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
@@ -19,35 +20,25 @@ import * as ImagePicker from 'expo-image-picker';
 import { updateEventApi } from '../apis/events';
 import { useAuth } from '../store/context/authContext';
 import { colors } from '../theme';
+import apiURL from '../apis/apiURL';
 
 const UpdateEventScreen = ({ navigation, route }) => {
     const { event } = route.params;
     const token = useAuth().token;
-
-    // Debug: Log the raw event object
-    useEffect(() => {
-        console.log("Raw event object:", JSON.stringify(event, null, 2));
-    }, []);
 
     // Initialize state with properly accessed properties from the event object
     const [title, setTitle] = useState(event?.title || '');
     const [date, setDate] = useState(event?.date || '');
     const [startTime, setStartTime] = useState(event?.start_time || '');
     const [endTime, setEndTime] = useState(event?.end_time || '');
-    const [ageRestriction, setAgeRestriction] = useState(
-        event?.age_restriction ? event.age_restriction.toString() : ''
-    );
+    const [ageRestriction, setAgeRestriction] = useState(event.age_restriction.toString() || '');
     const [dressCode, setDressCode] = useState(event?.dress_code || '');
     const [instagramHandle, setInstagramHandle] = useState(event?.insta_handle || '');
     const [description, setDescription] = useState(event?.description || '');
+    const [status, setStatus] = useState(event?.status || '');
 
     // Handle event photos properly
-    const [eventPhotos, setEventPhotos] = useState(event?.event_photos || []);
-
-    // Handle cover photo
-    const [coverPhoto, setCoverPhoto] = useState(
-        event?.cover_photo ? { uri: event.cover_photo } : null
-    );
+    const [eventPhotos, setEventPhotos] = useState(event.event_photos);
 
     // Ensure rules and requirements are arrays
     const [rules, setRules] = useState(Array.isArray(event?.rules) ? event.rules : []);
@@ -99,21 +90,6 @@ const UpdateEventScreen = ({ navigation, route }) => {
 
     const [locationPermission, setLocationPermission] = useState(null);
 
-    // Display debug info in console to help troubleshoot values
-    useEffect(() => {
-        console.log("Event data received:", event);
-        console.log("Initial values set:", {
-            title,
-            date,
-            startTime,
-            endTime,
-            location,
-            locationData,
-            rules,
-            influencerRequirements
-        });
-    }, []);
-
     // Check for location permission on mount
     useEffect(() => {
         (async () => {
@@ -148,7 +124,7 @@ const UpdateEventScreen = ({ navigation, route }) => {
         setInfluencerRequirements(updatedRequirements);
     };
 
-    const pickImage = async () => {
+    const pickImage = async (index) => {
         // Request media library permissions
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -160,16 +136,41 @@ const UpdateEventScreen = ({ navigation, route }) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            aspect: [16, 9],
+            aspect: [4, 3],
             quality: 0.8,
         });
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
             const selectedImage = result.assets[0];
-            setCoverPhoto(selectedImage);
-            // Add to eventPhotos array for the API
-            setEventPhotos(prevPhotos => [...prevPhotos, selectedImage]);
+
+            // Update the photo at the specified index, or add a new one
+            const updatedPhotos = [...eventPhotos];
+            if (index !== undefined && index < updatedPhotos.length) {
+                // Replace existing photo
+                updatedPhotos[index] = {
+                    uri: selectedImage.uri,
+                    isExisting: false,
+                    fileName: selectedImage.uri.split('/').pop()
+                };
+            } else {
+                // Add new photo
+                updatedPhotos.push({
+                    uri: selectedImage.uri,
+                    name: selectedImage.uri.split('/').pop(),
+                    type: selectedImage.uri.match(/\.(\w+)$/)
+                        ? `image/${selectedImage.uri.match(/\.(\w+)$/)[1]}`
+                        : 'image/jpeg'
+                });
+            }
+
+            setEventPhotos(updatedPhotos);
         }
+    };
+
+    const removePhoto = (index) => {
+        const updatedPhotos = [...eventPhotos];
+        updatedPhotos.splice(index, 1);
+        setEventPhotos(updatedPhotos);
     };
 
     const requestLocationPermission = async () => {
@@ -262,114 +263,46 @@ const UpdateEventScreen = ({ navigation, route }) => {
         }
     };
 
-    // Transform camelCase state back to snake_case for API
-    // const handleSubmit = async () => {
-    //     try {
-    //         // Prepare updated data with correct property names matching your API
-    //         const updatedData = {
-    //             title,
-    //             date,
-    //             start_time: startTime,  // Convert to snake_case for API
-    //             end_time: endTime,      // Convert to snake_case for API
-    //             age_restriction: ageRestriction ? parseInt(ageRestriction, 10) : undefined,
-    //             dress_code: dressCode,  // Convert to snake_case for API
-    //             location,
-    //             insta_handle: instagramHandle,  // Convert to snake_case for API
-    //             description,
-    //             influencer_requirements: influencerRequirements,  // Convert to snake_case for API
-    //             rules,
-    //             offer_type: offerType,  // Convert to snake_case for API
-    //         };
-
-    //         // Handle image uploads if there are new images
-    //         if (eventPhotos.length > 0) {
-    //             const formData = new FormData();
-
-    //             // Only append new photos (ones with URI property)
-    //             eventPhotos.forEach((photo) => {
-    //                 if (photo.uri && typeof photo !== 'string') {
-    //                     const localUri = photo.uri;
-    //                     const filename = localUri.split('/').pop();
-
-    //                     const match = /\.(\w+)$/.exec(filename);
-    //                     const type = match ? `image/${match[1]}` : 'image/jpeg';
-
-    //                     formData.append('event_photos', {  // Convert to snake_case for API
-    //                         uri: localUri,
-    //                         name: filename,
-    //                         type,
-    //                     });
-    //                 }
-    //             });
-
-    //             // Only set eventPhotos if there are new images to upload
-    //             if (formData.getParts().length > 0) {
-    //                 updatedData.event_photos = formData;  // Convert to snake_case for API
-    //             }
-    //         }
-
-    //         // Call update API with event ID, updated data, and token
-    //         await updateEventApi(event._id, updatedData, token);
-
-    //         // Show success message
-    //         Alert.alert('Success', 'Your event has been updated successfully!');
-
-    //         // Navigate back
-    //         navigation.goBack();
-    //     } catch (error) {
-    //         console.error('Error updating event:', error);
-    //         Alert.alert('Error', 'Failed to update event. Please try again.');
-    //     }
-    // };
-
     const handleSubmit = async () => {
         try {
             // Prepare updated data
             const updatedData = {
                 title,
-                date,
-                startTime,
-                endTime,
-                ageRestriction: ageRestriction,
                 dressCode,
+                rules,
                 location,
                 instagramHandle,
                 description,
+                eventPhotos: eventPhotos.map(photo => photo.name),
                 influencerRequirements,
-                rules,
-                offerType,
+                status,
             };
 
+
             // Handle image uploads if there are new images
+            const formData = new FormData();
             if (eventPhotos.length > 0) {
-                const formData = new FormData();
 
-                // Only append new photos (ones with URI property)
-                eventPhotos.forEach((photo) => {
-                    if (photo.uri && typeof photo !== 'string') {
-                        const localUri = photo.uri;
-                        const filename = localUri.split('/').pop();
+                // Create an array to track which photos are new and need to be sent
+                // const newPhotos = eventPhotos.filter(photo => !photo.isExisting);
 
-                        const match = /\.(\w+)$/.exec(filename);
-                        const type = match ? `image/${match[1]}` : 'image/jpeg';
+                // Only append new photos (ones that aren't from existing event photos)
+                eventPhotos.forEach((photo) =>
+                    formData.append('files', photo)
+                );
 
-                        formData.append('eventPhotos', {
-                            uri: localUri,
-                            name: filename,
-                            type,
-                        });
-                    }
-                });
+                // Only include formData if there are new photos to upload
+                // if (formData.getParts().length > 0) {
+                //     updatedData.eventPhotos = formData;
+                // }
 
-                // Only set eventPhotos if there are new images to upload
-                if (formData.getParts().length > 0) {
-                    updatedData.eventPhotos = formData;
-                }
+                // Also include the list of all photo URIs (including existing ones)
+                // updatedData.eventPhotoUris = eventPhotos.map(photo => photo.uri);
             }
 
-            // Call update API with event ID, updated data, and token
-            await updateEventApi(token, event._id, updatedData);
-
+            // // Call update API with event ID, updated data, and token
+            await updateEventApi(token, event._id, updatedData, formData);
+            console.log('formData', formData)
             // Show success message
             Alert.alert('Success', 'Your event has been updated successfully!');
 
@@ -392,6 +325,52 @@ const UpdateEventScreen = ({ navigation, route }) => {
         return '';
     };
 
+    // Render photo item
+    const renderPhotoItem = ({ item, index }) => (
+        <View style={styles.photoItemContainer}>
+            <TouchableOpacity
+                style={styles.photoItem}
+                onPress={() => pickImage(index)}
+            >
+                {item.uri ? (
+                    <>
+                        <Image
+                            source={{ uri: item.uri }}
+                            style={styles.photoImage}
+                            resizeMode="cover"
+                        />
+                        <TouchableOpacity
+                            style={styles.removePhotoButton}
+                            onPress={() => removePhoto(index)}
+                        >
+                            <Ionicons name="close-circle" size={22} color={colors.textPrimary} />
+                        </TouchableOpacity>
+                    </>
+                ) : (
+                    <>
+                        <Ionicons name="add" size={28} color={colors.textPrimary} />
+                        <Text style={styles.addPhotoText}>Upload photo</Text>
+                    </>
+                )}
+            </TouchableOpacity>
+        </View>
+    );
+
+    // Add empty slot function for photo upload
+    const renderEmptyPhotoSlot = () => {
+        if (eventPhotos.length >= 3) return null;
+
+        return (
+            <TouchableOpacity
+                style={[styles.photoItem, styles.emptyPhotoSlot]}
+                onPress={() => pickImage()}
+            >
+                <Ionicons name="add" size={28} color={colors.textPrimary} />
+                <Text style={styles.addPhotoText}>Upload photo</Text>
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <LinearGradient
             colors={[colors.background, colors.mapOverlay]}
@@ -403,7 +382,7 @@ const UpdateEventScreen = ({ navigation, route }) => {
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Header with back button */}
-                    <View style={styles.header}>
+                    {/* <View style={styles.header}>
                         <TouchableOpacity
                             style={styles.backButton}
                             onPress={() => navigation.goBack()}
@@ -411,27 +390,48 @@ const UpdateEventScreen = ({ navigation, route }) => {
                             <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Update Event</Text>
-                        <View style={{ width: 24 }} /> {/* Empty view for spacing */}
-                    </View>
+                        <View style={{ width: 24 }} /> {/* Empty view for spacing                             
+                    </View> */}
 
-                    {/* Cover Photo Area */}
-                    <TouchableOpacity
-                        style={styles.coverPhotoContainer}
-                        onPress={pickImage}
-                    >
-                        {coverPhoto ? (
-                            <Image
-                                source={{ uri: coverPhoto.uri }}
-                                style={styles.coverPhoto}
-                                resizeMode="cover"
-                            />
-                        ) : (
-                            <>
-                                <Ionicons name="add" size={36} color={colors.textPrimary} />
-                                <Text style={styles.coverPhotoText}>Update cover photo</Text>
-                            </>
-                        )}
-                    </TouchableOpacity>
+                    {/* Event Photos Section */}
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Event Photos</Text>
+                        <View style={styles.photosContainer}>
+                            {eventPhotos.map((photo, index) => (
+                                <View key={`photo-${index}`} style={styles.photoItemContainer}>
+                                    <TouchableOpacity
+                                        style={styles.photoItem}
+                                        onPress={() => pickImage(index)}
+                                    >
+                                        <Image
+                                            source={{ uri: `${apiURL}/uploads/${photo}` }}
+                                            style={styles.photoImage}
+                                            resizeMode="cover"
+                                        />
+                                        <TouchableOpacity
+                                            style={styles.removePhotoButton}
+                                            onPress={() => removePhoto(index)}
+                                        >
+                                            <Ionicons name="close-circle" size={22} color={colors.textPrimary} />
+                                        </TouchableOpacity>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+
+                            {/* Add empty slots until we have 3 total items */}
+                            {Array.from({ length: Math.max(0, 3 - eventPhotos.length) }).map((_, index) => (
+                                <View key={`empty-${index}`} style={styles.photoItemContainer}>
+                                    <TouchableOpacity
+                                        style={styles.photoItem}
+                                        onPress={() => pickImage()}
+                                    >
+                                        <Ionicons name="add" size={28} color={colors.textPrimary} />
+                                        <Text style={styles.addPhotoText}>Upload photo</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
 
                     {/* Event Details Section */}
                     <View style={styles.sectionContainer}>
@@ -760,24 +760,48 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
     },
-    coverPhotoContainer: {
-        height: 150,
+    // New Event Photos Section
+    photosContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    photoItemContainer: {
+        width: '32%',
+        marginBottom: 8,
+    },
+    photoItem: {
+        height: 100,
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        borderRadius: 12,
+        borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 20,
         overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
     },
-    coverPhoto: {
+    photoImage: {
         width: '100%',
         height: '100%',
     },
-    coverPhotoText: {
+    addPhotoText: {
         color: colors.textPrimary,
         marginTop: 8,
-        fontSize: 14,
+        fontSize: 12,
     },
+    removePhotoButton: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderRadius: 12,
+        padding: 2,
+    },
+    emptyPhotoSlot: {
+        borderStyle: 'dashed',
+    },
+    // Rest of the styles
     sectionContainer: {
         marginBottom: 20,
     },

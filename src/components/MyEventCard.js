@@ -13,22 +13,23 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from '../theme/index';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../store/context/authContext';
+import apiURL from '../apis/apiURL';
 
 const { width } = Dimensions.get('window');
 
 const MyEventCard = ({ event, variant = 'horizontal' }) => {
-// console.log('event',event._id)
+  // console.log('event',event._id)
   const navigation = useNavigation()
-  const user=useAuth().user;
-  const id=event._id
+  const user = useAuth().user;
+  const id = event._id
   // console.log('idddddddd',id)
-  
-  
+
+
   const handleEventPress = () => {
-    
-    const navigateTo=user.role==="influencer"?'HomeDetails':"HomeCreate"
-    navigation.navigate('HomeTab', {screen:navigateTo,params:{ id }});
-    
+
+    const navigateTo = user.role === "influencer" ? 'HomeDetails' : "HomeCreate"
+    navigation.navigate('HomeTab', { screen: navigateTo, params: { id } });
+
   };
 
   // Horizontal card (used in HomeScreen)
@@ -36,7 +37,7 @@ const MyEventCard = ({ event, variant = 'horizontal' }) => {
     return (
       <Pressable style={styles.horizontalCard} onPress={handleEventPress}>
         <ImageBackground
-          source={event.eventPhotos}
+          source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }}
           style={styles.horizontalImage}
           imageStyle={styles.horizontalImageStyle}
         >
@@ -47,14 +48,14 @@ const MyEventCard = ({ event, variant = 'horizontal' }) => {
               </Text>
             </View>
           )}
-          
+
           {event.status === 'Active' && (
             <View style={styles.statusChip}>
               <View style={styles.statusDot} />
               <Text style={styles.statusText}>{event.status}</Text>
             </View>
           )}
-          
+
           <View style={styles.horizontalEventInfo}>
             <Text style={styles.eventName}>{event.title}</Text>
             {event.location && (
@@ -66,7 +67,7 @@ const MyEventCard = ({ event, variant = 'horizontal' }) => {
               </View>
             )}
           </View>
-          
+
           <Pressable style={styles.favoriteButton}>
             <Ionicons name="heart-outline" size={18} color={colors.textPrimary} />
           </Pressable>
@@ -77,11 +78,11 @@ const MyEventCard = ({ event, variant = 'horizontal' }) => {
 
   // Vertical card (used in EventsScreen) 
   return (
-    <Pressable 
+    <Pressable
       style={styles.verticalCard}
       onPress={handleEventPress}
     >
-      <Image source={event.image} style={styles.verticalImage} />
+      <Image source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }} style={styles.verticalImage} />
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.7)']}
         style={styles.verticalGradient}
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 8,
   },
-  
+
   // Vertical card styles
   verticalCard: {
     height: 200,
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  
+
   // Unified styles for common elements
   dateChip: {
     alignSelf: 'flex-end',

@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/index';
 import { useAuth } from '../store/context/authContext';
+import apiURL from '../apis/apiURL';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.7; // Main card width
@@ -18,22 +19,22 @@ const ITEM_HEIGHT = 230; // Card height
 const SPACING = -14; // Space between cards
 
 const PopularEventsCarousel = ({ events, navigation }) => {
-  const user=useAuth().user;
+  const user = useAuth().user;
   // Create a duplicated array to enable the infinite scrolling effect
   const duplicatedEvents = [...events, ...events, ...events]; // Triple the array
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
-  
+
   // Calculate the initial scroll position to start in the middle section
   const initialScrollIndex = events.length;
   const initialScrollPosition = initialScrollIndex * (ITEM_WIDTH + SPACING);
 
-  const handleNavigate = (item)=>{
+  const handleNavigate = (item) => {
 
-    const navigateTo=user.role==="influencer"?'HomeDetails':"HomeCreate"
+    const navigateTo = user.role === "influencer" ? 'HomeDetails' : "HomeCreate"
     navigation.navigate(navigateTo, { id: item._id })
   }
-  
+
   useEffect(() => {
     // Set initial scroll position to the middle section
     if (flatListRef.current) {
@@ -42,7 +43,7 @@ const PopularEventsCarousel = ({ events, navigation }) => {
         animated: false
       });
     }
-    
+
     // Add auto-scrolling animation if desired
     // const interval = setInterval(() => {
     //   if (flatListRef.current) {
@@ -54,12 +55,12 @@ const PopularEventsCarousel = ({ events, navigation }) => {
     // }, 3000);
     // return () => clearInterval(interval);
   }, []);
-  
+
   // Handle scroll end to create the infinite scrolling effect
   const handleScrollEnd = (event) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
     const totalWidth = events.length * (ITEM_WIDTH + SPACING);
-    
+
     // If we've scrolled to the end of the first set or beginning of the third set,
     // jump to the corresponding position in the middle set
     if (scrollPosition < (ITEM_WIDTH + SPACING)) {
@@ -120,8 +121,8 @@ const PopularEventsCarousel = ({ events, navigation }) => {
           });
 
           // Properly handle the image source to avoid type errors
-          const imageSource = typeof item.image === 'string' 
-            ? { uri: item.image } 
+          const imageSource = typeof item.image === 'string'
+            ? { uri: item.image }
             : item.image || item.coverImage;
 
           return (
@@ -134,12 +135,12 @@ const PopularEventsCarousel = ({ events, navigation }) => {
                 },
               ]}
             >
-              <Pressable 
+              <Pressable
                 style={styles.card}
-                onPress={() => handleNavigate(item)                }
+                onPress={() => handleNavigate(item)}
               >
                 <ImageBackground
-                  source={imageSource}
+                  source={{ uri: `${apiURL}/uploads/${item.event_photos[0]}` }}
                   style={styles.horizontalImage}
                   imageStyle={styles.horizontalImageStyle}
                 >
@@ -150,14 +151,14 @@ const PopularEventsCarousel = ({ events, navigation }) => {
                       </Text>
                     </View>
                   )}
-                  
+
                   {item.status && (
                     <View style={styles.statusChip}>
                       <View style={styles.statusDot} />
                       <Text style={styles.statusText}>{item.status}</Text>
                     </View>
                   )}
-                  
+
                   <View style={styles.horizontalEventInfo}>
                     <Text style={styles.eventName}>{item.title}</Text>
                     {item.location && (
@@ -169,7 +170,7 @@ const PopularEventsCarousel = ({ events, navigation }) => {
                       </View>
                     )}
                   </View>
-                  
+
                   <Pressable style={styles.favoriteButton}>
                     <Ionicons name="heart-outline" size={18} color={colors.textPrimary} />
                   </Pressable>
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    height: '100%', 
+    height: '100%',
     borderRadius: 15,
     overflow: 'hidden',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',

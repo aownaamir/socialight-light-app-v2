@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Alert,
   Platform,
   Image,
+  FlatList,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,7 +26,7 @@ const CreateEventScreen = ({ navigation }) => {
   const token = useAuth().token;
   // Form state variables matching the API requirements
 
-  
+
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -34,8 +35,8 @@ const CreateEventScreen = ({ navigation }) => {
   const [dressCode, setDressCode] = useState('');
   const [instagramHandle, setInstagramHandle] = useState('');
   const [description, setDescription] = useState('');
-  const [eventPhotos, setEventPhotos] = useState([]);
-  const [coverPhoto, setCoverPhoto] = useState(null);
+  const [eventPhotos, setEventPhotos] = useState([]); // For displaying images
+  const [eventPhotosData, setEventPhotosData] = useState([])
   const [rules, setRules] = useState([]);
   const [influencerRequirements, setInfluencerRequirements] = useState([]);
   const [newRule, setNewRule] = useState('');
@@ -54,6 +55,7 @@ const CreateEventScreen = ({ navigation }) => {
   });
   const [locationPermission, setLocationPermission] = useState(null);
 
+  const MAX_PHOTOS = 3; // Maximum number of photos that can be uploaded
 
   const addRule = () => {
     if (newRule.trim() !== '') {
@@ -82,48 +84,76 @@ const CreateEventScreen = ({ navigation }) => {
   };
 
   const pickImage = async () => {
+    // Check if we've reached the maximum number of photos
+    if (eventPhotos.length >= MAX_PHOTOS) {
+      Alert.alert('Limit Reached', `You can only upload a maximum of ${MAX_PHOTOS} photos.`);
+      return;
+    }
+
     // Request media library permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Please grant camera roll permissions to upload photos');
       return;
     }
-    
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.8,
     });
-    
+
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const selectedImage = result.assets[0];
-      setCoverPhoto(selectedImage);
-      // Add to eventPhotos array for the API
-      setEventPhotos(prevPhotos => [...prevPhotos, selectedImage]);
+
+      // Create the file data object for the API
+      const fileData = {
+        uri: selectedImage.uri,
+        name: selectedImage.uri.split('/').pop(),
+        type: selectedImage.uri.match(/\.(\w+)$/)
+          ? `image/${selectedImage.uri.match(/\.(\w+)$/)[1]}`
+          : 'image/jpeg'
+      };
+
+      // Add to eventPhotos array for display
+      setEventPhotos(prevPhotos => [...prevPhotos, selectedImage.uri]);
+
+      // Add to eventPhotosData array for API submission
+      setEventPhotosData(prevData => [...prevData, fileData]);
     }
   };
-  
+
+  const removePhoto = (index) => {
+    const updatedPhotos = [...eventPhotos];
+    updatedPhotos.splice(index, 1);
+    setEventPhotos(updatedPhotos);
+
+    const updatedPhotosData = [...eventPhotosData];
+    updatedPhotosData.splice(index, 1);
+    setEventPhotosData(updatedPhotosData);
+  };
+
   const requestLocationPermission = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     setLocationPermission(status);
-    
+
     if (status === 'granted') {
       getCurrentLocation();
     } else {
       Alert.alert('Permission denied', 'Location permission is required to select a venue location.');
     }
   };
-  
+
   const getCurrentLocation = async () => {
     try {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High
       });
-      
+
       const { latitude, longitude } = location.coords;
-      
+
       // Update map region
       setMapRegion({
         latitude,
@@ -131,97 +161,79 @@ const CreateEventScreen = ({ navigation }) => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
-      
+
       // Reverse geocode to get address
       const addressResponse = await Location.reverseGeocodeAsync({
         latitude,
         longitude
       });
-      
+
       if (addressResponse && addressResponse.length > 0) {
         const address = addressResponse[0];
         const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
-        
+
         // Set location data in the format your API expects
         setLocationData({
           coordinates: [longitude, latitude], // Note: GeoJSON format uses [longitude, latitude]
           address: formattedAddress
         });
-        
+
         // Also update the display value for the input field
-        setLocation({
-          coordinates: [longitude, latitude], // Note: GeoJSON format uses [longitude, latitude]
-          address: formattedAddress
-        });
+        setLocation(formattedAddress);
       }
     } catch (error) {
       console.error('Error getting location:', error);
       Alert.alert('Error', 'Failed to get your current location.');
     }
   };
-  
+
   const handleMapPress = async (event) => {
-    // console.log('here er are')
     const { coordinate } = event.nativeEvent;
     const { latitude, longitude } = coordinate;
-    
+
     // Update marker position
     setMapRegion({
       ...mapRegion,
       latitude,
       longitude
     });
-    
+
     // Reverse geocode to get address
     const addressResponse = await Location.reverseGeocodeAsync({
       latitude,
       longitude
     });
-    
+
     if (addressResponse && addressResponse.length > 0) {
       const address = addressResponse[0];
       const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
-      
+
       // Set location data in the format your API expects
       setLocationData({
         coordinates: [longitude, latitude], // GeoJSON format: [longitude, latitude]
         address: formattedAddress
       });
-      
-      
-      // Actual
-      // setLocation({
-      //   coordinates: locationData.coordinates,
-      //   address: locationData.address || location 
-      // });
-      // testing
-      setLocation({
-        coordinates: locationData.coordinates, 
-        address: locationData.address || location 
-      });
+
+      // Update the location display
+      setLocation(formattedAddress);
     }
+  };
+
+  const prepareEventsFormData = () => {
+    // Create a new FormData instance for professional photos
+    const photosFormData = new FormData();
+
+    // Add professional photos that are not null
+    eventPhotosData.forEach((photo, index) => {
+      if (photo) {
+        photosFormData.append(`files`, photo);
+      }
+    });
+    return photosFormData;
   };
 
   const handleSubmit = async () => {
     try {
-      const formData = new FormData();
-      
-      if (eventPhotos.length > 0) {
-        eventPhotos.forEach((photo, index) => {
-          const localUri = photo.uri;
-          const filename = localUri.split('/').pop();
-          
-          const match = /\.(\w+)$/.exec(filename);
-          const type = match ? `image/${match[1]}` : 'image/jpeg';
-          
-          formData.append('eventPhotos', {
-            uri: localUri,
-            name: filename,
-            type,
-          });
-        });
-      }
-
       const data = {
         title,
         date,
@@ -229,19 +241,41 @@ const CreateEventScreen = ({ navigation }) => {
         endTime,
         ageRestriction,
         dressCode,
-        location,
+        rules,
+        location: locationData,
         instagramHandle,
         description,
+        eventPhotos: eventPhotosData.filter(photo => photo !== null).map(photo => photo.name),
         influencerRequirements,
-        rules,
-        eventPhotos: ['1','2','3'],
       };
 
-      await createEventApi(data, token);
-      
+      const eventsFormData = prepareEventsFormData();
+      await createEventApi(token, data, eventsFormData);
+
       // Show success message
       Alert.alert('Success', 'Your event has been created successfully!');
-      
+
+      setTitle('');
+      setDate('');
+      setStartTime('');
+      setEndTime('');
+      setAgeRestriction('');
+      setDressCode('');
+      setInstagramHandle('');
+      setDescription('');
+      setEventPhotos([]); // For displaying images
+      setEventPhotosData([])
+      setRules([]);
+      setInfluencerRequirements([]);
+      setNewRule('');
+      setNewRequirement('');
+      // setOfferType('stayUntilClosed');
+      setLocation('');
+      setLocationData({
+        coordinates: [0, 0],
+        address: ''
+      });
+
       // Navigate back or to another screen
       navigation.goBack();
     } catch (error) {
@@ -250,39 +284,69 @@ const CreateEventScreen = ({ navigation }) => {
     }
   };
 
+  const renderPhotoItem = ({ item, index }) => (
+    <View style={styles.photoItem}>
+      <Image source={{ uri: item }} style={styles.photoThumbnail} />
+      <TouchableOpacity
+        style={styles.removePhotoButton}
+        onPress={() => removePhoto(index)}
+      >
+        <Ionicons name="close-circle" size={24} color={colors.textPrimary} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Cover Photo Area */}
-          <TouchableOpacity 
-            style={styles.coverPhotoContainer}
-            onPress={pickImage}
-          >
-            {coverPhoto ? (
-              <Image
-                source={{ uri: coverPhoto.uri }}
-                style={styles.coverPhoto}
-                resizeMode="cover"
-              />
-            ) : (
-              <>
-                <Ionicons name="add" size={36} color={colors.textPrimary} />
-                <Text style={styles.coverPhotoText}>Add cover photo</Text>
-              </>
-            )}
-          </TouchableOpacity>
+          {/* Event Photos Section */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Event Photos ({eventPhotos.length}/{MAX_PHOTOS})</Text>
+
+            <View style={styles.photosContainer}>
+              {eventPhotos.length > 0 && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.photosList}
+                >
+                  {eventPhotos.map((photo, index) => (
+                    <View key={`photo-${index}`} style={styles.photoItem}>
+                      <Image source={{ uri: photo }} style={styles.photoThumbnail} />
+                      <TouchableOpacity
+                        style={styles.removePhotoButton}
+                        onPress={() => removePhoto(index)}
+                      >
+                        <Ionicons name="close-circle" size={24} color={colors.textPrimary} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
+
+              {eventPhotos.length < MAX_PHOTOS && (
+                <TouchableOpacity
+                  style={styles.addPhotoButton}
+                  onPress={pickImage}
+                >
+                  <Ionicons name="add" size={36} color={colors.textPrimary} />
+                  <Text style={styles.addPhotoText}>Add photo</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
 
           {/* Event Details Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Event Details</Text>
-            
+
             <TextInput
               style={styles.input}
               placeholder="Event name"
@@ -290,7 +354,7 @@ const CreateEventScreen = ({ navigation }) => {
               value={title}
               onChangeText={setTitle}
             />
-            
+
             <TextInput
               style={styles.input}
               placeholder="Event date (DD/MM/YYYY)"
@@ -299,17 +363,17 @@ const CreateEventScreen = ({ navigation }) => {
               onChangeText={setDate}
               keyboardType="numbers-and-punctuation"
             />
-            
+
             <View style={styles.timeContainer}>
-              <TextInput 
+              <TextInput
                 style={[styles.input, styles.timeInput]}
                 placeholder="Start time"
                 placeholderTextColor="#9E9E9E"
                 value={startTime}
                 onChangeText={setStartTime}
               />
-              
-              <TextInput 
+
+              <TextInput
                 style={[styles.input, styles.timeInput]}
                 placeholder="End time"
                 placeholderTextColor="#9E9E9E"
@@ -317,7 +381,7 @@ const CreateEventScreen = ({ navigation }) => {
                 onChangeText={setEndTime}
               />
             </View>
-            
+
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[styles.input, styles.inputWithIcon]}
@@ -330,7 +394,7 @@ const CreateEventScreen = ({ navigation }) => {
                 <Ionicons name="shirt-outline" size={18} color={colors.textSecondary} />
               </View>
             </View>
-            
+
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[styles.input, styles.inputWithIcon]}
@@ -344,7 +408,7 @@ const CreateEventScreen = ({ navigation }) => {
                 <Ionicons name="person-outline" size={18} color={colors.textSecondary} />
               </View>
             </View>
-            
+
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[styles.input, styles.inputWithIcon]}
@@ -377,10 +441,10 @@ const CreateEventScreen = ({ navigation }) => {
           {/* Event Rules Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Event Rules</Text>
-            
+
             {/* Existing radio button rules (preserved) */}
             <View style={styles.radioOption}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.radioButton}
                 onPress={() => {
                   const socialMediaRule = "3 posts, 4 stories on social media";
@@ -397,9 +461,9 @@ const CreateEventScreen = ({ navigation }) => {
               </TouchableOpacity>
               <Text style={styles.radioText}>3 posts, 4 stories on social media</Text>
             </View>
-            
+
             <View style={styles.radioOption}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.radioButton}
                 onPress={() => {
                   const googleReviewRule = "Google reviews";
@@ -423,11 +487,11 @@ const CreateEventScreen = ({ navigation }) => {
               if (rule === "3 posts, 4 stories on social media" || rule === "Google reviews") {
                 return null;
               }
-              
+
               return (
                 <View key={`rule-${index}`} style={styles.listItem}>
                   <Text style={styles.listItemText}>{rule}</Text>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.removeButton}
                     onPress={() => removeRule(index)}
                   >
@@ -439,14 +503,14 @@ const CreateEventScreen = ({ navigation }) => {
 
             {/* Add new rule input */}
             <View style={styles.addItemContainer}>
-              <TextInput 
+              <TextInput
                 style={styles.addItemInput}
                 placeholder="Add new rule..."
                 placeholderTextColor="#9E9E9E"
                 value={newRule}
                 onChangeText={setNewRule}
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.addButton}
                 onPress={addRule}
               >
@@ -458,12 +522,12 @@ const CreateEventScreen = ({ navigation }) => {
           {/* Influencer Requirements Section - New Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Influencer Requirements</Text>
-            
+
             {/* List of added requirements */}
             {influencerRequirements.map((requirement, index) => (
               <View key={`req-${index}`} style={styles.listItem}>
                 <Text style={styles.listItemText}>{requirement}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => removeRequirement(index)}
                 >
@@ -474,14 +538,14 @@ const CreateEventScreen = ({ navigation }) => {
 
             {/* Add new requirement input */}
             <View style={styles.addItemContainer}>
-              <TextInput 
+              <TextInput
                 style={styles.addItemInput}
                 placeholder="Add new requirement..."
                 placeholderTextColor="#9E9E9E"
                 value={newRequirement}
                 onChangeText={setNewRequirement}
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.addButton}
                 onPress={addRequirement}
               >
@@ -493,9 +557,9 @@ const CreateEventScreen = ({ navigation }) => {
           {/* Offer Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Offer to applicants</Text>
-            
+
             <View style={styles.radioOption}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.radioButton}
                 onPress={() => setOfferType('stayUntilClosed')}
               >
@@ -505,9 +569,9 @@ const CreateEventScreen = ({ navigation }) => {
               </TouchableOpacity>
               <Text style={styles.radioText}>Stay until closed</Text>
             </View>
-            
+
             <View style={styles.radioOption}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.radioButton}
                 onPress={() => setOfferType('foodAndDrinks')}
               >
@@ -517,7 +581,7 @@ const CreateEventScreen = ({ navigation }) => {
               </TouchableOpacity>
               <Text style={styles.radioText}>Table with drinks & food</Text>
             </View>
-            
+
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[styles.input, styles.inputWithIcon]}
@@ -527,7 +591,7 @@ const CreateEventScreen = ({ navigation }) => {
                 onChangeText={setLocation}
                 onFocus={requestLocationPermission}
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.iconContainer}
                 onPress={requestLocationPermission}
               >
@@ -552,7 +616,7 @@ const CreateEventScreen = ({ navigation }) => {
                 />
               </MapView>
             ) : (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.mapPlaceholder}
                 onPress={requestLocationPermission}
               >
@@ -563,7 +627,7 @@ const CreateEventScreen = ({ navigation }) => {
           </View>
 
           {/* Create Event Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.createButton}
             onPress={handleSubmit}
           >
@@ -603,20 +667,44 @@ const styles = StyleSheet.create({
   helpButton: {
     padding: 5,
   },
-  coverPhotoContainer: {
-    height: 150,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+  photosContainer: {
+    marginBottom: 10,
+    flexDirection: 'row',
+  },
+  photosList: {
+    paddingVertical: 10,
+    flexDirection: 'row',
+  },
+  photoItem: {
+    position: 'relative',
+    marginRight: 10,
+    borderRadius: 8,
     overflow: 'hidden',
   },
-  coverPhoto: {
-    width: '100%',
-    height: '100%',
+  photoThumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
   },
-  coverPhotoText: {
+  removePhotoButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 12,
+  },
+  addPhotoButton: {
+    height: 100,
+    width: 100,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderStyle: 'dashed',
+  },
+  addPhotoText: {
     color: colors.textPrimary,
     marginTop: 8,
     fontSize: 14,

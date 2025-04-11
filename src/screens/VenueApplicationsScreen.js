@@ -64,7 +64,7 @@ const VenueApplicationsScreen = ({ navigation, route }) => {
     };
 
     const handleViewProfile = (influencerId) => {
-        navigation.navigate('InfluencerProfile', { influencerId });
+        navigation.navigate('ProfileInfluencerProfile', { influencerId });
     };
 
     return (
@@ -75,13 +75,13 @@ const VenueApplicationsScreen = ({ navigation, route }) => {
             <StatusBar style="light" />
             <SafeAreaView style={styles.safeArea}>
                 {/* Header */}
-                <View style={styles.header}>
+                {/* <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Applications for {eventName}</Text>
                     <View style={{ width: 24 }} />
-                </View>
+                </View> */}
 
                 {/* Event Name Banner */}
                 <View style={styles.eventBanner}>

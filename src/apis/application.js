@@ -8,6 +8,12 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+const apiFile = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
 
 export const setAuthToken = (token) => {
   if (token) {
@@ -52,17 +58,15 @@ export const getEventApplicationsApi = async (token, eventId) => {
 
 
 export const updateApplicationStatusApi = async (token, applicationId, status) => {
-  // console.log('here')
   setAuthToken(token);
-  console.log(applicationId)
   try {
-    // From Image 3, we see that the controller expects just the status in the body
-    const response = await api.put(`/applications/${applicationId}`, { status });
+    const response = await api.put(`/application/${applicationId}`, { status });
     return response.data;
   } catch (error) {
     throw handleApiError(error);
   }
 };
+
 
 export const getApplicationStatusApi = async (token, influencerId, eventId) => {
   setAuthToken(token);
@@ -76,6 +80,7 @@ export const getApplicationStatusApi = async (token, influencerId, eventId) => {
     throw handleApiError(error);
   }
 };
+
 
 // Check if user has applied to an event
 export const checkApplicationStatusApi = async (token, eventId) => {

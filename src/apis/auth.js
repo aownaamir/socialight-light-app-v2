@@ -8,6 +8,12 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+const apiFile = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
 
 export const setAuthToken = (token) => {
   if (token) {
@@ -18,42 +24,55 @@ export const setAuthToken = (token) => {
 };
 
 export const loginApi = async (email, password) => {
-    try {
-      const response = await api.post('/auth/login', { email, password });   
-      
-        if (response.data && response.data.res && response.data.res.token) {
-            setAuthToken(response.data.res.token);
-        }
-        // console.log('response is this: ',await response.data)
-        return response.data; // Return the data instead of the whole response
-    } catch (error) {
-        throw handleApiError(error);
+  try {
+    const response = await api.post('/auth/login', { email, password });
+
+    if (response.data && response.data.res && response.data.res.token) {
+      setAuthToken(response.data.res.token);
     }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
 };
 
-export const signupInfluencerApi = async (userData, formData) => {
+export const signupInfluencerApi = async (userData, profileFormData, photosFormData) => {
+  // console.log("form data: ", photosFormData)
   try {
-    // console.log('userData:', userData)
+    const responseFile = await apiFile.post('/upload', profileFormData);
+    const profilePicFilename = responseFile.data.file.filename;
+
+    const responseMultipleFile = await apiFile.post('/upload-multiple', photosFormData);
+    const professionalPhotoFilenames = responseMultipleFile.data.files.map(file => file.filename);
+
+    userData.profilePicture = profilePicFilename;
+    userData.professionalPhotos = professionalPhotoFilenames;
+
     const response = await api.post('/auth/register/influencer', userData);
     return response.data;
 
-    //saparate api call for files
   } catch (error) {
     throw handleApiError(error);
   }
 };
 
-export const signupVenueApi = async (venueData ,formData) => {
-
-
+export const signupVenueApi = async (venueData, formData) => {
   try {
+
+    const responseFile = await apiFile.post('/upload', formData);
+    const savedFilename = responseFile.data.file.filename;
+    console.log('new file name: ', savedFilename)
+    venueData.profilePicture = savedFilename;
     const response = await api.post('/auth/register/venue', venueData);
+    console.log('File upload response:', responseFile.data);
+
     return response.data;
+
   } catch (error) {
+    console.error('API Error:', error);
     throw handleApiError(error);
   }
 };
-
 
 export const logoutApi = () => {
   setAuthToken(null);
@@ -61,71 +80,22 @@ export const logoutApi = () => {
 };
 
 const handleApiError = (error) => {
-    const message = 
-      error.response?.data?.message ||
-      error.message ||
-      'Something went wrong';
-      
-    return {
-      message,
-      status: error.response?.status,
-      data: error.response?.data
-    };
-  };
+  const message =
+    error.response?.data?.message ||
+    error.message ||
+    'Something went wrong';
 
-// export const verifyEmail = async (token) => {
-//   try {
-//     const response = await api.get(`/auth/verify/${token}`);
-//     return response.data;
-//   } catch (error) {
-//     throw handleApiError(error);
-//   }
-// };
-// export const requestPasswordReset = async (email) => {
-//   try {
-//     const response = await api.post('/auth/forgot-password', { email });
-//     return response.data;
-//   } catch (error) {
-//     throw handleApiError(error);
-//   }
-// };
-// export const resetPassword = async (token, password) => {
-//   try {
-//     const response = await api.post(`/auth/reset-password/${token}`, { password });
-//     return response.data;
-//   } catch (error) {
-//     throw handleApiError(error);
-//   }
-// };
-// export const getCurrentUser = async () => {
-//   try {
-//     const response = await api.get('/auth/me');
-//     return response.data;
-//   } catch (error) {
-//     throw handleApiError(error);
-//   }
-// };
-// const handleApiError = (error) => {
-//   const message = 
-//     error.response?.data?.message ||
-//     error.message ||
-//     'Something went wrong';
-    
-//   return {
-//     message,
-//     status: error.response?.status,
-//     data: error.response?.data
-//   };
-// };
+  return {
+    message,
+    status: error.response?.status,
+    data: error.response?.data
+  };
+};
 
 export default {
   loginApi,
   signupInfluencerApi,
   signupVenueApi,
-//   verifyEmail,
-//   requestPasswordReset,
-//   resetPassword,
-//   getCurrentUser,
   logoutApi,
   setAuthToken
 };

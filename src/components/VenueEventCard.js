@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from '../theme/index';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../store/context/authContext';
+import apiURL from '../apis/apiURL';
 
 const { width } = Dimensions.get('window');
 
@@ -38,7 +39,7 @@ const VenueEventCard = ({ event, variant = 'horizontal' }) => {
         return (
             <View style={styles.horizontalCard}>
                 <ImageBackground
-                    source={event.eventPhotos}
+                    source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }}
                     style={styles.horizontalImage}
                     imageStyle={styles.horizontalImageStyle}
                 >
@@ -99,7 +100,7 @@ const VenueEventCard = ({ event, variant = 'horizontal' }) => {
     // Vertical card (used in EventsScreen) 
     return (
         <View style={styles.verticalCard}>
-            <Image source={event.image || event.eventPhotos} style={styles.verticalImage} />
+            <Image source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }} style={styles.verticalImage} />
             <LinearGradient
                 colors={['transparent', 'rgba(0,0,0,0.7)']}
                 style={styles.verticalGradient}

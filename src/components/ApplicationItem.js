@@ -13,7 +13,6 @@ const ApplicationItem = ({
 }) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [currentStatus, setCurrentStatus] = useState(item.status);
-    // console.log(item)
 
     const handleAccept = async () => {
         setIsUpdating(true);
@@ -23,6 +22,10 @@ const ApplicationItem = ({
             onAccept(item.id);
         } catch (error) {
             console.error('Error accepting application:', error);
+            Alert.alert(
+                "Update Failed",
+                `Could not accept application. ${error.message || 'Please check your connection and try again.'}`
+            );
         } finally {
             setIsUpdating(false);
         }
@@ -31,11 +34,16 @@ const ApplicationItem = ({
     const handleReject = async () => {
         setIsUpdating(true);
         try {
+            console.log("Rejecting application with ID:", item.id);
             await updateApplicationStatusApi(token, item.id, 'rejected');
             setCurrentStatus('rejected');
             onReject(item.id);
         } catch (error) {
             console.error('Error rejecting application:', error);
+            Alert.alert(
+                "Update Failed",
+                `Could not reject application. ${error.message || 'Please check your connection and try again.'}`
+            );
         } finally {
             setIsUpdating(false);
         }

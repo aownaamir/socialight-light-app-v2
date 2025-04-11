@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,41 +11,88 @@ import {
   Platform,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { logoutApi } from '../apis/auth';
 import { useAuth } from '../store/context/authContext';
+import { colors } from '../theme';
+import { getCurrentUserApi } from '../apis/user';
+import apiURL from '../apis/apiURL';
 
 const { width } = Dimensions.get('window');
 
-const colors = {
-  background: '#1A2F2F',
-  mapOverlay: '#153B3B',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#CBCBCB', 
-  accent: '#056562',
-  starFilled: '#00A693',
-  starEmpty: '#2C4141',
-};
-
 const UserProfileScreen = ({ navigation }) => {
-    const logout=useAuth().logoutAuth
-  
-  
+  const { token } = useAuth();
+  const logout = useAuth().logoutAuth;
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    setLoading(true);
+    try {
+      const data = await getCurrentUserApi(token);
+      setUserData(data);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setError('Failed to load profile data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleMyEvents = () => {
     navigation.navigate('ProfileEvents');
     // console.log('My Events pressed');
   };
-  
+
   const handleLogout = () => {
-   
-        logoutApi();
-        logout()
-        return
-      
+    logoutApi();
+    logout()
+    return
   };
+
+  const handleEditProfile = () => {
+    navigation.navigate('ProfileUpdate');
+    // console.log('Edit Profile pressed');
+  };
+
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={[colors.background, colors.mapOverlay]}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={styles.loadingText}>Loading profile...</Text>
+      </LinearGradient>
+    );
+  }
+
+  if (error) {
+    return (
+      <LinearGradient
+        colors={[colors.background, colors.mapOverlay]}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={fetchUserData}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -53,48 +100,68 @@ const UserProfileScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {/* Profile Info */}
           <View style={styles.profileInfoContainer}>
-            <View style={styles.profileImageContainer}>
-              <Image 
-                source={require('../../assets/images/company-image.png')}
-                style={styles.profileImage}
-              />
+            <View style={styles.profileHeader}>
+              <View style={styles.profileImageContainer}>
+                <Image
+                  source={{ uri: `${apiURL}/uploads/${userData.profile_picture}` }}
+                  style={styles.profileImage}
+                />
+              </View>
             </View>
-            <Text style={styles.profileName}>Bert Berisaj</Text>
+
+            <Text style={styles.profileName}>
+              {userData ? `${userData.first_name} ${userData.last_name}` : 'Loading...'}
+            </Text>
+
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>53.2k</Text>
+                <Text style={styles.statNumber}>{userData?.likes || 0}</Text>
                 <Text style={styles.statLabel}>Posts</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>12</Text>
+                <Text style={styles.statNumber}>{userData?.event_count || 0}</Text>
                 <Text style={styles.statLabel}>Following</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>53.2k</Text>
+                <Text style={styles.statNumber}>{userData?.followers || 0}</Text>
                 <Text style={styles.statLabel}>Followers</Text>
               </View>
             </View>
           </View>
-          
-          {/* My Events Button */}
-          <View style={styles.myEventsContainer}>
-            <TouchableOpacity onPress={handleMyEvents} style={styles.myEventsButton}>
+
+          {/* Action Buttons - Edit Profile and My Events side by side */}
+          <View style={styles.actionButtonsContainer}>
+            {/* Edit Profile Button */}
+            <TouchableOpacity onPress={handleEditProfile} style={styles.actionButton}>
               <LinearGradient
                 colors={[colors.accent, '#034946']}
-                style={styles.myEventsGradient}
+                style={styles.actionButtonGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="pencil-outline" size={16} color={colors.textPrimary} />
+                <Text style={styles.actionButtonText}>Edit Profile</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            {/* My Events Button */}
+            <TouchableOpacity onPress={handleMyEvents} style={styles.actionButton}>
+              <LinearGradient
+                colors={[colors.accent, '#034946']}
+                style={styles.actionButtonGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
                 <Ionicons name="calendar" size={16} color={colors.textPrimary} />
-                <Text style={styles.myEventsText}>My Events</Text>
+                <Text style={styles.actionButtonText}>My Events</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -103,16 +170,16 @@ const UserProfileScreen = ({ navigation }) => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Photos</Text>
             <View style={styles.photosGrid}>
-              <Image 
-                source={require('../../assets/images/photo1.jpg')} 
+              <Image
+                source={{ uri: `${apiURL}/uploads/${userData.professional_photos[0]}` }}
                 style={styles.photoItem}
               />
-              <Image 
-                source={require('../../assets/images/photo2.jpg')} 
+              <Image
+                source={{ uri: `${apiURL}/uploads/${userData.professional_photos[1]}` }}
                 style={styles.photoItem}
               />
-              <Image 
-                source={require('../../assets/images/photo3.jpg')} 
+              <Image
+                source={{ uri: `${apiURL}/uploads/${userData.professional_photos[2]}` }}
                 style={styles.photoItem}
               />
             </View>
@@ -121,34 +188,42 @@ const UserProfileScreen = ({ navigation }) => {
           {/* Social Media Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Social media</Text>
-            
+
             <View style={styles.socialContainer}>
               <View style={styles.socialItem}>
                 <View style={styles.socialIconContainer}>
                   <Ionicons name="logo-instagram" size={20} color={colors.textPrimary} />
                 </View>
-                <Text style={styles.socialText}>@__berti</Text>
+                <Text style={styles.socialText}>
+                  @{userData?.social_links?.instagram || ''}
+                </Text>
               </View>
-              
+
               <View style={styles.socialItem}>
                 <View style={styles.socialIconContainer}>
                   <Ionicons name="logo-facebook" size={20} color={colors.textPrimary} />
                 </View>
-                <Text style={styles.socialText}>Bert Berisaj</Text>
+                <Text style={styles.socialText}>
+                  {userData?.social_links?.facebook || ''}
+                </Text>
               </View>
-              
+
               <View style={styles.socialItem}>
                 <View style={styles.socialIconContainer}>
                   <Ionicons name="logo-tiktok" size={20} color={colors.textPrimary} />
                 </View>
-                <Text style={styles.socialText}>Berti</Text>
+                <Text style={styles.socialText}>
+                  {userData?.social_links?.tiktok || ''}
+                </Text>
               </View>
-              
+
               <View style={styles.socialItem}>
                 <View style={styles.socialIconContainer}>
                   <Ionicons name="logo-youtube" size={20} color={colors.textPrimary} />
                 </View>
-                <Text style={styles.socialText}>Berti</Text>
+                <Text style={styles.socialText}>
+                  {userData?.social_links?.youtube || ''}
+                </Text>
               </View>
             </View>
           </View>
@@ -164,10 +239,12 @@ const UserProfileScreen = ({ navigation }) => {
                 <Ionicons name="star" size={24} color={colors.starFilled} />
                 <Ionicons name="star-outline" size={24} color={colors.starEmpty} />
               </View>
-              <Text style={styles.reviewText}>Give Bert Berisaj a review</Text>
+              <Text style={styles.reviewText}>
+                Give {userData ? `${userData.first_name} ${userData.last_name}` : ''} a review
+              </Text>
             </View>
           </View>
-          
+
           {/* Logout Button */}
           <View style={styles.logoutContainer}>
             <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
@@ -187,6 +264,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: colors.textPrimary,
+    marginTop: 10,
+    fontSize: 16,
+  },
+  errorText: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  retryButton: {
+    backgroundColor: colors.accent,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 15,
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontSize: 14,
+    fontWeight: '500',
   },
   safeArea: {
     flex: 1,
@@ -211,6 +315,12 @@ const styles = StyleSheet.create({
   profileInfoContainer: {
     alignItems: 'center',
     marginVertical: 15,
+  },
+  profileHeader: {
+    width: '100%',
+    alignItems: 'center',
+    position: 'relative',
+    marginBottom: 5,
   },
   profileImageContainer: {
     width: 100,
@@ -256,12 +366,17 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-  myEventsContainer: {
+  // Action Buttons Container (Edit Profile + My Events)
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 25,
+    paddingHorizontal: 20,
     marginBottom: 25,
+    gap: 15, // Space between buttons
   },
-  myEventsButton: {
+  actionButton: {
+    flex: 1,
     borderRadius: 20,
     overflow: 'hidden',
     elevation: 3,
@@ -269,17 +384,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    width: '40%',
   },
-  myEventsGradient: {
+  actionButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 20,
   },
-  myEventsText: {
+  actionButtonText: {
     color: colors.textPrimary,
     fontWeight: '500',
     fontSize: 14,

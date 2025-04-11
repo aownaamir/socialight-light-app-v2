@@ -18,51 +18,31 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { signupInfluencerApi } from '../apis/auth';
-// import api from '../api/apiConfig'; // Adjust this import based on your actual API config location
-
-
-// const dummyData = {
-      //   firstName: "Alice",
-      //   lastName: "Smith",
-      //   email: "alice.smith@example.com",
-      //   password: "S3cur3P@ss!",
-      //   phoneNumber: "+19876543210",
-      //   instagramHandleHandle: "@alice.insta",
-      //   facebookHandleHandle: "facebookHandle.com/alice.smith",
-      //   tiktokHandleHandle: "@aliceTok",
-      //   youtubeHandleHandle: "youtubeHandle.com/c/AliceSmith",
-      //   profilePicture: "https://example.com/images/alice.jpg",
-      //   professionalPhotos: [
-      //     "https://example.com/images/photo1.jpg",
-      //     "https://example.com/images/photo2.jpg"
-      //   ]
-      // };
-
-
 
 const { width, height } = Dimensions.get('window');
 
 const SignUpInfluencerScreen = ({ navigation }) => {
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
-  const formData = new FormData();
-  
+
   // Form state for account info
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [instagramHandle, setInstagramHandle] = useState('');
+  const [email, setEmail] = useState('any@gmail.com');
+  const [password, setPassword] = useState('123456');
+  const [phoneNumber, setPhoneNumber] = useState('3218424803');
+  const [instagramHandle, setInstagramHandle] = useState('qqyejxms');
   const [facebookHandle, setFacebookHandle] = useState('');
   const [tiktokHandle, setTiktokHandle] = useState('');
   const [youtubeHandle, setYoutubeHandle] = useState('');
-  
+
   // Form state for personal info
-  const [firstName, setFirstName] = useState('Khan');
-  const [lastName, setLastName] = useState('Khan');
-  
+  const [firstName, setFirstName] = useState('ok');
+  const [lastName, setLastName] = useState('ok');
+
   // Image state
   const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureData, setProfilePictureData] = useState(null); // Complete file data for upload
   const [professionalPhotos, setProfessionalPhotos] = useState([null, null, null]);
-  
+  const [professionalPhotosData, setProfessionalPhotosData] = useState([null, null, null]); // Complete file data for upload
+
   // Error state for account info
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -71,13 +51,14 @@ const SignUpInfluencerScreen = ({ navigation }) => {
   const [facebookHandleError, setFacebookHandleError] = useState('');
   const [tiktokHandleError, setTiktokHandleError] = useState('');
   const [youtubeHandleError, setYoutubeHandleError] = useState('');
-  
+
   // Error state for personal info
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
-  
+
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Image picker permissions
   const requestCameraPermissions = async () => {
@@ -100,14 +81,44 @@ const SignUpInfluencerScreen = ({ navigation }) => {
 
   // Image picker function for profile photo
   const handleProfilePictureUpload = async () => {
-    const options = ['Take Photo', 'Choose from Library', 'Cancel'];
-    
     Alert.alert(
-      'Upload Profile Photo',
-      'Select an option',
+      "Profile Picture",
+      "Choose or take a photo for your profile",
       [
         {
-          text: options[0],
+          text: "Choose from Gallery",
+          onPress: async () => {
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (permissionResult.granted === false) {
+              Alert.alert("Permission Required", "You need to allow access to your photos");
+              return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.8,
+            });
+
+            if (!result.canceled) {
+              // Store URI string for display purposes
+              setProfilePicture(result.assets[0].uri);
+
+              // Store the complete file data in a separate state variable
+              setProfilePictureData({
+                uri: result.assets[0].uri,
+                name: result.assets[0].uri.split('/').pop(),
+                type: result.assets[0].uri.match(/\.(\w+)$/)
+                  ? `image/${result.assets[0].uri.match(/\.(\w+)$/)[1]}`
+                  : 'image'
+              });
+            }
+          }
+        },
+        {
+          text: "Take Photo",
           onPress: async () => {
             if (await requestCameraPermissions()) {
               const result = await ImagePicker.launchCameraAsync({
@@ -116,33 +127,24 @@ const SignUpInfluencerScreen = ({ navigation }) => {
                 aspect: [1, 1],
                 quality: 0.8,
               });
-              
+
               if (!result.canceled) {
-                setProfilePicture(result.assets[0]);
+                setProfilePicture(result.assets[0].uri);
+
+                setProfilePictureData({
+                  uri: result.assets[0].uri,
+                  name: result.assets[0].uri.split('/').pop(),
+                  type: result.assets[0].uri.match(/\.(\w+)$/)
+                    ? `image/${result.assets[0].uri.match(/\.(\w+)$/)[1]}`
+                    : 'image'
+                });
               }
             }
           }
         },
         {
-          text: options[1],
-          onPress: async () => {
-            if (await requestMediaLibraryPermissions()) {
-              const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 0.8,
-              });
-              
-              if (!result.canceled) {
-                setProfilePicture(result.assets[0]);
-              }
-            }
-          }
-        },
-        {
-          text: options[2],
-          style: 'cancel'
+          text: "Cancel",
+          style: "cancel"
         }
       ]
     );
@@ -150,14 +152,48 @@ const SignUpInfluencerScreen = ({ navigation }) => {
 
   // Image picker function for additional photos
   const handleAdditionalPhotoUpload = async (index) => {
-    const options = ['Take Photo', 'Choose from Library', 'Cancel'];
-    
     Alert.alert(
-      'Upload Additional Photo',
-      'Select an option',
+      "Professional Photo",
+      "Choose or take a professional photo",
       [
         {
-          text: options[0],
+          text: "Choose from Gallery",
+          onPress: async () => {
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (permissionResult.granted === false) {
+              Alert.alert("Permission Required", "You need to allow access to your photos");
+              return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 0.8,
+            });
+
+            if (!result.canceled) {
+              // Update the photos array
+              const newPhotos = [...professionalPhotos];
+              newPhotos[index] = result.assets[0].uri;
+              setProfessionalPhotos(newPhotos);
+
+              // Update the photos data array for file upload
+              const newPhotosData = [...professionalPhotosData];
+              newPhotosData[index] = {
+                uri: result.assets[0].uri,
+                name: result.assets[0].uri.split('/').pop(),
+                type: result.assets[0].uri.match(/\.(\w+)$/)
+                  ? `image/${result.assets[0].uri.match(/\.(\w+)$/)[1]}`
+                  : 'image'
+              };
+              setProfessionalPhotosData(newPhotosData);
+            }
+          }
+        },
+        {
+          text: "Take Photo",
           onPress: async () => {
             if (await requestCameraPermissions()) {
               const result = await ImagePicker.launchCameraAsync({
@@ -166,37 +202,30 @@ const SignUpInfluencerScreen = ({ navigation }) => {
                 aspect: [4, 3],
                 quality: 0.8,
               });
-              
+
               if (!result.canceled) {
+                // Update the photos array
                 const newPhotos = [...professionalPhotos];
-                newPhotos[index] = result.assets[0];
+                newPhotos[index] = result.assets[0].uri;
                 setProfessionalPhotos(newPhotos);
+
+                // Update the photos data array for file upload
+                const newPhotosData = [...professionalPhotosData];
+                newPhotosData[index] = {
+                  uri: result.assets[0].uri,
+                  name: result.assets[0].uri.split('/').pop(),
+                  type: result.assets[0].uri.match(/\.(\w+)$/)
+                    ? `image/${result.assets[0].uri.match(/\.(\w+)$/)[1]}`
+                    : 'image'
+                };
+                setProfessionalPhotosData(newPhotosData);
               }
             }
           }
         },
         {
-          text: options[1],
-          onPress: async () => {
-            if (await requestMediaLibraryPermissions()) {
-              const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 0.8,
-              });
-              
-              if (!result.canceled) {
-                const newPhotos = [...professionalPhotos];
-                newPhotos[index] = result.assets[0];
-                setProfessionalPhotos(newPhotos);
-              }
-            }
-          }
-        },
-        {
-          text: options[2],
-          style: 'cancel'
+          text: "Cancel",
+          style: "cancel"
         }
       ]
     );
@@ -205,7 +234,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
   // Form validation
   const validateForm = () => {
     let isValid = true;
-    
+
     // First screen validation
     if (!isPersonalInfo) {
       // Email validation
@@ -218,7 +247,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setEmailError('');
       }
-      
+
       // Password validation
       if (!password) {
         setPasswordError('Password is required');
@@ -229,7 +258,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setPasswordError('');
       }
-      
+
       // Phone validation
       if (!phoneNumber.trim()) {
         setPhoneError('Phone number is required');
@@ -240,10 +269,10 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setPhoneError('');
       }
-      
+
       // InstagramHandle validation (required)
       if (!instagramHandle.trim()) {
-        setInstagramHandleError('InstagramHandle handle is required');
+        setInstagramHandleError('Instagram handle is required');
         isValid = false;
       } else if (instagramHandle.includes('@')) {
         setInstagramHandleError('Please enter only your handle without @');
@@ -251,7 +280,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setInstagramHandleError('');
       }
-      
+
       // Optional fields validation (if provided)
       if (facebookHandle && facebookHandle.includes('@')) {
         setFacebookHandleError('Please enter only your handle without @');
@@ -259,24 +288,24 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setFacebookHandleError('');
       }
-      
+
       if (tiktokHandle && tiktokHandle.includes('@')) {
         setTiktokHandleError('Please enter only your handle without @');
         isValid = false;
       } else {
         setTiktokHandleError('');
       }
-      
+
       if (youtubeHandle && youtubeHandle.includes('@')) {
         setYoutubeHandleError('Please enter only your handle without @');
         isValid = false;
       } else {
         setYoutubeHandleError('');
       }
-      
+
       return isValid;
     }
-    
+
     // Personal info validation
     if (isPersonalInfo) {
       // First name validation
@@ -286,7 +315,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setFirstNameError('');
       }
-      
+
       // Last name validation
       if (!lastName.trim()) {
         setLastNameError('Last name is required');
@@ -294,14 +323,14 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       } else {
         setLastNameError('');
       }
-      
+
       // Profile photo validation
       if (!profilePicture) {
         Alert.alert('Missing Photo', 'Please upload a profile photo');
         return false;
       }
     }
-    
+
     return isValid;
   };
 
@@ -314,47 +343,30 @@ const SignUpInfluencerScreen = ({ navigation }) => {
 
   // Prepare form data for submission
   const prepareFormData = () => {
+    // Create a new FormData instance for profile picture
     const formData = new FormData();
-    
-    // Add text fields
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('phoneNumber', phoneNumber);
-    formData.append('instagramHandle', instagramHandle);
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    
-    if (facebookHandle) formData.append('facebookHandle', facebookHandle);
-    if (tiktokHandle) formData.append('tiktokHandle', tiktokHandle);
-    if (youtubeHandle) formData.append('youtubeHandle', youtubeHandle);
-    
+
     // Add profile photo
-    if (profilePicture) {
-      const photoName = profilePicture.uri.split('/').pop();
-      const photoType = 'image/' + (photoName.split('.').pop() === 'png' ? 'png' : 'jpeg');
-      
-      formData.append('profilePicture', {
-        uri: profilePicture.uri,
-        name: photoName,
-        type: photoType,
-      });
+    if (profilePictureData) {
+      formData.append('file', profilePictureData);
     }
-    
-    // Add additional photos
-    professionalPhotos.forEach((photo, index) => {
+
+    return formData;
+  };
+
+  // Prepare professional photos form data
+  const prepareProfessionalPhotosFormData = () => {
+    // Create a new FormData instance for professional photos
+    const photosFormData = new FormData();
+
+    // Add professional photos that are not null
+    professionalPhotosData.forEach((photo, index) => {
       if (photo) {
-        const photoName = photo.uri.split('/').pop();
-        const photoType = 'image/' + (photoName.split('.').pop() === 'png' ? 'png' : 'jpeg');
-        
-        formData.append(`additionalPhoto${index + 1}`, {
-          uri: photo.uri,
-          name: photoName,
-          type: photoType,
-        });
+        photosFormData.append(`files`, photo);
       }
     });
-    
-    return formData;
+
+    return photosFormData;
   };
 
   // Handle signup submission
@@ -363,38 +375,18 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       return;
     }
 
-    if (profilePicture) {
-      const photoName = profilePicture.uri.split('/').pop();
-      const photoType = 'image/' + (photoName.split('.').pop() === 'png' ? 'png' : 'jpeg');
-      
-      formData.append('profilePicture', {
-        uri: profilePicture.uri,
-        name: photoName,
-        type: photoType,
-      });
-    }
-    
-    professionalPhotos.forEach((photo, index) => {
-      if (photo) {
-        const photoName = photo.uri.split('/').pop();
-        const photoType = 'image/' + (photoName.split('.').pop() === 'png' ? 'png' : 'jpeg');
-        
-        formData.append(`additionalPhoto${index + 1}`, {
-          uri: photo.uri,
-          name: photoName,
-          type: photoType,
-        });
-      }
-    });
-    
     try {
       setIsLoading(true);
-      // const formData = prepareFormData();
-      
-      // console.log('Sending data to API...');
 
-     
-      const data = {
+      // Check if profile picture exists
+      if (!profilePicture || !profilePictureData) {
+        Alert.alert('Profile Picture Required', 'Please select a profile picture');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create the user data object
+      const userData = {
         firstName,
         lastName,
         email,
@@ -404,28 +396,27 @@ const SignUpInfluencerScreen = ({ navigation }) => {
         facebookHandle,
         tiktokHandle,
         youtubeHandle,
-        profilePicture:"123",
-        professionalPhotos:["123","123","123"]
+        profilePicture: profilePictureData.name, // Just send the filename
+        professionalPhotos: professionalPhotosData
+          .filter(photo => photo !== null)
+          .map(photo => photo.name) // Just send the filenames
       };
-      
-      // for data send data, for FileSystem, send formData both in Api function and inside that function, saparately call the apis
-      
-      // API call
-      const response =await signupInfluencerApi(data, formData)
-      //  
-      
-      // console.log('Registration successful:',await response.data);
-      
-      // Navigate to success screen
+
+
+      const profileFormData = prepareFormData();
+      const photosFormData = prepareProfessionalPhotosFormData();
+
+      const response = await signupInfluencerApi(userData, profileFormData, photosFormData);
+
       navigation.navigate('UserType');
     } catch (error) {
       console.error('Registration failed:', error);
-      
+
       // Handle specific API errors
       if (error.response) {
         // Server responded with an error status
         const { status, data } = error.response;
-        
+
         if (status === 400) {
           // Validation errors
           if (data.errors) {
@@ -441,7 +432,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
               'firstName': setFirstNameError,
               'lastName': setLastNameError,
             };
-            
+
             Object.entries(data.errors).forEach(([field, message]) => {
               if (errorMapping[field]) {
                 errorMapping[field](message);
@@ -476,7 +467,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       {/* Email input */}
       <View style={styles.inputContainer}>
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           emailError ? styles.inputError : null
         ]}>
           <TextInput
@@ -490,10 +481,10 @@ const SignUpInfluencerScreen = ({ navigation }) => {
           />
         </View>
         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-        
+
         {/* Password input */}
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           passwordError ? styles.inputError : null
         ]}>
           <TextInput
@@ -506,10 +497,10 @@ const SignUpInfluencerScreen = ({ navigation }) => {
           />
         </View>
         {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-        
+
         {/* Phone number input */}
         <View style={[
-          styles.phoneInputContainer, 
+          styles.phoneInputContainer,
           phoneError ? styles.inputError : null
         ]}>
           <Text style={styles.countryCode}>+382</Text>
@@ -525,16 +516,16 @@ const SignUpInfluencerScreen = ({ navigation }) => {
         </View>
         <Text style={styles.inputHint}>Why we need your phone number?</Text>
         {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
-        
+
         <Text style={styles.sectionTitle}>Only Enter your handles</Text>
-        
+
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           instagramHandleError ? styles.inputError : null
         ]}>
           <TextInput
             style={styles.socialInput}
-            placeholder="Add your InstagramHandle*"
+            placeholder="Add your Instagram*"
             placeholderTextColor="#9E9E9E"
             value={instagramHandle}
             onChangeText={setInstagramHandle}
@@ -543,12 +534,12 @@ const SignUpInfluencerScreen = ({ navigation }) => {
         {instagramHandleError ? <Text style={styles.errorText}>{instagramHandleError}</Text> : null}
 
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           facebookHandleError ? styles.inputError : null
         ]}>
           <TextInput
             style={styles.socialInput}
-            placeholder="Add your FacebookHandle (optional)"
+            placeholder="Add your Facebook (optional)"
             placeholderTextColor="#9E9E9E"
             value={facebookHandle}
             onChangeText={setFacebookHandle}
@@ -557,12 +548,12 @@ const SignUpInfluencerScreen = ({ navigation }) => {
         {facebookHandleError ? <Text style={styles.errorText}>{facebookHandleError}</Text> : null}
 
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           tiktokHandleError ? styles.inputError : null
         ]}>
           <TextInput
             style={styles.socialInput}
-            placeholder="Add your TikTokHandle (optional)"
+            placeholder="Add your TikTok (optional)"
             placeholderTextColor="#9E9E9E"
             value={tiktokHandle}
             onChangeText={setTiktokHandle}
@@ -571,12 +562,12 @@ const SignUpInfluencerScreen = ({ navigation }) => {
         {tiktokHandleError ? <Text style={styles.errorText}>{tiktokHandleError}</Text> : null}
 
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           youtubeHandleError ? styles.inputError : null
         ]}>
           <TextInput
             style={styles.socialInput}
-            placeholder="Add your YouTubeHandle (optional)"
+            placeholder="Add your YouTube (optional)"
             placeholderTextColor="#9E9E9E"
             value={youtubeHandle}
             onChangeText={setYoutubeHandle}
@@ -587,14 +578,14 @@ const SignUpInfluencerScreen = ({ navigation }) => {
 
       {/* Navigation buttons */}
       <View style={styles.navigationContainer}>
-        <Pressable 
+        <Pressable
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Text style={styles.backButtonText}>Back</Text>
         </Pressable>
-        
-        <Pressable 
+
+        <Pressable
           style={styles.nextButton}
           onPress={handleNext}
         >
@@ -609,7 +600,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       {/* First Name input */}
       <View style={styles.inputContainer}>
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           firstNameError ? styles.inputError : null
         ]}>
           <TextInput
@@ -621,10 +612,10 @@ const SignUpInfluencerScreen = ({ navigation }) => {
           />
         </View>
         {firstNameError ? <Text style={styles.errorText}>{firstNameError}</Text> : null}
-        
+
         {/* Last Name input */}
         <View style={[
-          styles.socialInputContainer, 
+          styles.socialInputContainer,
           lastNameError ? styles.inputError : null
         ]}>
           <TextInput
@@ -641,14 +632,16 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       {/* Profile Photo Upload */}
       <View style={styles.photoUploadSection}>
         <Text style={styles.sectionLabel}>Upload Profile Photo</Text>
-        <Pressable 
+        <Pressable
           style={styles.profilePictureContainer}
           onPress={handleProfilePictureUpload}
         >
-          {profilePicture ? (
-            <Image 
-              source={{ uri: profilePicture.uri }} 
-              style={styles.profilePicture} 
+          {isUploading ? (
+            <ActivityIndicator color={colors.accent} size="large" />
+          ) : profilePicture ? (
+            <Image
+              source={{ uri: profilePicture }}
+              style={styles.profilePicture}
             />
           ) : (
             <Ionicons name="add" size={30} color="rgba(255, 255, 255, 0.5)" />
@@ -660,15 +653,15 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       {/* Additional Photos */}
       <View style={styles.professionalPhotosContainer}>
         {professionalPhotos.map((photo, index) => (
-          <Pressable 
+          <Pressable
             key={index}
             style={styles.additionalPhotoBox}
             onPress={() => handleAdditionalPhotoUpload(index)}
           >
             {photo ? (
-              <Image 
-                source={{ uri: photo.uri }} 
-                style={styles.additionalPhoto} 
+              <Image
+                source={{ uri: photo }}
+                style={styles.additionalPhoto}
               />
             ) : (
               <Ionicons name="add" size={24} color="rgba(255, 255, 255, 0.5)" />
@@ -678,7 +671,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       </View>
 
       {/* Complete Registration Button */}
-      <Pressable 
+      <Pressable
         style={[
           styles.completeButton,
           !isCompleteButtonEnabled && styles.disabledButton
@@ -694,7 +687,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       </Pressable>
 
       {/* Go Back Button */}
-      <Pressable 
+      <Pressable
         style={styles.backButton}
         onPress={() => setIsPersonalInfo(false)}
         disabled={isLoading}
@@ -710,7 +703,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -734,7 +727,7 @@ const SignUpInfluencerScreen = ({ navigation }) => {
             {/* Account type toggle */}
             <View style={styles.accountTypeContainer}>
               <View style={styles.personalInfoContainer}>
-                {!isPersonalInfo ? 
+                {!isPersonalInfo ?
                   <Text style={styles.accountTypeText}>Account</Text> :
                   <Text style={styles.accountTypeText}>Personal Info</Text>
                 }

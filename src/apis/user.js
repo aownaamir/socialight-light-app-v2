@@ -1,4 +1,3 @@
-// user.js
 import API_URL from "./apiURL";
 import axios from "axios";
 
@@ -8,8 +7,14 @@ const api = axios.create({
         'Content-Type': 'application/json',
     },
 });
+const apiFile = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'multipart/form-data',
+    },
+});
 
-// Set auth token for requests
+
 export const setAuthToken = (token) => {
     if (token) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -18,29 +23,11 @@ export const setAuthToken = (token) => {
     }
 };
 
-// Check if token exists and set it on app initialization
-
-
-// Register a new user
-export const registerUser = async (userData) => {
+// Get current user profile
+export const getCurrentUserApi = async (token) => {
+    setAuthToken(token);
+    // console.log('here')
     try {
-        const response = await api.post('/register', userData);
-        if (response.data.token) {
-            setAuthToken(response.data.token);
-        }
-        return response.data;
-    } catch (error) {
-        throw handleApiError(error);
-    }
-};
-
-// Login user
-
-
-// Get current user data
-export const getMe = async (token) => {
-    try {
-        setAuthToken(token)
         const response = await api.get('/users/me');
         return response.data;
     } catch (error) {
@@ -48,7 +35,59 @@ export const getMe = async (token) => {
     }
 };
 
-// Apply to event (from router.post("/", authenticate, authorizeRole("influencer"), applyToEvent))
+export const updateInfluencerProfileApi = async (token, userData, profileFormData, photosFormData) => {
+    setAuthToken(token);
+    try {
+        // console.log('profileFormData: ', profileFormData._parts)
+        // if (!profileFormData._parts.length !== 0) {
+        const responseFile = await apiFile.post('/upload', profileFormData);
+        const profilePicFilename = responseFile.data.file.filename;
+        console.log(photosFormData._parts)
+
+        const responseMultipleFile = await apiFile.post('/upload-multiple', photosFormData);
+        const professionalPhotoFilenames = responseMultipleFile.data.files.map(file => file.filename);
+        console.log(professionalPhotoFilenames)
+
+        userData.profile_picture = profilePicFilename;
+        userData.professional_photos = professionalPhotoFilenames;
+
+        // console.log('new file name: ', savedFilename)
+        // }
+        const response = await api.put('/users/influencer', userData);
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error);
+    }
+};
+
+// const responseFile = await apiFile.post('/upload', profileFormData);
+// const profilePicFilename = responseFile.data.file.filename;
+
+// const responseMultipleFile = await apiFile.post('/upload-multiple', photosFormData);
+// const professionalPhotoFilenames = responseMultipleFile.data.files.map(file => file.filename);
+
+// userData.profilePicture = profilePicFilename;
+// userData.professionalPhotos = professionalPhotoFilenames;
+
+// Update venue profile
+
+export const updateVenueProfileApi = async (token, profileData, formData) => {
+    setAuthToken(token);
+    try {
+        // console.log('formData: ', formData._parts)
+        if (formData._parts.length !== 0) {
+            const responseFile = await apiFile.post('/upload', formData);
+            const savedFilename = responseFile.data.file.filename;
+            console.log('new file name: ', savedFilename)
+            profileData.profile_picture = savedFilename;
+        }
+        const response = await api.put('/users/venue', profileData);
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error);
+    }
+};
+
 
 
 // Helper function to handle API errors consistently
@@ -65,25 +104,21 @@ const handleApiError = (error) => {
     };
 };
 
-// Check if current user has the required role
-export const hasRole = (user, role) => {
-    return user && user.role === role;
-};
-
-// Check if the user is an influencer
-export const isInfluencer = (user) => {
-    return hasRole(user, "influencer");
-};
-
-// Check if the user is a venue
-export const isVenue = (user) => {
-    return hasRole(user, "venue");
-};
+// Generic update profile function that calls the appropriate API based on user role
+// export const updateUserProfileApi = async (token, profileData, userRole) => {
+//     if (userRole === 'influencer') {
+//         return updateInfluencerProfileApi(token, profileData);
+//     } else if (userRole === 'venue') {
+//         return updateVenueProfileApi(token, profileData);
+//     } else {
+//         throw new Error('Invalid user role');
+//     }
+// };
 
 export default {
-    registerUser,
-    setAuthToken,
-    hasRole,
-    isInfluencer,
-    isVenue
+    getCurrentUserApi,
+    updateInfluencerProfileApi,
+    updateVenueProfileApi,
+    // updateUserProfileApi,
+    setAuthToken
 };

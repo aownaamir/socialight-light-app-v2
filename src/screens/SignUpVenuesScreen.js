@@ -24,13 +24,15 @@ import * as ImagePicker from 'expo-image-picker';
 const { width, height } = Dimensions.get('window');
 
 const SignUpVenuesScreen = ({ navigation }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [venueName, setVenueName] = useState('');
+  const [firstName, setFirstName] = useState('oky');
+  const [lastName, setLastName] = useState('oky');
+  const [email, setEmail] = useState('sdncwen@gmail.com');
+  const [password, setPassword] = useState('123456');
+  const [phoneNumber, setPhoneNumber] = useState('03218424803');
+  const [venueName, setVenueName] = useState('inciaw');
   const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureData, setProfilePictureData] = useState(null); // Complete file data for upload
+
   const [showPassword, setShowPassword] = useState(false);
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
@@ -42,11 +44,10 @@ const SignUpVenuesScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { signup, error, clearError, isAuthenticated } = useAuth();
-  const formData = new FormData();
+
 
   const validateEmail = (text) => {
     setEmail(text);
-    // Clear error when user starts typing again
     setEmailError('');
   };
 
@@ -59,60 +60,34 @@ const SignUpVenuesScreen = ({ navigation }) => {
           text: "Choose from Gallery",
           onPress: async () => {
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            
+
             if (permissionResult.granted === false) {
               Alert.alert("Permission Required", "You need to allow access to your photos");
               return;
             }
-            
+
             const result = await ImagePicker.launchImageLibraryAsync({
               mediaTypes: ImagePicker.MediaTypeOptions.Images,
               allowsEditing: true,
               aspect: [1, 1],
               quality: 0.8,
             });
-            
+
             if (!result.canceled) {
+              // Store ONLY the URI string for display purposes
               setProfilePicture(result.assets[0].uri);
-              // uploadProfilePicture(result.assets[0].uri);
-              
-              ////////////////////////////// from uploadProfilePicture
-              
-              const filename = imageUri.split('/').pop();
-              const match = /\.(\w+)$/.exec(filename);
-              const type = match ? `image/${match[1]}` : `image`;
-              ////////////////////////////// from uploadProfilePicture
-              
-              formData.append('file', {
-                uri: imageUri,
-                name: filename,
-                type,
+
+              // Store the complete file data in a separate state variable
+              setProfilePictureData({
+                uri: result.assets[0].uri,
+                name: result.assets[0].uri.split('/').pop(),
+                type: result.assets[0].uri.match(/\.(\w+)$/)
+                  ? `image/${result.assets[0].uri.match(/\.(\w+)$/)[1]}`
+                  : 'image'
               });
             }
           }
         },
-        // {
-        //   text: "Take a Photo",
-        //   onPress: async () => {
-        //     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-            
-        //     if (permissionResult.granted === false) {
-        //       Alert.alert("Permission Required", "You need to allow access to your camera");
-        //       return;
-        //     }
-            
-        //     const result = await ImagePicker.launchCameraAsync({
-        //       allowsEditing: true,
-        //       aspect: [1, 1],
-        //       quality: 0.8,
-        //     });
-            
-        //     if (!result.canceled) {
-        //       setProfilePicture(result.assets[0].uri);
-        //       uploadProfilePicture(result.assets[0].uri);
-        //     }
-        //   }
-        // },
         {
           text: "Cancel",
           style: "cancel"
@@ -121,52 +96,6 @@ const SignUpVenuesScreen = ({ navigation }) => {
     );
   };
 
-  // const uploadProfilePicture = async (imageUri) => {
-  //   try {
-  //     // Create form data
-  //     const formData = new FormData();
-  //     const filename = imageUri.split('/').pop();
-  //     const match = /\.(\w+)$/.exec(filename);
-  //     const type = match ? `image/${match[1]}` : `image`;
-      
-  //     formData.append('file', {
-  //       uri: imageUri,
-  //       name: filename,
-  //       type,
-  //     });
-      
-  //     // Set loading state for upload if needed
-  //     setIsUploading(true);
-      
-  //     // Replace with your actual upload API endpoint
-  //     const response = await fetch('YOUR_UPLOAD_API_ENDPOINT', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //       body: formData,
-  //     });
-      
-  //     const responseData = await response.json();
-      
-  //     if (response.ok) {
-  //       // Store the URL or ID returned from the server to use in the next API call
-  //       // This assumes your API returns something like { fileUrl: 'https://example.com/uploads/image.jpg' }
-  //       setProfilePicture(responseData.fileUrl); // Update to use the URL from your server
-  //       Alert.alert('Success', 'Profile picture uploaded successfully!');
-  //     } else {
-  //       throw new Error(responseData.message || 'Failed to upload image');
-  //     }
-  //   } catch (error) {
-  //     Alert.alert(
-  //       'Upload Error',
-  //       'Failed to upload profile picture. Please try again.',
-  //     );
-  //     console.error('Error uploading image:', error);
-  //   } finally {
-  //     setIsUploading(false);
-  //   }
-  // };
 
   const handleSignup = async () => {
     // Clear previous errors
@@ -177,83 +106,83 @@ const SignUpVenuesScreen = ({ navigation }) => {
     setPhoneNumberError('');
     setVenueNameError('');
     clearError();
-    
+
     let isValid = true;
-    
+
     // Validate first name
     if (!firstName.trim()) {
       setFirstNameError('First name is required');
       isValid = false;
     }
-    
+
     // Validate last name
     if (!lastName.trim()) {
       setLastNameError('Last name is required');
       isValid = false;
     }
-    
+
     // Validate email
     if (!email || !email.includes('@')) {
       setEmailError('Please enter a valid email address');
       isValid = false;
     }
-    
+
     // Validate password
     if (!password || password.length < 6) {
       setPasswordError('Password must be at least 6 characters');
       isValid = false;
     }
-    
+
     // Validate phone number
     if (!phoneNumber.trim()) {
       setPhoneNumberError('Phone number is required');
       isValid = false;
     }
-    
+
     // Validate venue name
     if (!venueName.trim()) {
       setVenueNameError('Venue name is required');
       isValid = false;
     }
-    
+
     // Validate terms agreement
     if (!agreeToTerms) {
       Alert.alert('Terms & Conditions', 'Please agree to the terms and conditions to continue.');
       isValid = false;
     }
-    
+
+
     if (!isValid) return;
-    
+
     try {
       setIsLoading(true);
-      
-      // Call signup function from auth context with new fields
 
-      // formData.append('firstName', firstName);
-      // formData.append('lastName', lastName);
-      // formData.append('email', email);
-      // formData.append('password', password);
-      // formData.append('phoneNumber', phoneNumber);
-      // formData.append('venueName', venueName);
-      // formData.append('agreeToTerms', agreeToTerms);
+      // First check if there's a profile picture
+      if (!profilePicture || !profilePictureData) {
+        Alert.alert('Profile Picture Required', 'Please select a profile picture');
+        setIsLoading(false);
+        return;
+      }
 
-        const data={
-          firstName, 
-          lastName, 
-          email, 
-          password, 
-          phoneNumber,
-          venueName,
-          profilePicture:"pic",
-          agreeToTerms
-        }
-        // console.log(data)
+      // Create the venue data
+      const data = {
+        firstName,
+        lastName,
+        email,
+        password,
+        phoneNumber,
+        venueName,
+        agreeToTerms,
+        profilePicture: profilePictureData.name,
+      };
+
+      const formData = new FormData();
+
+      formData.append('file', profilePictureData);
 
       const userData = await signupVenueApi(data, formData);
-      
-      // If successful, navigation would happen through the effect that watches isAuthenticated
       navigation.navigate('UserType');
-      
+
     } catch (err) {
       if (err.response && err.response.status === 409) {
         setEmailError('This email is already registered');
@@ -270,14 +199,6 @@ const SignUpVenuesScreen = ({ navigation }) => {
     }
   };
 
-  // Effect to navigate after successful signup
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigation.navigate('Main');
-  //   }
-  // }, [isAuthenticated, navigation]);
-
-  // Effect to handle auth errors
   useEffect(() => {
     if (error) {
       Alert.alert('Authentication Error', error);
@@ -292,7 +213,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
     >
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -343,7 +264,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
               {firstNameError ? (
                 <Text style={styles.errorText}>{firstNameError}</Text>
               ) : null}
-              
+
               <TextInput
                 style={styles.input}
                 placeholder="Last name"
@@ -358,7 +279,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
               {lastNameError ? (
                 <Text style={styles.errorText}>{lastNameError}</Text>
               ) : null}
-              
+
               <TextInput
                 style={styles.input}
                 placeholder="Venue name"
@@ -373,7 +294,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
               {venueNameError ? (
                 <Text style={styles.errorText}>{venueNameError}</Text>
               ) : null}
-              
+
               <TextInput
                 style={styles.input}
                 placeholder="E-mail"
@@ -387,7 +308,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
               {emailError ? (
                 <Text style={styles.errorText}>{emailError}</Text>
               ) : null}
-              
+
               <TextInput
                 style={styles.input}
                 placeholder="Phone number"
@@ -403,7 +324,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
               {phoneNumberError ? (
                 <Text style={styles.errorText}>{phoneNumberError}</Text>
               ) : null}
-              
+
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={styles.passwordInput}
@@ -437,7 +358,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
 
             {/* Terms agreement */}
             <View style={styles.termsContainer}>
-              <Pressable 
+              <Pressable
                 style={styles.checkboxContainer}
                 onPress={() => setAgreeToTerms(!agreeToTerms)}
                 disabled={isLoading}
@@ -454,7 +375,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
             </View>
 
             {/* Signup button */}
-            <Pressable 
+            <Pressable
               style={[styles.signupButton, isLoading && styles.disabledButton]}
               onPress={handleSignup}
               disabled={isLoading}
@@ -465,9 +386,9 @@ const SignUpVenuesScreen = ({ navigation }) => {
                 <Text style={styles.signupButtonText}>Signup</Text>
               )}
             </Pressable>
-            
+
             {/* Request participation button */}
-            <Pressable 
+            <Pressable
               style={[styles.requestButton, isLoading && styles.disabledRequest]}
               onPress={handleSignup}
               disabled={isLoading}
@@ -476,13 +397,13 @@ const SignUpVenuesScreen = ({ navigation }) => {
             </Pressable>
 
             {/* Back button */}
-              <Pressable 
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-                disabled={isLoading}
-              >
-                <Text style={styles.backButtonText}>Back</Text>
-              </Pressable>
+            <Pressable
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+              disabled={isLoading}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </Pressable>
 
             {/* Login link */}
             <View style={styles.loginLinkContainer}>
