@@ -87,7 +87,7 @@ const EventCard = ({ event, variant = 'horizontal', source = 'home' }) => {
       style={styles.verticalCard}
       onPress={handleEventPress}
     >
-      <Image source={event.image} style={styles.verticalImage} />
+      <Image source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }} style={styles.verticalImage} />
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.7)']}
         style={styles.verticalGradient}

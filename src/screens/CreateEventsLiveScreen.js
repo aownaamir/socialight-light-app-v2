@@ -15,10 +15,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../store/context/authContext';
 import { getEventByIdApi } from '../apis/events';
 import { useRoute } from '@react-navigation/native';
+import apiURL from '../apis/apiURL';
 
 const { width, height } = Dimensions.get('window');
 
-const CreateEventsLiveScreen = ({ navigation,route }) => {
+const CreateEventsLiveScreen = ({ navigation, route }) => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -28,7 +29,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
   // const route=useRoute()
 
   const id = route.params.id;
-    
+
   useEffect(() => {
     fetchEventDetails();
   }, []);
@@ -36,7 +37,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
   const fetchEventDetails = async (searchParams = {}) => {
     setLoading(true);
     try {
-      const result = await getEventByIdApi(token, id);   
+      const result = await getEventByIdApi(token, id);
       setEvent(result.event);
       // console.log(result.event)
     } catch (error) {
@@ -90,25 +91,25 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {/* Event Cover Image */}
           <View style={styles.coverImageContainer}>
-            <Image 
-              source={placeholderCover} // Using placeholder since API provides photo URLs but not actual images
-              style={styles.coverImage} 
+            <Image
+              source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }} // Using placeholder since API provides photo URLs but not actual images
+              style={styles.coverImage}
               resizeMode="cover"
             />
-            
+
             {/* Event title and details overlay */}
             <View style={styles.eventOverlay}>
               <View style={styles.eventTitleContainer}>
                 <Text style={styles.eventTitle}>{event.title}</Text>
                 <View style={styles.eventStatusContainer}>
-                  <View style={[styles.statusDot, 
-                    {backgroundColor: event.status === 'published' ? '#4CAF50' : '#FFC107'}]} />
+                  <View style={[styles.statusDot,
+                  { backgroundColor: event.status === 'published' ? '#4CAF50' : '#FFC107' }]} />
                   <Text style={styles.eventStatus}>
                     {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                   </Text>
@@ -116,15 +117,15 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
                 </View>
                 <Text style={styles.eventTime}>{event.start_time} - {event.end_time}</Text>
               </View>
-              
-              <Pressable 
+
+              <Pressable
                 style={styles.favoriteButton}
                 onPress={toggleFavorite}
               >
-                <Ionicons 
-                  name={isFavorite ? "heart" : "heart-outline"} 
-                  size={24} 
-                  color={isFavorite ? "#FF4d4d" : colors.textPrimary} 
+                <Ionicons
+                  name={isFavorite ? "heart" : "heart-outline"}
+                  size={24}
+                  color={isFavorite ? "#FF4d4d" : colors.textPrimary}
                 />
               </Pressable>
             </View>
@@ -133,9 +134,9 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
           {/* Organizer info */}
           <View style={styles.organizerContainer}>
             <View style={styles.organizerInfo}>
-              <Image 
+              <Image
                 source={placeholderAvatar} // Using placeholder since we don't have actual image
-                style={styles.organizerSmallAvatar} 
+                style={styles.organizerSmallAvatar}
               />
               <View>
                 <Text style={styles.organizerName}>{event.venue.venue_name}</Text>
@@ -150,7 +151,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
           {/* Event Details Card */}
           <View style={styles.detailsCard}>
             <Text style={styles.cardTitle}>Events Details</Text>
-            
+
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
                 <Ionicons name="calendar-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
@@ -161,7 +162,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
                 <Text style={styles.detailText}>{event.start_time} - {event.end_time}</Text>
               </View>
             </View>
-            
+
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
                 <Ionicons name="location-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
@@ -172,7 +173,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
                 <Text style={styles.detailText}>{event.location.address}</Text>
               </View>
             </View>
-            
+
             <View style={styles.descriptionContainer}>
               <Text style={styles.descriptionTitle}>Event Description</Text>
               <Text style={styles.descriptionText}>{event.description}</Text>
@@ -182,7 +183,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
           {/* Additional details */}
           <View style={styles.detailsCard}>
             <Text style={styles.cardTitle}>Additional Details</Text>
-            
+
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
                 <Ionicons name="person-outline" size={18} color={colors.textSecondary} style={styles.detailIcon} />
@@ -193,7 +194,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
                 <Text style={styles.detailText}>Dress Code: {event.dress_code}</Text>
               </View>
             </View>
-            
+
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
                 <Ionicons name="logo-instagram" size={18} color={colors.textSecondary} style={styles.detailIcon} />
@@ -205,7 +206,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
           {/* Event Rules Card */}
           <View style={styles.rulesCard}>
             <Text style={styles.cardTitle}>Event Rules</Text>
-            
+
             {event.rules.map((rule, index) => (
               <View key={`rule-${index}`} style={styles.ruleItem}>
                 <View style={styles.bulletPoint} />
@@ -217,7 +218,7 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
           {/* Influencer Requirements Card */}
           <View style={styles.offersCard}>
             <Text style={styles.cardTitle}>Influencer Requirements</Text>
-            
+
             {event.influencer_requirements.map((requirement, index) => (
               <View key={`requirement-${index}`} style={styles.offerItem}>
                 <View style={styles.bulletPoint} />
@@ -230,8 +231,8 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
           <View style={styles.locationContainer}>
             <Text style={styles.cardTitle}>Location</Text>
             <View style={styles.mapContainer}>
-              <Image 
-                source={require('../../assets/images/map-placeholder.png')} 
+              <Image
+                source={require('../../assets/images/map-placeholder.png')}
                 style={styles.mapImage}
                 resizeMode="cover"
               />
@@ -239,24 +240,24 @@ const CreateEventsLiveScreen = ({ navigation,route }) => {
                 <Ionicons name="location" size={24} color="#FF4d4d" />
               </View>
             </View>
-            
+
             {/* Attendees */}
             <View style={styles.attendeesContainer}>
               <View style={styles.avatarStack}>
                 {placeholderAttendees.map((attendee, index) => (
-                  <Image 
+                  <Image
                     key={`attendee-${index}`}
-                    source={attendee} 
+                    source={attendee}
                     style={[
                       styles.attendeeAvatar,
                       { left: index * 20 }
-                    ]} 
+                    ]}
                   />
                 ))}
               </View>
-              
+
               {/* Interested Button */}
-              <Pressable 
+              <Pressable
                 style={[
                   styles.interestedButton,
                   styles.interestedActiveButton

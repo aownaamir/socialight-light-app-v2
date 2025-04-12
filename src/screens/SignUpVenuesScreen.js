@@ -24,14 +24,14 @@ import * as ImagePicker from 'expo-image-picker';
 const { width, height } = Dimensions.get('window');
 
 const SignUpVenuesScreen = ({ navigation }) => {
-  const [firstName, setFirstName] = useState('oky');
-  const [lastName, setLastName] = useState('oky');
-  const [email, setEmail] = useState('sdncwen@gmail.com');
-  const [password, setPassword] = useState('123456');
-  const [phoneNumber, setPhoneNumber] = useState('03218424803');
-  const [venueName, setVenueName] = useState('inciaw');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [venueName, setVenueName] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
-  const [profilePictureData, setProfilePictureData] = useState(null); // Complete file data for upload
+  const [profilePictureData, setProfilePictureData] = useState(null);
 
   const [showPassword, setShowPassword] = useState(false);
   const [firstNameError, setFirstNameError] = useState('');

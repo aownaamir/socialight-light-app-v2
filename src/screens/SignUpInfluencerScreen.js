@@ -25,17 +25,17 @@ const SignUpInfluencerScreen = ({ navigation }) => {
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
 
   // Form state for account info
-  const [email, setEmail] = useState('any@gmail.com');
-  const [password, setPassword] = useState('123456');
-  const [phoneNumber, setPhoneNumber] = useState('3218424803');
-  const [instagramHandle, setInstagramHandle] = useState('qqyejxms');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [instagramHandle, setInstagramHandle] = useState('');
   const [facebookHandle, setFacebookHandle] = useState('');
   const [tiktokHandle, setTiktokHandle] = useState('');
   const [youtubeHandle, setYoutubeHandle] = useState('');
 
   // Form state for personal info
-  const [firstName, setFirstName] = useState('ok');
-  const [lastName, setLastName] = useState('ok');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   // Image state
   const [profilePicture, setProfilePicture] = useState(null);

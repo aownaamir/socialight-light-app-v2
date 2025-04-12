@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../store/context/authContext';
 import { getEventByIdApi } from '../apis/events';
 import { useRoute } from '@react-navigation/native';
+import apiURL from '../apis/apiURL';
 
 const { width, height } = Dimensions.get('window');
 
@@ -110,7 +111,7 @@ const MyVenueEventDetailsScreen = ({ navigation, route }) => {
           {/* Event Cover Image */}
           <View style={styles.coverImageContainer}>
             <Image
-              source={placeholderCover} // Using placeholder since API provides photo URLs but not actual images
+              source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }} // Using placeholder since API provides photo URLs but not actual images
               style={styles.coverImage}
               resizeMode="cover"
             />

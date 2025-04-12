@@ -17,7 +17,8 @@ import { useAuth } from '../store/context/authContext';
 import { getEventByIdApi } from '../apis/events';
 import { applyToEventApi, checkApplicationStatusApi } from '../apis/application';
 import { useRoute } from '@react-navigation/native';
-import { getMe } from '../apis/user';
+import { getCurrentUserApi } from '../apis/user';
+import apiURL from '../apis/apiURL';
 
 const { width, height } = Dimensions.get('window');
 
@@ -85,8 +86,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
 
     setApplying(true);
     try {
-      const me = await getMe(token)
-      // console.log(me)
+      const me = await getCurrentUserApi(token)
       await applyToEventApi(token, eventId, me._id);
       setHasApplied(true);
       Alert.alert(
@@ -159,7 +159,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
           {/* Event Cover Image */}
           <View style={styles.coverImageContainer}>
             <Image
-              source={placeholderCover}
+              source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }}
               style={styles.coverImage}
               resizeMode="cover"
             />
