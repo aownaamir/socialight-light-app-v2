@@ -8,7 +8,7 @@ import {
     TextInput,
     ScrollView,
     Platform,
-    TouchableOpacity,
+    Pressable,
     ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
@@ -216,12 +216,12 @@ const EditVenueProfileScreen = ({ navigation }) => {
                                 style={styles.coverPhoto}
                                 resizeMode="cover"
                             />
-                            <TouchableOpacity style={styles.editCoverButton}>
+                            <Pressable style={styles.editCoverButton}>
                                 <Ionicons name="camera" size={22} color={colors.textPrimary} />
-                            </TouchableOpacity>
+                            </Pressable>
 
                             <View style={styles.profileImageWrapper}>
-                                <TouchableOpacity
+                                <Pressable
                                     style={styles.profileImageContainer}
                                     onPress={handleProfilePictureUpload}
                                 >
@@ -235,7 +235,7 @@ const EditVenueProfileScreen = ({ navigation }) => {
                                     {/* <View style={styles.editProfilePicButton}>
                                         <Ionicons name="camera" size={16} color={colors.textPrimary} />
                                     </View> */}
-                                </TouchableOpacity>
+                                </Pressable>
                                 <Text style={styles.changePhotoText}>Change Profile Photo</Text>
                             </View>
                         </View>
@@ -328,7 +328,7 @@ const EditVenueProfileScreen = ({ navigation }) => {
                         </View>
 
                         {/* Update Button */}
-                        <TouchableOpacity
+                        <Pressable
                             style={styles.updateButton}
                             onPress={handleUpdateProfile}
                             disabled={updating}
@@ -345,7 +345,7 @@ const EditVenueProfileScreen = ({ navigation }) => {
                                     <Text style={styles.updateButtonText}>Update Profile</Text>
                                 )}
                             </LinearGradient>
-                        </TouchableOpacity>
+                        </Pressable>
 
                         {error && (
                             <Text style={styles.errorText}>{error}</Text>

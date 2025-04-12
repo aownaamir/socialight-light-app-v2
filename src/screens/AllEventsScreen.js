@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   StatusBar,
   Platform,
@@ -40,7 +40,7 @@ const AllEventsScreen = ({ navigation }) => {
       const result = await getEventsApi(token, {
         page: pagination.page,
         limit: pagination.limit,
-      });   
+      });
       setEvents(result.events);
       // console.log(events)
       setPagination(result.pagination);
@@ -58,7 +58,7 @@ const AllEventsScreen = ({ navigation }) => {
       fetchEvents({ page: pagination.page + 1 });
     }
   };
-  
+
   return (
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
@@ -67,13 +67,13 @@ const AllEventsScreen = ({ navigation }) => {
       <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.safeArea}>
         {/* Create Event Button */}
-        <TouchableOpacity 
+        <Pressable
           style={styles.createEventButton}
           onPress={() => navigation.navigate('CreateEvent')}
         >
           <Text style={styles.createEventText}>Create a new event</Text>
           <Ionicons name="add-outline" size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
 
         {loading && events.length === 0 ? (
           <View style={styles.loadingContainer}>
@@ -81,7 +81,7 @@ const AllEventsScreen = ({ navigation }) => {
             <Text style={styles.loadingText}>Loading events...</Text>
           </View>
         ) : (
-          <ScrollView 
+          <ScrollView
             style={styles.scrollView}
             showsVerticalScrollIndicator={false}
           >
@@ -91,7 +91,7 @@ const AllEventsScreen = ({ navigation }) => {
 
             {events.length > 0 ? (
               events.map((event) => (
-                <EventCard 
+                <EventCard
                   key={event._id || event.id}
                   event={event}
                   variant="vertical"
@@ -113,12 +113,12 @@ const AllEventsScreen = ({ navigation }) => {
 
             {/* Load More Button - only show if there are more pages */}
             {!loading && pagination.page < pagination.totalPages && (
-              <TouchableOpacity 
+              <Pressable
                 style={styles.loadMoreButton}
                 onPress={loadMoreEvents}
               >
                 <Text style={styles.loadMoreText}>Load more events</Text>
-              </TouchableOpacity>
+              </Pressable>
             )}
 
             {/* Contact Information */}

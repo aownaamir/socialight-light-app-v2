@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Platform, StatusBar as RNStatusBar, Pressable } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/index';
 import { StatusBar } from 'expo-status-bar';
@@ -16,7 +16,7 @@ const CustomHeader = ({ navigation }) => {
   const currentScreenName = route.name;
   const showPhotoIcon = photoScreens.includes(currentScreenName);
   const showGridIcon = gridScreens.includes(currentScreenName);
-  
+
   return (
     <View style={[
       styles.container,
@@ -31,17 +31,17 @@ const CustomHeader = ({ navigation }) => {
           <Text style={styles.logoText}>SOCIALIGHT</Text>
         </View>
         {showPhotoIcon ? (
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Pressable onPress={() => navigation.navigate('Profile')}>
             <Image
               source={require('../../assets/images/company-image.png')}
               style={styles.profileIcon}
               resizeMode="cover"
             />
-          </TouchableOpacity>
+          </Pressable>
         ) : (
-          <TouchableOpacity>
+          <Pressable>
             <Feather name="grid" size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     </View>

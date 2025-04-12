@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   Image,
   SafeAreaView,
   Dimensions,
@@ -19,11 +19,11 @@ const { width } = Dimensions.get('window');
 const OTPScreen = ({ navigation, route }) => {
   const [otp, setOtp] = useState('97272');
   // User data can be passed through route params
-  const { userName, userType } = route?.params || { 
-    userName: 'Bert Berišaj', 
-    userType: 'Influencer' 
+  const { userName, userType } = route?.params || {
+    userName: 'Bert Berišaj',
+    userType: 'Influencer'
   };
-  
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -39,13 +39,13 @@ const OTPScreen = ({ navigation, route }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.contentContainer}>
             <Text style={styles.titleText}>OTP Verification</Text>
-            
+
             <View style={styles.imageContainer}>
               <View style={styles.circularBorder1} />
               <View style={styles.circularBorder2} />
@@ -56,17 +56,17 @@ const OTPScreen = ({ navigation, route }) => {
                 resizeMode="cover"
               />
             </View>
-            
-            <TouchableOpacity style={styles.statusButton}>
+
+            <Pressable style={styles.statusButton}>
               <Text style={styles.statusButtonText}>{userName}</Text>
-            </TouchableOpacity>
-            
+            </Pressable>
+
             <View style={styles.divider} />
-            
+
             <Text style={styles.messageText}>
               {userType}
             </Text>
-            
+
             <View style={styles.otpContainer}>
               <Text style={styles.otpLabel}>OTP</Text>
               <TextInput
@@ -78,17 +78,17 @@ const OTPScreen = ({ navigation, route }) => {
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
               />
             </View>
-            
-            <TouchableOpacity 
+
+            <Pressable
               style={styles.primaryButton}
               onPress={handleVerify}
             >
               <Text style={styles.primaryButtonText}>Verify</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.supportButton}>
+            </Pressable>
+
+            <Pressable style={styles.supportButton}>
               <Text style={styles.supportButtonText}>Need help? Contact support</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>

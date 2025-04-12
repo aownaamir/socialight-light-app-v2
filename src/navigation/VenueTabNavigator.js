@@ -25,59 +25,64 @@ import StylishCarousel from "../chat/StylishCarousel";
 import EventsVenueNavigator from "./EventsVenueNavigator";
 import HomeVenueNavigator from "./HomeVenueNavigator";
 import ProfileVenueNavigator from "./ProfileVenueNavigator";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 
 const Tab = createBottomTabNavigator();
 
 const VenueTabNavigator = () => {
+  const publishableKey = 'pk_test_51NZvt4AmY9u66TUJSJ9TcEqlfSRdCx8JrfNV2cxeXLBBeXj5RrVFELYas0Qcj9XuM6NwQIh7DTKyP4E39IfdJMBV00IDXyiU9U';
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarShowLabel: false,
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+    <StripeProvider publishableKey={publishableKey}>
 
-          if (route.name === 'HomeTab') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'EventsTab') {
-            iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'ProfileTab') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarShowLabel: false,
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
 
-          // Create a fixed height container with centered icon and dot
-          return (
-            <View style={styles.tabIconContainer}>
-              <View style={styles.iconWrapper}>
-                <Ionicons name={iconName} size={20} color={focused ? '#4BE0C2' : colors.textSecondary} />
+            if (route.name === 'HomeTab') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'EventsTab') {
+              iconName = focused ? 'calendar' : 'calendar-outline';
+            } else if (route.name === 'ProfileTab') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
+
+            // Create a fixed height container with centered icon and dot
+            return (
+              <View style={styles.tabIconContainer}>
+                <View style={styles.iconWrapper}>
+                  <Ionicons name={iconName} size={20} color={focused ? '#4BE0C2' : colors.textSecondary} />
+                </View>
+                <View style={[styles.dotWrapper, { opacity: focused ? 1 : 0 }]}>
+                  <View style={styles.activeDot} />
+                </View>
               </View>
-              <View style={[styles.dotWrapper, { opacity: focused ? 1 : 0 }]}>
-                <View style={styles.activeDot} />
-              </View>
-            </View>
-          );
-        },
-        tabBarActiveTintColor: '#4BE0C2',
-        tabBarInactiveTintColor: colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopWidth: 0,
-          height: 60,
-          paddingVertical: 10,
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-        header: (props) => <CustomHeader {...props} />,
-      })}
-      initialRouteName="HomeTab"
-    >
-      {/* <Tab.Screen name="Home" component={HomeScreen} />
+            );
+          },
+          tabBarActiveTintColor: '#4BE0C2',
+          tabBarInactiveTintColor: colors.textSecondary,
+          tabBarStyle: {
+            backgroundColor: colors.background,
+            borderTopWidth: 0,
+            height: 60,
+            paddingVertical: 10,
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          header: (props) => <CustomHeader {...props} />,
+        })}
+        initialRouteName="HomeTab"
+      >
+        {/* <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Events" component={EventsScreen} />
       <Tab.Screen name="Profile" component={ProfileUserScreen} /> */}
-      <Tab.Screen name="HomeTab" component={HomeVenueNavigator} />
-      <Tab.Screen name="EventsTab" component={EventsVenueNavigator} />
-      <Tab.Screen name="ProfileTab" component={ProfileVenueNavigator} />
-    </Tab.Navigator>
+        <Tab.Screen name="HomeTab" component={HomeVenueNavigator} />
+        <Tab.Screen name="EventsTab" component={EventsVenueNavigator} />
+        <Tab.Screen name="ProfileTab" component={ProfileVenueNavigator} />
+      </Tab.Navigator>
+    </StripeProvider>
   );
 };
 

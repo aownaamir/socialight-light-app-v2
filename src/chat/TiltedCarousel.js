@@ -6,7 +6,7 @@ import {
   FlatList,
   Image,
   Dimensions,
-  TouchableOpacity,
+  Pressable,
   Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -47,38 +47,38 @@ const events = [
 const TiltedCarousel = () => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(1);
-  
+
   const renderItem = ({ item, index }) => {
     const inputRange = [
       (index - 2) * ITEM_WIDTH,
       (index - 1) * ITEM_WIDTH,
       index * ITEM_WIDTH,
     ];
-    
+
     const translateY = scrollX.interpolate({
       inputRange,
       outputRange: [30, 0, 30],
       extrapolate: 'clamp',
     });
-    
+
     const scale = scrollX.interpolate({
       inputRange,
       outputRange: [0.8, 1, 0.8],
       extrapolate: 'clamp',
     });
-    
+
     const rotate = scrollX.interpolate({
       inputRange,
       outputRange: ['10deg', '0deg', '-10deg'],
       extrapolate: 'clamp',
     });
-    
+
     const opacity = scrollX.interpolate({
       inputRange,
       outputRange: [0.5, 1, 0.5],
       extrapolate: 'clamp',
     });
-    
+
     return (
       <Animated.View
         style={[
@@ -110,9 +110,9 @@ const TiltedCarousel = () => {
               <Ionicons name="location-outline" size={14} color="rgba(255,255,255,0.8)" />
               <Text style={styles.location}>{item.location}</Text>
             </View>
-            <TouchableOpacity style={styles.heartContainer}>
+            <Pressable style={styles.heartContainer}>
               <Ionicons name="heart-outline" size={24} color="white" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </Animated.View>
@@ -123,11 +123,11 @@ const TiltedCarousel = () => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Most popular event</Text>
-        <TouchableOpacity>
+        <Pressable>
           <Text style={styles.viewAllText}>view all</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
-      
+
       <Animated.FlatList
         data={events}
         keyExtractor={(item) => item.id}

@@ -8,10 +8,9 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Platform,
   Linking,
-  Pressable,
   ActivityIndicator,
 } from 'react-native';
 import { colors } from '../theme/index';
@@ -49,7 +48,7 @@ const HomeVenueScreen = ({ navigation }) => {
       const result = await getEventsApi(token, {
         page: searchParams.page || pagination.page,
         limit: searchParams.limit || pagination.limit,
-      });   
+      });
       setActiveEvents(result.events.filter(event => event.status === 'published'));
       setUpcomingEvents(result.events);
       setPagination(result.pagination);
@@ -94,9 +93,9 @@ const HomeVenueScreen = ({ navigation }) => {
               />
               <Ionicons name="mic" size={20} color={colors.textSecondary} />
             </View>
-            
+
             {/* Create event Button */}
-            <TouchableOpacity 
+            <Pressable
               style={styles.createEventButton}
               onPress={handleCreateEvent}
             >
@@ -109,7 +108,7 @@ const HomeVenueScreen = ({ navigation }) => {
                 <Feather name="plus" size={16} color={colors.textPrimary} />
                 <Text style={styles.createEventText}>Create event</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Most Popular Events Section */}
@@ -134,11 +133,11 @@ const HomeVenueScreen = ({ navigation }) => {
           {/* Upcoming Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Upcoming event</Text>
-            <TouchableOpacity>
+            <Pressable>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-          
+
           {/* Upcoming Events Horizontal Scroll with Loading State */}
           {loading ? (
             renderLoadingPlaceholder()
@@ -150,9 +149,9 @@ const HomeVenueScreen = ({ navigation }) => {
                 style={styles.eventsScroll}
               >
                 {upcomingEvents.map(event => (
-                  <EventCard 
-                    key={event._id || event.id} 
-                    event={event} 
+                  <EventCard
+                    key={event._id || event.id}
+                    event={event}
                   />
                 ))}
               </ScrollView>

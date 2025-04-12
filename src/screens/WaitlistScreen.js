@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
 } from 'react-native';
 import { colors } from '../theme/index';
@@ -21,13 +21,13 @@ const WaitlistScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.contentContainer}>
             <Text style={styles.titleText}>In Review</Text>
-            
+
             <View style={styles.imageContainer}>
               <View style={styles.circularBorder1} />
               <View style={styles.circularBorder2} />
@@ -38,23 +38,23 @@ const WaitlistScreen = ({ navigation }) => {
                 resizeMode="cover"
               />
             </View>
-            
-            <TouchableOpacity style={styles.statusButton}>
+
+            <Pressable style={styles.statusButton}>
               <Text style={styles.statusButtonText}>Bertt</Text>
-            </TouchableOpacity>
-            
+            </Pressable>
+
             <View style={styles.divider} />
-            
+
             <Text style={styles.messageText}>
               Your account is under review. Thank you for your patience. You will be notified if your account is accepted.
             </Text>
-            
-            <TouchableOpacity 
+
+            <Pressable
               style={styles.primaryButton}
               onPress={() => navigation.navigate('Home')}
             >
               <Text style={styles.primaryButtonText}>Continue</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>

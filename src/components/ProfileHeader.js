@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, SafeAreaView, Platform, StatusBar as RNStatusBar, Pressable } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, SafeAreaView, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/index';
 import { StatusBar } from 'expo-status-bar';
@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const ProfileHeader = ({ navigation }) => {
   // Get safe area insets
   const insets = useSafeAreaInsets();
-  
+
   return (
     <View style={[
       styles.container,
@@ -17,14 +17,14 @@ const ProfileHeader = ({ navigation }) => {
       <StatusBar style="light" />
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()}>
-                      <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-                    </Pressable>
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+        </Pressable>
         <View style={styles.logoContainer}>
           <Text style={styles.logoText}>SOCIALIGHT</Text>
         </View>
-        <TouchableOpacity>
+        <Pressable>
           <Feather name="grid" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

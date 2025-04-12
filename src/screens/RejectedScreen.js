@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
 } from 'react-native';
 import { colors } from '../theme/index';
@@ -22,13 +22,13 @@ const RejectedScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.contentContainer}>
             <Text style={styles.titleText}>Ops! Your profile was rejected</Text>
-            
+
             <View style={styles.imageContainer}>
               <View style={styles.circularBorder1} />
               <View style={styles.circularBorder2} />
@@ -39,32 +39,32 @@ const RejectedScreen = ({ navigation }) => {
                 resizeMode="cover"
               />
             </View>
-            
-            <TouchableOpacity style={styles.statusButton}>
+
+            <Pressable style={styles.statusButton}>
               <Text style={styles.statusButtonText}>Rejected</Text>
               <Ionicons name="close" size={18} color="#FFFFFF" />
-            </TouchableOpacity>
-            
+            </Pressable>
+
             <View style={styles.divider} />
-            
+
             <Text style={styles.messageText}>
               Unfortunately your profile doesn't meet the criteria of Socialight.
               However, this is not the end.
             </Text>
-            
-            <TouchableOpacity 
+
+            <Pressable
               style={styles.primaryButton}
               onPress={() => navigation.navigate('Home')}
             >
               <Text style={styles.primaryButtonText}>Okay</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
+            </Pressable>
+
+            <Pressable
               style={styles.supportButton}
               onPress={() => navigation.navigate('Support')}
             >
               <Text style={styles.supportButtonText}>Need help? Contact support</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>

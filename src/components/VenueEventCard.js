@@ -3,11 +3,10 @@ import {
     View,
     Text,
     StyleSheet,
-    Pressable,
     ImageBackground,
     Image,
     Dimensions,
-    TouchableOpacity,
+    Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from "expo-linear-gradient";
@@ -71,21 +70,21 @@ const VenueEventCard = ({ event, variant = 'horizontal' }) => {
 
                         {/* Action buttons */}
                         <View style={styles.actionButtonsContainer}>
-                            <TouchableOpacity
+                            <Pressable
                                 style={[styles.actionButton, styles.applicationsButton]}
                                 onPress={handleApplicationsPress}
                             >
                                 <Ionicons name="people" size={14} color={colors.textPrimary} />
                                 <Text style={styles.actionButtonText}>Applications</Text>
-                            </TouchableOpacity>
+                            </Pressable>
 
-                            <TouchableOpacity
+                            <Pressable
                                 style={[styles.actionButton, styles.detailsButton]}
                                 onPress={handleDetailsPress}
                             >
                                 <Ionicons name="information-circle" size={14} color={colors.textPrimary} />
                                 <Text style={styles.actionButtonText}>Details</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </View>
 
@@ -126,21 +125,21 @@ const VenueEventCard = ({ event, variant = 'horizontal' }) => {
 
                         {/* Action buttons for vertical card */}
                         <View style={styles.verticalActionButtonsContainer}>
-                            <TouchableOpacity
+                            <Pressable
                                 style={[styles.actionButton, styles.applicationsButton]}
                                 onPress={handleApplicationsPress}
                             >
                                 <Ionicons name="people" size={14} color={colors.textPrimary} />
                                 <Text style={styles.actionButtonText}>Applications</Text>
-                            </TouchableOpacity>
+                            </Pressable>
 
-                            <TouchableOpacity
+                            <Pressable
                                 style={[styles.actionButton, styles.detailsButton]}
                                 onPress={handleDetailsPress}
                             >
                                 <Ionicons name="information-circle" size={14} color={colors.textPrimary} />
                                 <Text style={styles.actionButtonText}>Details</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </View>
                 </View>

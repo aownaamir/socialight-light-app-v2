@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/index';
 import { updateApplicationStatusApi } from '../apis/application';
@@ -75,19 +75,19 @@ const ApplicationItem = ({
                     </View>
                 ) : currentStatus === 'pending' ? (
                     <>
-                        <TouchableOpacity
+                        <Pressable
                             style={[styles.actionButton, styles.acceptButton]}
                             onPress={handleAccept}
                         >
                             <Text style={styles.actionButtonText}>Accept</Text>
-                        </TouchableOpacity>
+                        </Pressable>
 
-                        <TouchableOpacity
+                        <Pressable
                             style={[styles.actionButton, styles.rejectButton]}
                             onPress={handleReject}
                         >
                             <Text style={styles.actionButtonText}>Reject</Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     </>
                 ) : (
                     <View style={[
@@ -100,13 +100,13 @@ const ApplicationItem = ({
                     </View>
                 )}
 
-                <TouchableOpacity
+                <Pressable
                     style={[styles.actionButton, styles.viewProfileButton]}
                     onPress={() => onViewProfile(item.influencer.id)}
                     disabled={isUpdating}
                 >
                     <Text style={styles.actionButtonText}>View Profile</Text>
-                </TouchableOpacity>
+                </Pressable>
             </View>
         </View>
     );

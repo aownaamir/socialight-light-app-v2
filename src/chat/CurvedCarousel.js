@@ -6,7 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  TouchableOpacity,
+  Pressable,
   Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -143,9 +143,9 @@ const CurvedCarousel = () => {
             <Ionicons name="location-outline" size={14} color="#FFFFFF" />
             <Text style={styles.locationText}>{item.location}</Text>
           </View>
-          <TouchableOpacity style={styles.heartContainer}>
+          <Pressable style={styles.heartContainer}>
             <Ionicons name="heart-outline" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </Animated.View>
     );
@@ -176,7 +176,7 @@ const CurvedCarousel = () => {
           setCurrentIndex(index);
         }}
       />
-      
+
       {/* Indicator dots */}
       <View style={styles.indicatorContainer}>
         {storyData.map((_, index) => (

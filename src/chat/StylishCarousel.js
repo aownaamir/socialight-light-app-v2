@@ -5,7 +5,7 @@
 //   StyleSheet,
 //   Image,
 //   Dimensions,
-//   TouchableOpacity,
+//   Pressable,
 //   Animated,
 //   StatusBar,
 // } from 'react-native';
@@ -158,9 +158,9 @@
 //             </View>
             
 //             {/* Heart Icon */}
-//             <TouchableOpacity style={styles.heartContainer}>
+//             <Pressable style={styles.heartContainer}>
 //               <View style={styles.heartOutline} />
-//             </TouchableOpacity>
+//             </Pressable>
 //           </View>
 //         </View>
 //       </Animated.View>
@@ -173,9 +173,9 @@
       
 //       <View style={styles.headerContainer}>
 //         <Text style={styles.headerTitle}>Most popular event</Text>
-//         <TouchableOpacity>
+//         <Pressable>
 //           <Text style={styles.viewAllText}>view all</Text>
-//         </TouchableOpacity>
+//         </Pressable>
 //       </View>
       
 //       <Animated.FlatList

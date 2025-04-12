@@ -5,7 +5,7 @@ import {
     StyleSheet,
     SafeAreaView,
     FlatList,
-    TouchableOpacity,
+    Pressable,
     Platform,
     ActivityIndicator,
     Alert,
@@ -76,9 +76,9 @@ const VenueApplicationsScreen = ({ navigation, route }) => {
             <SafeAreaView style={styles.safeArea}>
                 {/* Header */}
                 {/* <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Pressable onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-                    </TouchableOpacity>
+                    </Pressable>
                     <Text style={styles.headerTitle}>Applications for {eventName}</Text>
                     <View style={{ width: 24 }} />
                 </View> */}

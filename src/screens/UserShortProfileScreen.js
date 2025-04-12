@@ -8,7 +8,7 @@ import {
     Dimensions,
     ScrollView,
     Platform,
-    TouchableOpacity,
+    Pressable,
 } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
@@ -70,9 +70,9 @@ const UserShortProfileScreen = ({ navigation, route }) => {
             <SafeAreaView style={styles.safeArea}>
                 {/* Header with back button */}
                 {/* <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+                    <Pressable onPress={handleBackPress} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-                    </TouchableOpacity>
+                    </Pressable>
                     <Text style={styles.headerTitle}>Profile</Text>
                     <View style={styles.placeholderRight} />
                 </View> */}
@@ -110,7 +110,7 @@ const UserShortProfileScreen = ({ navigation, route }) => {
 
                     {/* Follow and Message Buttons */}
                     <View style={styles.actionButtonsContainer}>
-                        <TouchableOpacity onPress={handleFollowToggle} style={styles.followButton}>
+                        <Pressable onPress={handleFollowToggle} style={styles.followButton}>
                             <LinearGradient
                                 colors={isFollowing ? ['#2C4141', '#153B3B'] : [colors.accent, '#034946']}
                                 style={styles.buttonGradient}
@@ -121,14 +121,14 @@ const UserShortProfileScreen = ({ navigation, route }) => {
                                     {isFollowing ? 'Following' : 'Follow'}
                                 </Text>
                             </LinearGradient>
-                        </TouchableOpacity>
+                        </Pressable>
 
-                        <TouchableOpacity onPress={handleMessage} style={styles.messageButton}>
+                        <Pressable onPress={handleMessage} style={styles.messageButton}>
                             <View style={styles.messageButtonContent}>
                                 <Ionicons name="chatbubble-outline" size={16} color={colors.textPrimary} />
                                 <Text style={styles.messageText}>Message</Text>
                             </View>
-                        </TouchableOpacity>
+                        </Pressable>
                     </View>
 
                     {/* Photos Section */}

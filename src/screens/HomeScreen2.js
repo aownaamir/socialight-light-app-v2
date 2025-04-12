@@ -8,7 +8,7 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Platform,
   Linking,
 } from 'react-native';
@@ -29,7 +29,7 @@ const HomeScreen2 = ({ navigation }) => {
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
   const upcomingEvents = eventsArray;
 
-  
+
 
   return (
     <LinearGradient
@@ -55,9 +55,9 @@ const HomeScreen2 = ({ navigation }) => {
           {/* Most Popular Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Most popular event</Text>
-            <TouchableOpacity>
+            <Pressable>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Popular Events Horizontal Scroll - Dynamic */}
@@ -67,9 +67,9 @@ const HomeScreen2 = ({ navigation }) => {
             style={styles.eventsScroll}
           >
             {activeEvents.map(event => (
-              <EventCard 
-                key={event.id} 
-                event={event} 
+              <EventCard
+                key={event.id}
+                event={event}
                 variant="horizontal" // Optional since it's the default
               />
             ))}
@@ -78,11 +78,11 @@ const HomeScreen2 = ({ navigation }) => {
           {/* Upcoming Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Upcoming event</Text>
-            <TouchableOpacity>
+            <Pressable>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-          
+
           {/* Upcoming Events Horizontal Scroll - Dynamic */}
           <ScrollView
             horizontal
@@ -90,9 +90,9 @@ const HomeScreen2 = ({ navigation }) => {
             style={styles.eventsScroll}
           >
             {upcomingEvents.map(event => (
-              <EventCard 
-                key={event.id} 
-                event={event} 
+              <EventCard
+                key={event.id}
+                event={event}
               />
             ))}
           </ScrollView>
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginTop: 15,
     backgroundColor: 'rgba(0, 0, 0, 0.24)'
-    
+
   },
   contactCard: {
     padding: 15,

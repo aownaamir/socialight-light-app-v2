@@ -7,7 +7,7 @@ import {
     TextInput,
     ScrollView,
     Platform,
-    TouchableOpacity,
+    Pressable,
     ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
@@ -266,7 +266,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                         {/* Profile Photo Section */}
                         <View style={styles.profilePhotoSection}>
                             <Text style={styles.sectionTitle}>Profile Photo</Text>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={pickProfileImage}
                                 style={styles.profileImageContainer}
                             >
@@ -289,7 +289,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                                         <Ionicons name="camera" size={32} color={colors.textSecondary} />
                                     </View>
                                 )}
-                            </TouchableOpacity>
+                            </Pressable>
                             <Text style={styles.photoHelpText}>Tap to change your profile photo</Text>
                         </View>
 
@@ -340,7 +340,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                             <Text style={styles.sectionTitle}>Professional Photos</Text>
                             <View style={styles.photosGrid}>
                                 {[0, 1, 2].map((index) => (
-                                    <TouchableOpacity
+                                    <Pressable
                                         key={index}
                                         style={styles.photoItemContainer}
                                         onPress={() => pickProfessionalPhoto(index)}
@@ -365,7 +365,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                                         <View style={styles.photoEditIcon}>
                                             <Ionicons name="pencil" size={12} color={colors.textPrimary} />
                                         </View>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 ))}
                             </View>
                             <Text style={styles.photoHelpText}>Tap to add or change professional photos</Text>
@@ -434,7 +434,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
 
                         {/* Update Button */}
                         <View style={styles.updateButtonContainer}>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={handleUpdateProfile}
                                 disabled={updating}
                                 style={styles.updateButton}
@@ -454,7 +454,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                                         </>
                                     )}
                                 </LinearGradient>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
 
                         {error && (

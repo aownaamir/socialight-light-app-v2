@@ -8,10 +8,9 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Platform,
   Linking,
-  Pressable,
   ActivityIndicator,
 } from 'react-native';
 import { colors } from '../theme/index';
@@ -97,7 +96,7 @@ const HomeInfluencerScreen = ({ navigation }) => {
             </View>
 
             {/* Request venue Button */}
-            <TouchableOpacity
+            <Pressable
               style={styles.createEventButton}
               onPress={handleRequestVenue}
             >
@@ -110,7 +109,7 @@ const HomeInfluencerScreen = ({ navigation }) => {
                 <Feather name="plus" size={16} color={colors.textPrimary} />
                 <Text style={styles.createEventText}>Request venue</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Most Popular Events Section */}
@@ -135,9 +134,9 @@ const HomeInfluencerScreen = ({ navigation }) => {
           {/* Upcoming Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Upcoming event</Text>
-            <TouchableOpacity>
+            <Pressable>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Upcoming Events Horizontal Scroll with Loading State */}

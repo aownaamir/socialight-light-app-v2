@@ -3,12 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   SafeAreaView,
   Image,
   Dimensions,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
@@ -96,13 +95,13 @@ const MyVenueEventDetailsScreen = ({ navigation, route }) => {
     >
       <SafeAreaView style={styles.safeArea}>
         {/* Fixed position update button */}
-        <TouchableOpacity
+        <Pressable
           style={styles.updateEventButton}
           onPress={handleUpdateEvent}
         >
           <Ionicons name="create-outline" size={16} color={colors.textPrimary} />
           <Text style={styles.updateEventText}>Update Event</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         <ScrollView
           contentContainerStyle={styles.scrollContent}

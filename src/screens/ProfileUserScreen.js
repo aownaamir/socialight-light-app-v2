@@ -3,13 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   SafeAreaView,
   Image,
   Dimensions,
   ScrollView,
   Platform,
-  TouchableOpacity,
+  Pressable,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -84,12 +83,12 @@ const UserProfileScreen = ({ navigation }) => {
         style={[styles.container, styles.loadingContainer]}
       >
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity
+        <Pressable
           style={styles.retryButton}
           onPress={fetchUserData}
         >
           <Text style={styles.retryButtonText}>Retry</Text>
-        </TouchableOpacity>
+        </Pressable>
       </LinearGradient>
     );
   }
@@ -140,7 +139,7 @@ const UserProfileScreen = ({ navigation }) => {
           {/* Action Buttons - Edit Profile and My Events side by side */}
           <View style={styles.actionButtonsContainer}>
             {/* Edit Profile Button */}
-            <TouchableOpacity onPress={handleEditProfile} style={styles.actionButton}>
+            <Pressable onPress={handleEditProfile} style={styles.actionButton}>
               <LinearGradient
                 colors={[colors.accent, '#034946']}
                 style={styles.actionButtonGradient}
@@ -150,10 +149,10 @@ const UserProfileScreen = ({ navigation }) => {
                 <Ionicons name="pencil-outline" size={16} color={colors.textPrimary} />
                 <Text style={styles.actionButtonText}>Edit Profile</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* My Events Button */}
-            <TouchableOpacity onPress={handleMyEvents} style={styles.actionButton}>
+            <Pressable onPress={handleMyEvents} style={styles.actionButton}>
               <LinearGradient
                 colors={[colors.accent, '#034946']}
                 style={styles.actionButtonGradient}
@@ -163,7 +162,7 @@ const UserProfileScreen = ({ navigation }) => {
                 <Ionicons name="calendar" size={16} color={colors.textPrimary} />
                 <Text style={styles.actionButtonText}>My Events</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Photos Section */}
@@ -247,12 +246,12 @@ const UserProfileScreen = ({ navigation }) => {
 
           {/* Logout Button */}
           <View style={styles.logoutContainer}>
-            <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Pressable onPress={handleLogout} style={styles.logoutButton}>
               <View style={styles.logoutContent}>
                 <Ionicons name="log-out-outline" size={20} color={colors.textPrimary} />
                 <Text style={styles.logoutText}>Logout</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>

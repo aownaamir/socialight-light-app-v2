@@ -8,7 +8,7 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Platform,
   Linking,
 } from 'react-native';
@@ -30,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
   const upcomingEvents = eventsArray;
 
   const handleCreateEvent = () => {
-    navigation.navigate('Events',{
+    navigation.navigate('Events', {
       screen: 'CreateEvent'
     })
     // console.log('Create event pressed');
@@ -57,9 +57,9 @@ const HomeScreen = ({ navigation }) => {
               />
               <Ionicons name="mic" size={20} color={colors.textSecondary} />
             </View>
-            
+
             {/* Create event Button */}
-            <TouchableOpacity 
+            <Pressable
               style={styles.createEventButton}
               onPress={handleCreateEvent}
             >
@@ -72,15 +72,15 @@ const HomeScreen = ({ navigation }) => {
                 <Feather name="plus" size={16} color={colors.textPrimary} />
                 <Text style={styles.createEventText}>Create event</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Most Popular Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Most popular event</Text>
-            <TouchableOpacity>
+            <Pressable>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* New tilting Popular Events Carousel */}
@@ -89,11 +89,11 @@ const HomeScreen = ({ navigation }) => {
           {/* Upcoming Events Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Upcoming event</Text>
-            <TouchableOpacity>
+            <Pressable>
               <Text style={styles.viewAllText}>view all</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-          
+
           {/* Original Upcoming Events Horizontal Scroll - Dynamic */}
           <ScrollView
             horizontal
@@ -101,9 +101,9 @@ const HomeScreen = ({ navigation }) => {
             style={styles.eventsScroll}
           >
             {upcomingEvents.map(event => (
-              <EventCard 
-                key={event.id} 
-                event={event} 
+              <EventCard
+                key={event.id}
+                event={event}
               />
             ))}
           </ScrollView>

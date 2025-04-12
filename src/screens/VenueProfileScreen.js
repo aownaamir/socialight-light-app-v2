@@ -1,10 +1,8 @@
-// VenueProfileScreen modifications - Edit button side by side with My Events
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   SafeAreaView,
   Image,
   Dimensions,
@@ -13,7 +11,7 @@ import {
   Platform,
   LayoutAnimation,
   UIManager,
-  TouchableOpacity,
+  Pressable,
   ActivityIndicator,
 } from 'react-native';
 import { colors } from '../theme/index';
@@ -47,6 +45,7 @@ const VenueProfileScreen = ({ navigation }) => {
         setLoading(true);
         const data = await getCurrentUserApi(token);
         setUserData(data);
+        console.log(data)
         setError(null);
       } catch (err) {
         console.error('Error fetching user data:', err);
@@ -76,6 +75,10 @@ const VenueProfileScreen = ({ navigation }) => {
     // console.log('Edit Profile pressed');
   };
 
+  const handleSubscription = () => {
+    navigation.navigate('ProfileSubscriptionScreen');
+  };
+
   if (loading) {
     return (
       <LinearGradient
@@ -95,7 +98,7 @@ const VenueProfileScreen = ({ navigation }) => {
         style={[styles.container, styles.loadingContainer]}
       >
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity
+        <Pressable
           style={styles.retryButton}
           onPress={() => {
             getCurrentUserApi(token)
@@ -110,7 +113,7 @@ const VenueProfileScreen = ({ navigation }) => {
           }}
         >
           <Text style={styles.retryButtonText}>Retry</Text>
-        </TouchableOpacity>
+        </Pressable>
       </LinearGradient>
     );
   }
@@ -167,10 +170,25 @@ const VenueProfileScreen = ({ navigation }) => {
             </View>
           </View>
 
+          {/* Premium Subscription Badge/Tag */}
+          {userData?.is_subscribed ? (
+            <View style={styles.premiumBadgeContainer}>
+              <LinearGradient
+                colors={['#FFD700', '#FFA500']}
+                style={styles.premiumBadge}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="star" size={14} color="#000" />
+                <Text style={styles.premiumBadgeText}>Premium</Text>
+              </LinearGradient>
+            </View>
+          ) : null}
+
           {/* Action Buttons - Edit Profile and My Events side by side */}
           <View style={styles.actionButtonsContainer}>
             {/* Edit Profile Button */}
-            <TouchableOpacity onPress={handleEditProfile} style={styles.actionButton}>
+            <Pressable onPress={handleEditProfile} style={styles.actionButton}>
               <LinearGradient
                 colors={[colors.accent, '#034946']}
                 style={styles.actionButtonGradient}
@@ -180,10 +198,10 @@ const VenueProfileScreen = ({ navigation }) => {
                 <Ionicons name="pencil-outline" size={16} color={colors.textPrimary} />
                 <Text style={styles.actionButtonText}>Edit Profile</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* My Events Button */}
-            <TouchableOpacity onPress={handleMyEvents} style={styles.actionButton}>
+            <Pressable onPress={handleMyEvents} style={styles.actionButton}>
               <LinearGradient
                 colors={[colors.accent, '#034946']}
                 style={styles.actionButtonGradient}
@@ -193,8 +211,27 @@ const VenueProfileScreen = ({ navigation }) => {
                 <Ionicons name="calendar" size={16} color={colors.textPrimary} />
                 <Text style={styles.actionButtonText}>My Events</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           </View>
+
+          {/* Subscription Button */}
+          <Pressable onPress={handleSubscription} style={styles.subscriptionButton}>
+            <LinearGradient
+              colors={userData?.is_subscribed ? ['#1A2F2F', '#153B3B'] : ['#00A693', '#056562']}
+              style={styles.subscriptionButtonGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Ionicons
+                name={userData?.is_subscribed ? "star" : "star-outline"}
+                size={18}
+                color={colors.textPrimary}
+              />
+              <Text style={styles.subscriptionButtonText}>
+                {userData?.is_subscribed ? 'Manage Subscription' : 'Upgrade to Premium'}
+              </Text>
+            </LinearGradient>
+          </Pressable>
 
           {/* Account Info Section */}
           <View style={styles.accountSection}>
@@ -398,13 +435,31 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
+  // Premium Badge
+  premiumBadgeContainer: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  premiumBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
+  premiumBadgeText: {
+    color: '#000',
+    fontWeight: '600',
+    fontSize: 12,
+    marginLeft: 4,
+  },
   // Action Buttons Container (Edit Profile + My Events)
   actionButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginBottom: 25,
+    marginBottom: 15,
     gap: 15, // Space between buttons
   },
   actionButton: {
@@ -430,6 +485,31 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     marginLeft: 6,
+  },
+  // Subscription Button
+  subscriptionButton: {
+    marginHorizontal: 20,
+    marginBottom: 25,
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  subscriptionButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 20,
+  },
+  subscriptionButtonText: {
+    color: colors.textPrimary,
+    fontWeight: '600',
+    fontSize: 15,
+    marginLeft: 8,
   },
   accountSection: {
     paddingHorizontal: 20,

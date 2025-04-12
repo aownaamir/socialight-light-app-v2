@@ -6,7 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  TouchableOpacity,
+  Pressable,
   StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Make sure to install expo vector icons
@@ -57,14 +57,14 @@ const StoryCard = ({ item, index }) => {
       <View style={styles.dateChip}>
         <Text style={styles.dateText}>{item.date}</Text>
       </View>
-      
+
       {/* Background Image */}
-      <Image 
-        source={{ uri: item.image }} 
-        style={styles.cardImage} 
+      <Image
+        source={{ uri: item.image }}
+        style={styles.cardImage}
         resizeMode="cover"
       />
-      
+
       {/* Active indicator */}
       {item.active && (
         <View style={styles.activeIndicator}>
@@ -72,10 +72,10 @@ const StoryCard = ({ item, index }) => {
           <Text style={styles.activeText}>Active</Text>
         </View>
       )}
-      
+
       {/* Semi-transparent overlay */}
       <View style={styles.overlay} />
-      
+
       {/* Bottom content */}
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{item.title}</Text>
@@ -83,9 +83,9 @@ const StoryCard = ({ item, index }) => {
           <Ionicons name="location-outline" size={14} color="#FFFFFF" />
           <Text style={styles.locationText}>{item.location}</Text>
         </View>
-        <TouchableOpacity style={styles.heartContainer}>
+        <Pressable style={styles.heartContainer}>
           <Ionicons name="heart-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -94,7 +94,7 @@ const StoryCard = ({ item, index }) => {
 const HorizontalScrollCarousel = () => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
@@ -121,7 +121,7 @@ const HorizontalScrollCarousel = () => {
         viewabilityConfig={viewabilityConfig}
         renderItem={({ item, index }) => <StoryCard item={item} index={index} />}
       />
-      
+
       {/* Optional: Add indicator dots */}
       <View style={styles.indicatorContainer}>
         {storyData.map((_, index) => (

@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   TextInput,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Alert,
   Platform,
   Image,
@@ -287,12 +287,12 @@ const CreateEventScreen = ({ navigation }) => {
   const renderPhotoItem = ({ item, index }) => (
     <View style={styles.photoItem}>
       <Image source={{ uri: item }} style={styles.photoThumbnail} />
-      <TouchableOpacity
+      <Pressable
         style={styles.removePhotoButton}
         onPress={() => removePhoto(index)}
       >
         <Ionicons name="close-circle" size={24} color={colors.textPrimary} />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 
@@ -320,25 +320,25 @@ const CreateEventScreen = ({ navigation }) => {
                   {eventPhotos.map((photo, index) => (
                     <View key={`photo-${index}`} style={styles.photoItem}>
                       <Image source={{ uri: photo }} style={styles.photoThumbnail} />
-                      <TouchableOpacity
+                      <Pressable
                         style={styles.removePhotoButton}
                         onPress={() => removePhoto(index)}
                       >
                         <Ionicons name="close-circle" size={24} color={colors.textPrimary} />
-                      </TouchableOpacity>
+                      </Pressable>
                     </View>
                   ))}
                 </ScrollView>
               )}
 
               {eventPhotos.length < MAX_PHOTOS && (
-                <TouchableOpacity
+                <Pressable
                   style={styles.addPhotoButton}
                   onPress={pickImage}
                 >
                   <Ionicons name="add" size={36} color={colors.textPrimary} />
                   <Text style={styles.addPhotoText}>Add photo</Text>
-                </TouchableOpacity>
+                </Pressable>
               )}
             </View>
           </View>
@@ -444,7 +444,7 @@ const CreateEventScreen = ({ navigation }) => {
 
             {/* Existing radio button rules (preserved) */}
             <View style={styles.radioOption}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.radioButton}
                 onPress={() => {
                   const socialMediaRule = "3 posts, 4 stories on social media";
@@ -458,12 +458,12 @@ const CreateEventScreen = ({ navigation }) => {
                 <View style={[styles.radioCircle, rules.includes("3 posts, 4 stories on social media") && styles.radioCircleSelected]}>
                   {rules.includes("3 posts, 4 stories on social media") && <View style={styles.radioDot} />}
                 </View>
-              </TouchableOpacity>
+              </Pressable>
               <Text style={styles.radioText}>3 posts, 4 stories on social media</Text>
             </View>
 
             <View style={styles.radioOption}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.radioButton}
                 onPress={() => {
                   const googleReviewRule = "Google reviews";
@@ -477,7 +477,7 @@ const CreateEventScreen = ({ navigation }) => {
                 <View style={[styles.radioCircle, rules.includes("Google reviews") && styles.radioCircleSelected]}>
                   {rules.includes("Google reviews") && <View style={styles.radioDot} />}
                 </View>
-              </TouchableOpacity>
+              </Pressable>
               <Text style={styles.radioText}>Google reviews</Text>
             </View>
 
@@ -491,12 +491,12 @@ const CreateEventScreen = ({ navigation }) => {
               return (
                 <View key={`rule-${index}`} style={styles.listItem}>
                   <Text style={styles.listItemText}>{rule}</Text>
-                  <TouchableOpacity
+                  <Pressable
                     style={styles.removeButton}
                     onPress={() => removeRule(index)}
                   >
                     <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               );
             })}
@@ -510,12 +510,12 @@ const CreateEventScreen = ({ navigation }) => {
                 value={newRule}
                 onChangeText={setNewRule}
               />
-              <TouchableOpacity
+              <Pressable
                 style={styles.addButton}
                 onPress={addRule}
               >
                 <Ionicons name="add-circle" size={24} color={colors.accent} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
@@ -527,12 +527,12 @@ const CreateEventScreen = ({ navigation }) => {
             {influencerRequirements.map((requirement, index) => (
               <View key={`req-${index}`} style={styles.listItem}>
                 <Text style={styles.listItemText}>{requirement}</Text>
-                <TouchableOpacity
+                <Pressable
                   style={styles.removeButton}
                   onPress={() => removeRequirement(index)}
                 >
                   <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             ))}
 
@@ -545,12 +545,12 @@ const CreateEventScreen = ({ navigation }) => {
                 value={newRequirement}
                 onChangeText={setNewRequirement}
               />
-              <TouchableOpacity
+              <Pressable
                 style={styles.addButton}
                 onPress={addRequirement}
               >
                 <Ionicons name="add-circle" size={24} color={colors.accent} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
@@ -559,26 +559,26 @@ const CreateEventScreen = ({ navigation }) => {
             <Text style={styles.sectionTitle}>Offer to applicants</Text>
 
             <View style={styles.radioOption}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.radioButton}
                 onPress={() => setOfferType('stayUntilClosed')}
               >
                 <View style={[styles.radioCircle, offerType === 'stayUntilClosed' && styles.radioCircleSelected]}>
                   {offerType === 'stayUntilClosed' && <View style={styles.radioDot} />}
                 </View>
-              </TouchableOpacity>
+              </Pressable>
               <Text style={styles.radioText}>Stay until closed</Text>
             </View>
 
             <View style={styles.radioOption}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.radioButton}
                 onPress={() => setOfferType('foodAndDrinks')}
               >
                 <View style={[styles.radioCircle, offerType === 'foodAndDrinks' && styles.radioCircleSelected]}>
                   {offerType === 'foodAndDrinks' && <View style={styles.radioDot} />}
                 </View>
-              </TouchableOpacity>
+              </Pressable>
               <Text style={styles.radioText}>Table with drinks & food</Text>
             </View>
 
@@ -591,12 +591,12 @@ const CreateEventScreen = ({ navigation }) => {
                 onChangeText={setLocation}
                 onFocus={requestLocationPermission}
               />
-              <TouchableOpacity
+              <Pressable
                 style={styles.iconContainer}
                 onPress={requestLocationPermission}
               >
                 <Ionicons name="location-outline" size={18} color={colors.textSecondary} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
@@ -616,23 +616,23 @@ const CreateEventScreen = ({ navigation }) => {
                 />
               </MapView>
             ) : (
-              <TouchableOpacity
+              <Pressable
                 style={styles.mapPlaceholder}
                 onPress={requestLocationPermission}
               >
                 <Ionicons name="map-outline" size={36} color={colors.textSecondary} />
                 <Text style={styles.mapPlaceholderText}>Tap to enable map</Text>
-              </TouchableOpacity>
+              </Pressable>
             )}
           </View>
 
           {/* Create Event Button */}
-          <TouchableOpacity
+          <Pressable
             style={styles.createButton}
             onPress={handleSubmit}
           >
             <Text style={styles.createButtonText}>Create event</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

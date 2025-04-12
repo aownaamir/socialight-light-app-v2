@@ -5,7 +5,6 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  TouchableOpacity,
   StatusBar,
   Platform,
 } from 'react-native';
@@ -17,7 +16,7 @@ import EventHeader from '../components/EventHeader';
 const MyEventsInfluencerScreen = ({ navigation }) => {
   // Extract first 2 events as new events
   const newEvents = eventsArray.slice(0, 2);
-  
+
   // Extract last 3 events as recent events
   const recentEvents = eventsArray.slice(2, 5);
 
@@ -28,16 +27,16 @@ const MyEventsInfluencerScreen = ({ navigation }) => {
     >
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>New</Text>
             {newEvents.map((event) => (
-              <EventHeader 
-                key={event.id} 
-                event={event} 
+              <EventHeader
+                key={event.id}
+                event={event}
                 onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
               />
             ))}
@@ -46,8 +45,8 @@ const MyEventsInfluencerScreen = ({ navigation }) => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Recent</Text>
             {recentEvents.map((event) => (
-              <EventHeader 
-                key={event.id} 
+              <EventHeader
+                key={event.id}
                 event={event}
                 onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}
               />

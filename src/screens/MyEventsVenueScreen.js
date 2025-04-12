@@ -4,12 +4,11 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   StatusBar,
   Platform,
   ActivityIndicator,
-  Pressable,
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
@@ -69,9 +68,9 @@ const MyEventsVenueScreen = ({ navigation }) => {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Your events</Text>
             {!loading && !error && (
-              <TouchableOpacity onPress={fetchEvents}>
+              <Pressable onPress={fetchEvents}>
                 <Ionicons name="refresh-outline" size={22} color={colors.textSecondary} />
-              </TouchableOpacity>
+              </Pressable>
             )}
           </View>
 
@@ -88,12 +87,12 @@ const MyEventsVenueScreen = ({ navigation }) => {
             <View style={styles.errorContainer}>
               <Ionicons name="alert-circle-outline" size={40} color={colors.error || '#ff4d4d'} />
               <Text style={styles.errorText}>{error}</Text>
-              <TouchableOpacity
+              <Pressable
                 style={styles.retryButton}
                 onPress={fetchEvents}
               >
                 <Text style={styles.retryButtonText}>Retry</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )}
 
@@ -102,13 +101,13 @@ const MyEventsVenueScreen = ({ navigation }) => {
             <View style={styles.emptyContainer}>
               <Ionicons name="calendar-outline" size={48} color={colors.textSecondary} />
               <Text style={styles.emptyText}>You don't have any active events</Text>
-              <TouchableOpacity
+              <Pressable
                 style={[styles.createEventButton, styles.emptyCreateButton]}
                 onPress={() => navigation.navigate('CreateEvent')}
               >
                 <Text style={styles.createEventText}>Create one now</Text>
                 <Ionicons name="add-outline" size={20} color={colors.textPrimary} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )}
 

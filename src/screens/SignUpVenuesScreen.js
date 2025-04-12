@@ -242,7 +242,7 @@ const SignUpVenuesScreen = ({ navigation }) => {
                 ) : profilePicture ? (
                   <Image source={{ uri: profilePicture }} style={styles.profilePictureImage} />
                 ) : (
-                  <Ionicons name="camera" size={30} color={colors.accent} />
+                  <Ionicons name="add" size={30} color="rgba(255, 255, 255, 0.5)" />
                 )}
               </View>
               <Text style={styles.profilePictureText}>Profile Picture</Text>
@@ -388,13 +388,13 @@ const SignUpVenuesScreen = ({ navigation }) => {
             </Pressable>
 
             {/* Request participation button */}
-            <Pressable
+            {/* <Pressable
               style={[styles.requestButton, isLoading && styles.disabledRequest]}
               onPress={handleSignup}
               disabled={isLoading}
             >
               <Text style={styles.requestButtonText}>Request participation</Text>
-            </Pressable>
+            </Pressable> */}
 
             {/* Back button */}
             <Pressable
