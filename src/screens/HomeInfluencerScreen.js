@@ -44,7 +44,7 @@ const HomeInfluencerScreen = ({ navigation }) => {
   const fetchEvents = async (searchParams = {}) => {
     setLoading(true);
     try {
-      // You can pass any query parameters based on user filters
+
       const result = await getEventsApi(token, {
         page: searchParams.page || pagination.page,
         limit: searchParams.limit || pagination.limit,
@@ -63,10 +63,10 @@ const HomeInfluencerScreen = ({ navigation }) => {
     navigation.navigate('EventsTab', {
       screen: 'EventsRequestVenue'
     })
-    // console.log('Create event pressed');
+
   };
 
-  // Content placeholder while loading
+
   const renderLoadingPlaceholder = () => (
     <View style={styles.loadingPlaceholder}>
       <ActivityIndicator size="large" color={colors.accent} />
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     marginLeft: 10,
   },
-  // Contact Section Styles with BlurView
+
   contactSection: {
     paddingHorizontal: 20,
     marginBottom: 20,

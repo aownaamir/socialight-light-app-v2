@@ -24,7 +24,7 @@ import { useAuth } from '../store/context/authContext';
 
 const CreateEventScreen = ({ navigation }) => {
   const token = useAuth().token;
-  // Form state variables matching the API requirements
+
 
 
   const [title, setTitle] = useState('');
@@ -35,7 +35,7 @@ const CreateEventScreen = ({ navigation }) => {
   const [dressCode, setDressCode] = useState('');
   const [instagramHandle, setInstagramHandle] = useState('');
   const [description, setDescription] = useState('');
-  const [eventPhotos, setEventPhotos] = useState([]); // For displaying images
+  const [eventPhotos, setEventPhotos] = useState([]);
   const [eventPhotosData, setEventPhotosData] = useState([])
   const [rules, setRules] = useState([]);
   const [influencerRequirements, setInfluencerRequirements] = useState([]);
@@ -44,7 +44,7 @@ const CreateEventScreen = ({ navigation }) => {
   const [offerType, setOfferType] = useState('stayUntilClosed');
   const [location, setLocation] = useState('');
   const [locationData, setLocationData] = useState({
-    coordinates: [0, 0], // [longitude, latitude]
+    coordinates: [0, 0],
     address: ''
   });
   const [mapRegion, setMapRegion] = useState({
@@ -55,7 +55,7 @@ const CreateEventScreen = ({ navigation }) => {
   });
   const [locationPermission, setLocationPermission] = useState(null);
 
-  const MAX_PHOTOS = 3; // Maximum number of photos that can be uploaded
+  const MAX_PHOTOS = 3;
 
   const addRule = () => {
     if (newRule.trim() !== '') {
@@ -84,13 +84,13 @@ const CreateEventScreen = ({ navigation }) => {
   };
 
   const pickImage = async () => {
-    // Check if we've reached the maximum number of photos
+
     if (eventPhotos.length >= MAX_PHOTOS) {
       Alert.alert('Limit Reached', `You can only upload a maximum of ${MAX_PHOTOS} photos.`);
       return;
     }
 
-    // Request media library permissions
+
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== 'granted') {
@@ -108,7 +108,7 @@ const CreateEventScreen = ({ navigation }) => {
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const selectedImage = result.assets[0];
 
-      // Create the file data object for the API
+
       const fileData = {
         uri: selectedImage.uri,
         name: selectedImage.uri.split('/').pop(),
@@ -117,10 +117,10 @@ const CreateEventScreen = ({ navigation }) => {
           : 'image/jpeg'
       };
 
-      // Add to eventPhotos array for display
+
       setEventPhotos(prevPhotos => [...prevPhotos, selectedImage.uri]);
 
-      // Add to eventPhotosData array for API submission
+
       setEventPhotosData(prevData => [...prevData, fileData]);
     }
   };
@@ -154,7 +154,7 @@ const CreateEventScreen = ({ navigation }) => {
 
       const { latitude, longitude } = location.coords;
 
-      // Update map region
+
       setMapRegion({
         latitude,
         longitude,
@@ -162,7 +162,7 @@ const CreateEventScreen = ({ navigation }) => {
         longitudeDelta: 0.0421,
       });
 
-      // Reverse geocode to get address
+
       const addressResponse = await Location.reverseGeocodeAsync({
         latitude,
         longitude
@@ -172,13 +172,13 @@ const CreateEventScreen = ({ navigation }) => {
         const address = addressResponse[0];
         const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
 
-        // Set location data in the format your API expects
+
         setLocationData({
-          coordinates: [longitude, latitude], // Note: GeoJSON format uses [longitude, latitude]
+          coordinates: [longitude, latitude],
           address: formattedAddress
         });
 
-        // Also update the display value for the input field
+
         setLocation(formattedAddress);
       }
     } catch (error) {
@@ -191,14 +191,14 @@ const CreateEventScreen = ({ navigation }) => {
     const { coordinate } = event.nativeEvent;
     const { latitude, longitude } = coordinate;
 
-    // Update marker position
+
     setMapRegion({
       ...mapRegion,
       latitude,
       longitude
     });
 
-    // Reverse geocode to get address
+
     const addressResponse = await Location.reverseGeocodeAsync({
       latitude,
       longitude
@@ -208,22 +208,22 @@ const CreateEventScreen = ({ navigation }) => {
       const address = addressResponse[0];
       const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
 
-      // Set location data in the format your API expects
+
       setLocationData({
-        coordinates: [longitude, latitude], // GeoJSON format: [longitude, latitude]
+        coordinates: [longitude, latitude],
         address: formattedAddress
       });
 
-      // Update the location display
+
       setLocation(formattedAddress);
     }
   };
 
   const prepareEventsFormData = () => {
-    // Create a new FormData instance for professional photos
+
     const photosFormData = new FormData();
 
-    // Add professional photos that are not null
+
     eventPhotosData.forEach((photo, index) => {
       if (photo) {
         photosFormData.append(`files`, photo);
@@ -252,7 +252,7 @@ const CreateEventScreen = ({ navigation }) => {
       const eventsFormData = prepareEventsFormData();
       await createEventApi(token, data, eventsFormData);
 
-      // Show success message
+
       Alert.alert('Success', 'Your event has been created successfully!');
 
       setTitle('');
@@ -263,20 +263,20 @@ const CreateEventScreen = ({ navigation }) => {
       setDressCode('');
       setInstagramHandle('');
       setDescription('');
-      setEventPhotos([]); // For displaying images
+      setEventPhotos([]);
       setEventPhotosData([])
       setRules([]);
       setInfluencerRequirements([]);
       setNewRule('');
       setNewRequirement('');
-      // setOfferType('stayUntilClosed');
+
       setLocation('');
       setLocationData({
         coordinates: [0, 0],
         address: ''
       });
 
-      // Navigate back or to another screen
+
       navigation.goBack();
     } catch (error) {
       console.error('Error creating event:', error);
@@ -483,7 +483,7 @@ const CreateEventScreen = ({ navigation }) => {
 
             {/* Custom rules list */}
             {rules.map((rule, index) => {
-              // Skip the predefined rules as they are already shown above
+
               if (rule === "3 posts, 4 stories on social media" || rule === "Google reviews") {
                 return null;
               }
@@ -727,10 +727,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     marginBottom: 10,
-    height: 45, // Fixed height for all inputs
+    height: 45,
   },
   inputWithIcon: {
-    paddingRight: 40, // Make room for the icon
+    paddingRight: 40,
   },
   inputWrapper: {
     position: 'relative',
@@ -750,7 +750,7 @@ const styles = StyleSheet.create({
   timeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 10, // Add gap between time inputs
+    gap: 10,
   },
   timeInput: {
     width: '48%',
@@ -829,7 +829,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  // New styles for the custom lists
+
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',

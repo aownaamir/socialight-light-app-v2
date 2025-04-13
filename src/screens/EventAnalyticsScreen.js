@@ -18,7 +18,7 @@ const { width, height } = Dimensions.get('window');
 
 const EventAnalyticsScreen = ({ navigation, route }) => {
   const [isFavorite, setIsFavorite] = useState(false);
-  
+
   const event = eventsArray[0];
 
   const toggleFavorite = () => {
@@ -27,11 +27,11 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with back button and title */}
+
         {/* <View style={styles.header}>
           <Pressable 
             style={styles.backButton} 
@@ -46,15 +46,15 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
           />
         </View> */}
 
-        {/* Event Cover Image */}
+
         <View style={styles.coverImageContainer}>
-          <Image 
-            source={event.coverImage} 
-            style={styles.coverImage} 
+          <Image
+            source={event.coverImage}
+            style={styles.coverImage}
             resizeMode="cover"
           />
-          
-          {/* Event title and details overlay */}
+
+
           <View style={styles.eventDetailsContainer}>
             <Text style={styles.eventTitle}>{event.title}</Text>
             <View style={styles.eventStatusContainer}>
@@ -64,20 +64,20 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
             </View>
             <Text style={styles.eventTime}>{event.time} • {event.location}</Text>
           </View>
-          
-          <Pressable 
+
+          <Pressable
             style={styles.favoriteButton}
             onPress={toggleFavorite}
           >
-            <Ionicons 
-              name={isFavorite ? "heart" : "heart-outline"} 
-              size={24} 
-              color={isFavorite ? "#FF4d4d" : colors.textPrimary} 
+            <Ionicons
+              name={isFavorite ? "heart" : "heart-outline"}
+              size={24}
+              color={isFavorite ? "#FF4d4d" : colors.textPrimary}
             />
           </Pressable>
         </View>
 
-        {/* Stats Containers */}
+
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{event.stats.all}</Text>
@@ -104,17 +104,17 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
           </View>
         </View>
 
-        {/* Account Section */}
+
         <View style={styles.accountSection}>
           <Text style={styles.sectionTitle}>Account</Text>
-          
-          {/* First Attendee Card */}
+
+
           <View style={styles.attendeeCard}>
             <View style={styles.attendeeHeader}>
               <View style={styles.attendeeInfo}>
-                <Image 
-                  source={event.attendees[0].avatar} 
-                  style={styles.attendeeAvatar} 
+                <Image
+                  source={event.attendees[0].avatar}
+                  style={styles.attendeeAvatar}
                 />
                 <View>
                   <Text style={styles.attendeeName}>Bert Berišaj</Text>
@@ -125,22 +125,22 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
                 <Text style={styles.badgeText}>Attended</Text>
               </View>
             </View>
-            
+
             <View style={styles.divider} />
-            
+
             <View style={styles.profileActions}>
               <Text style={styles.actionLink}>View Profile</Text>
               <Text style={styles.actionLink}>Reviewed!</Text>
             </View>
           </View>
-          
-          {/* Second Attendee Card */}
+
+
           <View style={styles.attendeeCard}>
             <View style={styles.attendeeHeader}>
               <View style={styles.attendeeInfo}>
-                <Image 
-                  source={event.attendees[1].avatar} 
-                  style={styles.attendeeAvatar} 
+                <Image
+                  source={event.attendees[1].avatar}
+                  style={styles.attendeeAvatar}
                 />
                 <View>
                   <Text style={styles.attendeeName}>Bert Berišaj</Text>
@@ -151,9 +151,9 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
                 <Text style={styles.badgeText}>Accepted</Text>
               </View>
             </View>
-            
+
             <View style={styles.divider} />
-            
+
             <View style={styles.profileActions}>
               <Text style={styles.actionLink}>View Profile</Text>
               <Text style={styles.actionLink}>View OTP</Text>
@@ -161,7 +161,7 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
           </View>
         </View>
 
-        {/* Edit Button */}
+
         <Pressable style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit event</Text>
         </Pressable>

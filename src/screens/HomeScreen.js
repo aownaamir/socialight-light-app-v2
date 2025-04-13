@@ -17,7 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import EventCard from '../components/EventCard';
-import PopularEventsCarousel from '../components/PopularEventsCarousel'; // Import the new carousel
+import PopularEventsCarousel from '../components/PopularEventsCarousel';
 import { eventsArray } from '../data/data';
 import { BlurView } from 'expo-blur';
 import ContactSection from '../components/ContactSection';
@@ -25,7 +25,7 @@ import ContactSection from '../components/ContactSection';
 const { width, height } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
-  // Events filtering by status
+
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
   const upcomingEvents = eventsArray;
 
@@ -33,7 +33,7 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate('Events', {
       screen: 'CreateEvent'
     })
-    // console.log('Create event pressed');
+
   };
 
   return (
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     marginLeft: 10,
   },
-  // Contact Section Styles with BlurView
+
   contactSection: {
     paddingHorizontal: 20,
     marginBottom: 20,

@@ -5,13 +5,13 @@ import RootNavigator from './src/navigation/RootNavigator';
 import { AuthProvider } from './src/store/context/authContext';
 
 export default function App() {
-    return (
+  return (
     <AuthProvider>
-    <SafeAreaProvider>
-      <StatusBar style='light' />
-      <RootNavigator />
-    </SafeAreaProvider>
-    </AuthProvider> 
+      <SafeAreaProvider>
+        <StatusBar style='light' />
+        <RootNavigator />
+      </SafeAreaProvider>
+    </AuthProvider>
   );
 }
 

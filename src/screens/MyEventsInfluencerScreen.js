@@ -14,10 +14,10 @@ import { eventsArray } from '../data/data';
 import EventHeader from '../components/EventHeader';
 
 const MyEventsInfluencerScreen = ({ navigation }) => {
-  // Extract first 2 events as new events
+
   const newEvents = eventsArray.slice(0, 2);
 
-  // Extract last 3 events as recent events
+
   const recentEvents = eventsArray.slice(2, 5);
 
   return (

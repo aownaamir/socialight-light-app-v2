@@ -11,7 +11,6 @@ const HomeVenueNavigator = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="HomeMain">
             <Stack.Screen name="HomeMain" component={HomeVenueScreen} />
-            {/* create===details */}
             <Stack.Screen name="HomeCreate" component={CreateEventsLiveScreen} />
             <Stack.Screen name="HomeAllEvents" component={AllEventsScreen} />
 

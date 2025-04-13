@@ -33,7 +33,7 @@ const MyEventsVenueScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const response = await getVenueEventsApi(token);
-      // Filter active events if your API doesn't filter them already
+
       setEvents(response.events);
       setError(null);
     } catch (err) {
@@ -51,7 +51,7 @@ const MyEventsVenueScreen = ({ navigation }) => {
     >
       <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.safeArea}>
-        {/* Create Event Button */}
+
         <Pressable
           style={styles.createEventButton}
           onPress={() => navigation.navigate('EventsTab', { screen: "EventsCreate" })}
@@ -60,7 +60,7 @@ const MyEventsVenueScreen = ({ navigation }) => {
           <Ionicons name="add-outline" size={20} color={colors.textPrimary} />
         </Pressable>
 
-        {/* Events List */}
+
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -74,7 +74,7 @@ const MyEventsVenueScreen = ({ navigation }) => {
             )}
           </View>
 
-          {/* Loading State */}
+
           {loading && (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.accent} />
@@ -82,7 +82,7 @@ const MyEventsVenueScreen = ({ navigation }) => {
             </View>
           )}
 
-          {/* Error State */}
+
           {error && (
             <View style={styles.errorContainer}>
               <Ionicons name="alert-circle-outline" size={40} color={colors.error || '#ff4d4d'} />
@@ -96,7 +96,7 @@ const MyEventsVenueScreen = ({ navigation }) => {
             </View>
           )}
 
-          {/* Event Cards - Using the modified EventCard component with 'vertical' variant */}
+
           {!loading && !error && events.length === 0 && (
             <View style={styles.emptyContainer}>
               <Ionicons name="calendar-outline" size={48} color={colors.textSecondary} />
@@ -116,11 +116,11 @@ const MyEventsVenueScreen = ({ navigation }) => {
               source='my'
               key={event._id}
               event={event}
-              variant="vertical" // Specify the vertical variant
+              variant="vertical"
             />
           ))}
 
-          {/* Contact Information */}
+
           <ContactSection />
         </ScrollView>
       </SafeAreaView>

@@ -21,7 +21,6 @@ import LoadingScreen from "../screens/LoadingScreen";
 import TiltedCarousel from "../chat/TiltedCarousel";
 import Carousel2 from "../chat/Carousel2";
 import StylishCarousel from "../chat/StylishCarousel";
-// import HomeVenueNavigator from "./HomeVenueNavigator";
 import EventsVenueNavigator from "./EventsVenueNavigator";
 import HomeVenueNavigator from "./HomeVenueNavigator";
 import ProfileVenueNavigator from "./ProfileVenueNavigator";
@@ -48,8 +47,6 @@ const VenueTabNavigator = () => {
             } else if (route.name === 'ProfileTab') {
               iconName = focused ? 'person' : 'person-outline';
             }
-
-            // Create a fixed height container with centered icon and dot
             return (
               <View style={styles.tabIconContainer}>
                 <View style={styles.iconWrapper}>
@@ -75,9 +72,6 @@ const VenueTabNavigator = () => {
         })}
         initialRouteName="HomeTab"
       >
-        {/* <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Events" component={EventsScreen} />
-      <Tab.Screen name="Profile" component={ProfileUserScreen} /> */}
         <Tab.Screen name="HomeTab" component={HomeVenueNavigator} />
         <Tab.Screen name="EventsTab" component={EventsVenueNavigator} />
         <Tab.Screen name="ProfileTab" component={ProfileVenueNavigator} />

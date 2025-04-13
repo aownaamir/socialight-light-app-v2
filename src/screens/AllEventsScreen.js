@@ -36,23 +36,23 @@ const AllEventsScreen = ({ navigation }) => {
   const fetchEvents = async (searchParams = {}) => {
     setLoading(true);
     try {
-      // You can pass any query parameters based on user filters
+
       const result = await getEventsApi(token, {
         page: pagination.page,
         limit: pagination.limit,
       });
       setEvents(result.events);
-      // console.log(events)
+
       setPagination(result.pagination);
     } catch (error) {
       console.error('Error fetching events:', error);
-      // You could add error state handling here if needed
+
     } finally {
       setLoading(false);
     }
   };
 
-  // Load more function for pagination
+
   const loadMoreEvents = () => {
     if (pagination.page < pagination.totalPages) {
       fetchEvents({ page: pagination.page + 1 });
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  // other styles remain the same
+
 });
 
 export default AllEventsScreen;

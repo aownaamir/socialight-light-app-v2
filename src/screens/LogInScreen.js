@@ -26,62 +26,62 @@ const LogInScreen = ({ navigation }) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login, error, clearError, isAuthenticated } = useAuth();
 
-const handleLogin = async () => {
-  
-  setEmailError('');
-  setPasswordError('');
-  clearError();
-  
-  let isValid = true;
-  
-  if (!email || !email.includes('@')) {
+  const handleLogin = async () => {
+
+    setEmailError('');
+    setPasswordError('');
+    clearError();
+
+    let isValid = true;
+
+    if (!email || !email.includes('@')) {
       setEmailError('Please enter a valid email address');
       isValid = false;
-  }
-  
-  if (!password) {
+    }
+
+    if (!password) {
       setPasswordError('Password is required');
       isValid = false;
-  }
-  
-  if (!isValid) return;
-  
+    }
 
-  try {
+    if (!isValid) return;
+
+
+    try {
       setIsLoading(true);
-      
-      //  the context login function
+
+
       const userData = await login(email, password);
-      
-  } catch (err) {
-     
+
+    } catch (err) {
+
 
       if (err.response && err.response.status === 401) {
-          setPasswordError('The email or password you entered is incorrect');
+        setPasswordError('The email or password you entered is incorrect');
       } else if (err.response && err.response.status === 404) {
-          setEmailError('The email you entered does not belong to any account');
+        setEmailError('The email you entered does not belong to any account');
       } else {
-          Alert.alert(
-              'Login Error',
-              'An error occurred while trying to log in. Please try again later.'
-          );
+        Alert.alert(
+          'Login Error',
+          'An error occurred while trying to log in. Please try again later.'
+        );
       }
-  } finally {
+    } finally {
       setIsLoading(false);
-  }
-};
+    }
+  };
 
-  // Effect to navigate after successful login
-  // React.useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigation.navigate('Main');
-  //   }
-  // }, [isAuthenticated, navigation]);
 
-  // Effect to handle auth errors
+
+
+
+
+
+
+
   React.useEffect(() => {
     if (error) {
       Alert.alert('Authentication Error', error);
@@ -95,7 +95,7 @@ const handleLogin = async () => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -153,7 +153,7 @@ const handleLogin = async () => {
               ) : null}
             </View>
 
-            <Pressable 
+            <Pressable
               style={[styles.loginButton, isLoading && styles.disabledButton]}
               onPress={handleLogin}
               disabled={isLoading}
@@ -165,7 +165,7 @@ const handleLogin = async () => {
               )}
             </Pressable>
 
-            <Pressable 
+            <Pressable
               style={styles.forgotPasswordContainer}
               onPress={() => navigation.navigate('ForgotPassword')}
               disabled={isLoading}
@@ -175,7 +175,7 @@ const handleLogin = async () => {
 
             <View style={styles.signupContainer}>
               <Text style={styles.signupText}>New to Socialight? </Text>
-              <Pressable 
+              <Pressable
                 onPress={() => navigation.navigate('UserType')}
                 disabled={isLoading}
               >

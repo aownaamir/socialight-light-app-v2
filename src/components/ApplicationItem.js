@@ -34,7 +34,7 @@ const ApplicationItem = ({
     const handleReject = async () => {
         setIsUpdating(true);
         try {
-            console.log("Rejecting application with ID:", item.id);
+            // console.log("Rejecting application with ID:", item.id);
             await updateApplicationStatusApi(token, item.id, 'rejected');
             setCurrentStatus('rejected');
             onReject(item.id);

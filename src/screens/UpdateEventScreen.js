@@ -302,7 +302,7 @@ const UpdateEventScreen = ({ navigation, route }) => {
 
             // // Call update API with event ID, updated data, and token
             await updateEventApi(token, event._id, updatedData, formData);
-            console.log('formData', formData)
+            // console.log('formData', formData)
             // Show success message
             Alert.alert('Success', 'Your event has been updated successfully!');
 

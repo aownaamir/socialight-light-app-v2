@@ -32,7 +32,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState(null);
 
-    // Form state
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [instagram, setInstagram] = useState('');
@@ -41,11 +41,11 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
     const [youtube, setYoutube] = useState('');
     const [followers, setFollowers] = useState('');
 
-    // Image URI states (for display)
+
     const [profilePicture, setProfilePicture] = useState('');
     const [professionalPhotos, setProfessionalPhotos] = useState([]);
 
-    // Image data states (for upload) - similar to signup screen
+
     const [profilePictureData, setProfilePictureData] = useState(null);
     const [professionalPhotosData, setProfessionalPhotosData] = useState([]);
 
@@ -68,21 +68,21 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
         try {
             const data = await getCurrentUserApi(token);
 
-            // Populate form with existing user data
+
             setFirstName(data.first_name || '');
             setLastName(data.last_name || '');
             setFollowers(data.followers ? data.followers.toString() : '');
 
-            // Set profile picture URI (for display)
+
             setProfilePicture(data.profile_picture || '');
 
-            // Set professional photos URIs (for display)
+
             setProfessionalPhotos(data.professional_photos || []);
 
-            // Initialize professional photos data array with nulls
+
             setProfessionalPhotosData(Array(data.professional_photos?.length || 0).fill(null));
 
-            // Set social links if they exist
+
             if (data.social_links) {
                 setInstagram(data.social_links.instagram || '');
                 setFacebook(data.social_links.facebook || '');
@@ -108,10 +108,10 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
         });
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
-            // Set URI for display
+
             setProfilePicture(result.assets[0].uri);
 
-            // Set complete file data for upload
+
             setProfilePictureData({
                 uri: result.assets[0].uri,
                 name: result.assets[0].uri.split('/').pop(),
@@ -131,12 +131,12 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
         });
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
-            // Update the photos array for display
+
             const newPhotos = [...professionalPhotos];
             newPhotos[index] = result.assets[0].uri;
             setProfessionalPhotos(newPhotos);
 
-            // Update the photos data array for upload
+
             const newPhotosData = [...professionalPhotosData];
             newPhotosData[index] = {
                 uri: result.assets[0].uri,
@@ -152,7 +152,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
     const handleUpdateProfile = async () => {
         setUpdating(true);
         try {
-            // Create user data object
+
             const userData = {
                 first_name: firstName,
                 last_name: lastName,
@@ -168,18 +168,18 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
             };
 
 
-            // Create FormData for profile picture
+
             const profileFormData = new FormData();
             if (profilePictureData) {
 
-                // const profileImageUri = Platform.OS === 'android'
-                //     ? profilePictureData.uri
-                //     : profilePictureData.uri.replace('file://', '');
 
-                // profileFormData.append('file', {
-                //     uri: profileImageUri,
-                //     type: profilePictureData.type,
-                //     name: profilePictureData.name
+
+
+
+
+
+
+
 
 
                 profileFormData.append('file', {
@@ -189,18 +189,18 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                 });
             }
 
-            // Create FormData for professional photos
+
             const photosFormData = new FormData();
             professionalPhotosData.forEach((photo, index) => {
                 if (photo) {
-                    // const photoUri = Platform.OS === 'android'
-                    //     ? photo.uri
-                    //     : photo.uri.replace('file://', '');
 
-                    // photosFormData.append('files', {
-                    //     uri: photoUri,
-                    //     type: photo.type,
-                    //     name: photo.name
+
+
+
+
+
+
+
 
 
                     photosFormData.append('files', {
@@ -211,7 +211,7 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                 }
             });
 
-            // Send the update to API with the three separate objects
+
             await updateInfluencerProfileApi(token, userData, profileFormData, photosFormData);
             Alert.alert('Success', 'Profile updated successfully');
             navigation.goBack();
@@ -236,13 +236,13 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
         );
     }
 
-    // Helper function to get image source for professional photos
+
     const getPhotoSource = (index) => {
         if (professionalPhotos[index] && professionalPhotos[index].startsWith('http')) {
-            // If it's already a full URL (from a new selection)
+
             return { uri: professionalPhotos[index] };
         } else if (professionalPhotos[index]) {
-            // If it's a path from the API
+
             return { uri: `${apiURL}/uploads/${professionalPhotos[index]}` };
         }
         return null;
@@ -272,13 +272,13 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                             >
                                 {profilePicture ? (
                                     profilePictureData ? (
-                                        // Show newly selected image
+
                                         <Image
                                             source={{ uri: profilePictureData.uri }}
                                             style={styles.profileImage}
                                         />
                                     ) : (
-                                        // Show existing image from API
+
                                         <Image
                                             source={{ uri: `${apiURL}/uploads/${profilePicture}` }}
                                             style={styles.profileImage}
@@ -346,13 +346,13 @@ const EditInfluencerProfileScreen = ({ navigation }) => {
                                         onPress={() => pickProfessionalPhoto(index)}
                                     >
                                         {professionalPhotosData[index] ? (
-                                            // Show newly selected image
+
                                             <Image
                                                 source={{ uri: professionalPhotosData[index].uri }}
                                                 style={styles.photoItem}
                                             />
                                         ) : professionalPhotos[index] ? (
-                                            // Show existing image from API
+
                                             <Image
                                                 source={{ uri: `${apiURL}/uploads/${professionalPhotos[index]}` }}
                                                 style={styles.photoItem}
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 40,
     },
-    // Profile Photo Section
+
     profilePhotoSection: {
         alignItems: 'center',
         marginBottom: 30,
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 5,
     },
-    // Professional Photos Section
+
     photosGrid: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.background,
     },
-    // Form Sections
+
     formSection: {
         marginBottom: 30,
     },

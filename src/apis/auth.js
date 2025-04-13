@@ -61,10 +61,10 @@ export const signupVenueApi = async (venueData, formData) => {
 
     const responseFile = await apiFile.post('/upload', formData);
     const savedFilename = responseFile.data.file.filename;
-    console.log('new file name: ', savedFilename)
+    // console.log('new file name: ', savedFilename)
     venueData.profilePicture = savedFilename;
     const response = await api.post('/auth/register/venue', venueData);
-    console.log('File upload response:', responseFile.data);
+    // console.log('File upload response:', responseFile.data);
 
     return response.data;
 

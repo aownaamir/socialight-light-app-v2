@@ -16,9 +16,8 @@ const Stack = createStackNavigator();
 
 const RootNavigator = () => {
   // const { isAuthenticated, loading } = useAuth();
-  const isAuthenticated=useAuth().isAuthenticated;
+  const isAuthenticated = useAuth().isAuthenticated;
 
-  // Show loading spinner while checking auth state
   // if (loading) {
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -29,22 +28,10 @@ const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-
-    {!isAuthenticated ?  <AuthNavigator /> :  <TabNavigator />}
-    {/* set auth user null */}
-    {/* is user is dummy influencer then render only influencerNavigator */}
-    {/* is user is dummy venue then render only venueNavigator */}
-
-
-    {/* <TabNavigator /> */}
-    {/* <InfluencerTabNavigator /> */}
-    {/* <VenueTabNavigator /> */}
-    {/* <CreateEventsLiveScreen /> */}
-
-
+      {!isAuthenticated ? <AuthNavigator /> : <TabNavigator />}
     </NavigationContainer>
-       
-    )
+
+  )
 };
 
 

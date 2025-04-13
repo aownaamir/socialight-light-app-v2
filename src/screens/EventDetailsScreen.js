@@ -33,7 +33,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
   const eventId = route.params.id;
   useEffect(() => {
     fetchEventDetails();
-    // checkIfApplied();
+
   }, []);
 
   const fetchEventDetails = async () => {
@@ -49,32 +49,32 @@ const EventDetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // const checkIfApplied = async () => {
-  //   try {
-  //     const result = await checkApplicationStatusApi(token, id);
-  //     setHasApplied(result.applied);
-  //   } catch (error) {
-  //     console.error('Error checking application status:', error);
-  //     // Don't show an alert here as this is just a status check
-  //   }
-  // };
+
+
+
+
+
+
+
+
+
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
 
   const handleApply = async () => {
-    // if (hasApplied) {
-    //   // If already applied, maybe show a message or navigate to application status
-    //   Alert.alert(
-    //     'Already Applied',
-    //     'You have already applied to this event. Check your applications for status updates.',
-    //     [{ text: 'OK' }]
-    //   );
-    //   return;
-    // }
 
-    // Only influencers can apply
+
+
+
+
+
+
+
+
+
+
     if (user.role !== 'influencer') {
       Alert.alert(
         'Not Allowed',
@@ -96,7 +96,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
       );
     } catch (error) {
       console.error('Error applying to event:', error);
-      // If the error is because user already applied
+
       if (error.status === 400 && error.message.includes('already applied')) {
         setHasApplied(true);
         Alert.alert(
@@ -116,7 +116,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // Return loading state
+
   if (loading || !event) {
     return (
       <LinearGradient
@@ -128,17 +128,17 @@ const EventDetailsScreen = ({ navigation, route }) => {
     );
   }
 
-  // Format date for display
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
-  // Default placeholder image for organizer avatar
+
   const placeholderAvatar = require('../../assets/images/organizer-avatar.png');
-  // Default placeholder for event cover
+
   const placeholderCover = require('../../assets/images/fashion-event.jpg');
-  // Placeholder attendees (since API doesn't include this info)
+
   const placeholderAttendees = [
     require('../../assets/images/attendee1.png'),
     require('../../assets/images/attendee2.png'),

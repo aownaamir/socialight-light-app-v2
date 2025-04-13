@@ -18,7 +18,7 @@ const { width } = Dimensions.get('window');
 
 const OTPScreen = ({ navigation, route }) => {
   const [otp, setOtp] = useState('97272');
-  // User data can be passed through route params
+
   const { userName, userType } = route?.params || {
     userName: 'Bert Berišaj',
     userType: 'Influencer'
@@ -29,7 +29,7 @@ const OTPScreen = ({ navigation, route }) => {
   };
 
   const handleVerify = () => {
-    // Verify OTP logic here
+
     navigation.navigate('Dashboard');
   };
 

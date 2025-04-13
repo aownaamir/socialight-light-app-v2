@@ -26,8 +26,6 @@ const InfluencerTabNavigator = () => {
           } else if (route.name === 'ProfileTab') {
             iconName = focused ? 'person' : 'person-outline';
           }
-
-          // Create a fixed height container with centered icon and dot
           return (
             <View style={styles.tabIconContainer}>
               <View style={styles.iconWrapper}>
@@ -53,9 +51,6 @@ const InfluencerTabNavigator = () => {
       })}
       initialRouteName="HomeTab"
     >
-      {/* <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Events" component={EventsScreen} />
-      <Tab.Screen name="Profile" component={ProfileUserScreen} /> */}
       <Tab.Screen name="HomeTab" component={HomeInfluencerNavigator} />
       <Tab.Screen name="EventsTab" component={EventsInfluencerNavigator} />
       <Tab.Screen name="ProfileTab" component={ProfileInfluencerNavigator} />

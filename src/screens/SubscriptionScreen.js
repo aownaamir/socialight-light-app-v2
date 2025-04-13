@@ -4,7 +4,7 @@ import {
     Text,
     StyleSheet,
     Alert,
-    TouchableOpacity,
+    Pressable,
     SafeAreaView,
     ScrollView,
     ActivityIndicator,
@@ -31,7 +31,6 @@ const SubscriptionScreen = ({ navigation }) => {
             setLoading(true);
 
             const response = await createSubscribtionApi(token);
-            console.log("createSubscribtionApi call success")
             const { clientSecret, subscriptionId } = response.result;
 
             const { error: initError } = await initPaymentSheet({
@@ -81,12 +80,12 @@ const SubscriptionScreen = ({ navigation }) => {
                     showsVerticalScrollIndicator={false}
                 >
                     {/* <View style={styles.header}>
-                        <TouchableOpacity
+                        <Pressable
                             style={styles.backButton}
                             onPress={() => navigation.goBack()}
                         >
                             <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-                        </TouchableOpacity>
+                        </Pressable>
                         <Text style={styles.headerTitle}>Premium Subscription</Text>
                         <View style={{ width: 24 }} />
                     </View> */}
@@ -171,7 +170,7 @@ const SubscriptionScreen = ({ navigation }) => {
                     </View>
 
                     {/* Subscribe Button */}
-                    <TouchableOpacity
+                    <Pressable
                         style={[styles.subscribeButton, loading && styles.disabledButton]}
                         onPress={subscribe}
                         disabled={loading}
@@ -191,15 +190,15 @@ const SubscriptionScreen = ({ navigation }) => {
                                 </>
                             )}
                         </LinearGradient>
-                    </TouchableOpacity>
+                    </Pressable>
 
                     {/* Terms and Support */}
                     <Text style={styles.termsText}>
                         By subscribing, you agree to our Terms of Service and Privacy Policy
                     </Text>
-                    <TouchableOpacity onPress={() => console.log('Support pressed')}>
+                    <Pressable onPress={() => console.log('Support pressed')}>
                         <Text style={styles.supportText}>Need help? Contact support</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 </ScrollView>
             </SafeAreaView>
         </LinearGradient>

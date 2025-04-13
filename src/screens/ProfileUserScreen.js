@@ -50,7 +50,7 @@ const UserProfileScreen = ({ navigation }) => {
 
   const handleMyEvents = () => {
     navigation.navigate('ProfileEvents');
-    // console.log('My Events pressed');
+
   };
 
   const handleLogout = () => {
@@ -61,7 +61,7 @@ const UserProfileScreen = ({ navigation }) => {
 
   const handleEditProfile = () => {
     navigation.navigate('ProfileUpdate');
-    // console.log('Edit Profile pressed');
+
   };
 
   if (loading) {
@@ -365,14 +365,14 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-  // Action Buttons Container (Edit Profile + My Events)
+
   actionButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 25,
-    gap: 15, // Space between buttons
+    gap: 15,
   },
   actionButton: {
     flex: 1,
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
   },
-  // Logout Button Styles
+
   logoutContainer: {
     alignItems: 'center',
     marginTop: 30,

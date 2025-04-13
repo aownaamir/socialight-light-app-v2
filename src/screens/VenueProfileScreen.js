@@ -45,7 +45,7 @@ const VenueProfileScreen = ({ navigation }) => {
         setLoading(true);
         const data = await getCurrentUserApi(token);
         setUserData(data);
-        console.log(data)
+        // console.log(data)
         setError(null);
       } catch (err) {
         console.error('Error fetching user data:', err);
@@ -215,23 +215,19 @@ const VenueProfileScreen = ({ navigation }) => {
           </View>
 
           {/* Subscription Button */}
-          <Pressable onPress={handleSubscription} style={styles.subscriptionButton}>
-            <LinearGradient
-              colors={userData?.is_subscribed ? ['#1A2F2F', '#153B3B'] : ['#00A693', '#056562']}
-              style={styles.subscriptionButtonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Ionicons
-                name={userData?.is_subscribed ? "star" : "star-outline"}
-                size={18}
-                color={colors.textPrimary}
-              />
-              <Text style={styles.subscriptionButtonText}>
-                {userData?.is_subscribed ? 'Manage Subscription' : 'Upgrade to Premium'}
-              </Text>
-            </LinearGradient>
-          </Pressable>
+          {!userData?.is_subscribed && (
+            <Pressable onPress={handleSubscription} style={styles.subscriptionButton}>
+              <LinearGradient
+                colors={['#00A693', '#056562']}
+                style={styles.subscriptionButtonGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="star-outline" size={18} color={colors.textPrimary} />
+                <Text style={styles.subscriptionButtonText}>Upgrade to Premium</Text>
+              </LinearGradient>
+            </Pressable>
+          )}
 
           {/* Account Info Section */}
           <View style={styles.accountSection}>

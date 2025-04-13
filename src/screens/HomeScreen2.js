@@ -18,14 +18,14 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import EventCard from '../components/EventCard';
 import { eventsArray } from '../data/data';
-import { BlurView } from 'expo-blur'; // Add this import
+import { BlurView } from 'expo-blur';
 import ContactSection from '../components/ContactSection';
 
 const { width, height } = Dimensions.get('window');
 
 
 const HomeScreen2 = ({ navigation }) => {
-  // Events filtering by status
+
   const activeEvents = eventsArray.filter(event => event.status === 'Active');
   const upcomingEvents = eventsArray;
 
@@ -41,7 +41,7 @@ const HomeScreen2 = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Search Bar */}
+
           <View style={styles.searchContainer}>
             <Ionicons name="search" size={20} color={colors.textSecondary} />
             <TextInput
@@ -52,7 +52,7 @@ const HomeScreen2 = ({ navigation }) => {
             <Ionicons name="mic" size={20} color={colors.textSecondary} />
           </View>
 
-          {/* Most Popular Events Section */}
+
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Most popular event</Text>
             <Pressable>
@@ -60,7 +60,7 @@ const HomeScreen2 = ({ navigation }) => {
             </Pressable>
           </View>
 
-          {/* Popular Events Horizontal Scroll - Dynamic */}
+
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -70,12 +70,12 @@ const HomeScreen2 = ({ navigation }) => {
               <EventCard
                 key={event.id}
                 event={event}
-                variant="horizontal" // Optional since it's the default
+                variant="horizontal"
               />
             ))}
           </ScrollView>
 
-          {/* Upcoming Events Section */}
+
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Upcoming event</Text>
             <Pressable>
@@ -83,7 +83,7 @@ const HomeScreen2 = ({ navigation }) => {
             </Pressable>
           </View>
 
-          {/* Upcoming Events Horizontal Scroll - Dynamic */}
+
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -97,7 +97,7 @@ const HomeScreen2 = ({ navigation }) => {
             ))}
           </ScrollView>
 
-          {/* Partners Section */}
+
           <View style={styles.partnersSection}>
             <Text style={styles.sectionTitle}>Socialight partners</Text>
             <View style={styles.partnersContainer}>
@@ -135,7 +135,7 @@ const HomeScreen2 = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Contact Section - Updated with BlurView */}
+
           <ContactSection />
 
         </ScrollView>
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     marginLeft: 10,
   },
-  // Updated Contact Section Styles with BlurView
+
   contactSection: {
     paddingHorizontal: 20,
     marginBottom: 20,
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   },
   contactCard: {
     padding: 15,
-    // backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fallback in case BlurView doesn't work
+
   },
   contactContent: {
     flexDirection: 'row',

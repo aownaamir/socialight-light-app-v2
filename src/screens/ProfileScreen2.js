@@ -20,19 +20,19 @@ import { StatusBar } from 'expo-status-bar';
 
 const { width, height } = Dimensions.get('window');
 
-// Enable LayoutAnimation for Android
+
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 const ProfileScreen2 = ({ navigation }) => {
   const [activeSection, setActiveSection] = useState(null);
-  const isAuthenticated=useAuth().isAuthenticated;
+  const isAuthenticated = useAuth().isAuthenticated;
 
   const toggleSection = (sectionName) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    
-    // If this section is already active, close it, otherwise open it
+
+
     if (activeSection === sectionName) {
       setActiveSection(null);
     } else {
@@ -42,7 +42,7 @@ const ProfileScreen2 = ({ navigation }) => {
 
   const CollapsibleSection = ({ name, title, icon, children }) => {
     const isExpanded = activeSection === name;
-    
+
     return (
       <View style={styles.collapsibleSection}>
         <Pressable style={styles.menuItem} onPress={() => toggleSection(name)}>
@@ -52,13 +52,13 @@ const ProfileScreen2 = ({ navigation }) => {
             </View>
             <Text style={styles.menuText}>{title}</Text>
           </View>
-          <Ionicons 
-            name={isExpanded ? "chevron-down" : "chevron-forward"} 
-            size={20} 
-            color={colors.textPrimary} 
+          <Ionicons
+            name={isExpanded ? "chevron-down" : "chevron-forward"}
+            size={20}
+            color={colors.textPrimary}
           />
         </Pressable>
-        
+
         {isExpanded && (
           <View style={styles.collapsibleContent}>
             {children}
@@ -67,7 +67,7 @@ const ProfileScreen2 = ({ navigation }) => {
       </View>
     );
   };
-  // Account Settings Content Component
+
   const AccountSettingsContent = () => (
     <View style={styles.settingsContent}>
       <TextInput
@@ -106,13 +106,13 @@ const ProfileScreen2 = ({ navigation }) => {
     </View>
   );
 
-  // Following Content Component
+
   const FollowingContent = () => (
     <View style={styles.followingContent}>
       {[1, 2, 3].map((item, index) => (
         <View key={index} style={styles.followingItem}>
           <View style={styles.followingItemLeft}>
-            <Image 
+            <Image
               source={require('../../assets/images/bansko.png')}
               style={styles.followingImage}
             />
@@ -133,33 +133,33 @@ const ProfileScreen2 = ({ navigation }) => {
     </View>
   );
 
-  // Support Content Component
-const SupportContent = () => (
-  <View style={styles.supportContent}>
-    <TextInput
-      style={styles.supportInput}
-      placeholder="Username"
-      placeholderTextColor={colors.textSecondary}
-    />
-    <TextInput
-      style={styles.supportInput}
-      placeholder="E-mail"
-      placeholderTextColor={colors.textSecondary}
-    />
-    <TextInput
-      style={[styles.supportInput, styles.supportTextArea]}
-      placeholder="Please describe your problem..."
-      placeholderTextColor={colors.textSecondary}
-      multiline={true}
-      numberOfLines={5}
-      textAlignVertical="top"
-    />
-  </View>
-);
+
+  const SupportContent = () => (
+    <View style={styles.supportContent}>
+      <TextInput
+        style={styles.supportInput}
+        placeholder="Username"
+        placeholderTextColor={colors.textSecondary}
+      />
+      <TextInput
+        style={styles.supportInput}
+        placeholder="E-mail"
+        placeholderTextColor={colors.textSecondary}
+      />
+      <TextInput
+        style={[styles.supportInput, styles.supportTextArea]}
+        placeholder="Please describe your problem..."
+        placeholderTextColor={colors.textSecondary}
+        multiline={true}
+        numberOfLines={5}
+        textAlignVertical="top"
+      />
+    </View>
+  );
 
 
 
-  // Privacy Content Component
+
   const PrivacyContent = () => (
     <View style={styles.privacyContent}>
       <Text style={styles.privacyTitle}>Terms and conditions & user agreement</Text>
@@ -177,7 +177,7 @@ const SupportContent = () => (
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -195,8 +195,8 @@ const SupportContent = () => (
           {/* Profile Info */}
           <View style={styles.profileInfoContainer}>
             <View style={styles.profileImageContainer}>
-              <Image 
-                source={require('../../assets/images/profile.png')} 
+              <Image
+                source={require('../../assets/images/profile.png')}
                 style={styles.profileImage}
               />
             </View>
@@ -238,20 +238,20 @@ const SupportContent = () => (
           {/* Account Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Account</Text>
-            
+
             {/* Account Settings Section - Collapsible */}
-            <CollapsibleSection 
+            <CollapsibleSection
               name="accountSettings"
-              title="Account settings" 
+              title="Account settings"
               icon="settings-outline"
             >
               <AccountSettingsContent />
             </CollapsibleSection>
-            
+
             {/* Linked Accounts Section - Collapsible */}
-            <CollapsibleSection 
+            <CollapsibleSection
               name="linkedAccounts"
-              title="Linked Accounts" 
+              title="Linked Accounts"
               icon="link-outline"
             >
               <View style={styles.socialLinksContainer}>
@@ -279,27 +279,27 @@ const SupportContent = () => (
             </CollapsibleSection>
 
             {/* Following Section - Collapsible */}
-            <CollapsibleSection 
+            <CollapsibleSection
               name="following"
-              title="Following" 
+              title="Following"
               icon="people-outline"
             >
               <FollowingContent />
             </CollapsibleSection>
-            
+
             {/* Support Section - Collapsible */}
-            <CollapsibleSection 
-  name="support"
-  title="Support" 
-  icon="call-outline"
->
-  <SupportContent />
-</CollapsibleSection>
-            
+            <CollapsibleSection
+              name="support"
+              title="Support"
+              icon="call-outline"
+            >
+              <SupportContent />
+            </CollapsibleSection>
+
             {/* Privacy Section - Collapsible */}
-            <CollapsibleSection 
+            <CollapsibleSection
               name="privacy"
-              title="Privacy" 
+              title="Privacy"
               icon="lock-closed-outline"
             >
               <PrivacyContent />
@@ -413,8 +413,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  
-  // Updated dropdown styles to match the screenshot
+
+
   collapsibleSection: {
     marginBottom: 15,
     borderRadius: 20,
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  // Account Settings specific styles
+
   settingsContent: {
     padding: 15,
   },
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  // Following specific styles
+
   followingContent: {
     padding: 15,
   },
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
 
-  // Privacy specific styles
+
   privacyContent: {
     padding: 15,
   },
@@ -614,8 +614,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
   },
-  
-  // Support specific styles
+
+
   supportContent: {
     padding: 15,
   },

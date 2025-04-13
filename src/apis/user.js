@@ -42,11 +42,11 @@ export const updateInfluencerProfileApi = async (token, userData, profileFormDat
         // if (!profileFormData._parts.length !== 0) {
         const responseFile = await apiFile.post('/upload', profileFormData);
         const profilePicFilename = responseFile.data.file.filename;
-        console.log(photosFormData._parts)
+        // console.log(photosFormData._parts)
 
         const responseMultipleFile = await apiFile.post('/upload-multiple', photosFormData);
         const professionalPhotoFilenames = responseMultipleFile.data.files.map(file => file.filename);
-        console.log(professionalPhotoFilenames)
+        // console.log(professionalPhotoFilenames)
 
         userData.profile_picture = profilePicFilename;
         userData.professional_photos = professionalPhotoFilenames;

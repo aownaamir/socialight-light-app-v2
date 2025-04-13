@@ -21,7 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../store/context/authContext';
 import { colors } from '../theme';
 import { getCurrentUserApi } from '../apis/user';
-import { updateVenueProfileApi } from '../apis/user'; // Import the update API
+import { updateVenueProfileApi } from '../apis/user';
 import apiURL from '../apis/apiURL';
 
 const EditVenueProfileScreen = ({ navigation }) => {
@@ -31,15 +31,15 @@ const EditVenueProfileScreen = ({ navigation }) => {
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null)
 
-    // Form state
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [venueName, setVenueName] = useState('');
     const [profilePicture, setProfilePicture] = useState('');
     const [profilePictureData, setProfilePictureData] = useState(null);
 
-    // Local state for UI display of profile picture
-    // const [profileImageUri, setProfileImageUri] = useState('');
+
+
 
     useEffect(() => {
         fetchUserData();
@@ -65,7 +65,7 @@ const EditVenueProfileScreen = ({ navigation }) => {
         }
     };
 
-    // Request camera permissions
+
     const requestCameraPermissions = async () => {
         const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
@@ -76,7 +76,7 @@ const EditVenueProfileScreen = ({ navigation }) => {
         return true;
     };
 
-    // Handle profile picture upload
+
     const handleProfilePictureUpload = async () => {
         Alert.alert(
             "Profile Picture",
@@ -100,10 +100,10 @@ const EditVenueProfileScreen = ({ navigation }) => {
                         });
 
                         if (!result.canceled) {
-                            // Update UI immediately with the selected image
-                            // setProfileImageUri(result.assets[0].uri);
 
-                            // Store the complete file userData in profilePicture
+
+
+
                             setProfilePicture(result.assets[0].uri.split('/').pop())
                             setProfilePictureData({
                                 uri: result.assets[0].uri,
@@ -127,10 +127,10 @@ const EditVenueProfileScreen = ({ navigation }) => {
                             });
 
                             if (!result.canceled) {
-                                // Update UI immediately with the taken photo
-                                // seult.assets[0].uri);
 
-                                // Store the complete file userData in profilePicture
+
+
+
                                 setProfilePicture({
                                     uri: result.assets[0].uri,
                                     name: result.assets[0].uri.split('/').pop(),
@@ -394,17 +394,17 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     placeholderView: {
-        width: 24, // Same width as back button for balanced header
+        width: 24,
     },
     scrollContent: {
         flexGrow: 1,
         paddingBottom: 30,
     },
-    // Cover Photo and Profile Image Styles
+
     coverContainer: {
         position: 'relative',
         height: 130,
-        marginBottom: 60, // Increased to accommodate "Change Profile Photo" text
+        marginBottom: 60,
     },
     coverPhoto: {
         width: '100%',
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     },
     profileImageWrapper: {
         position: 'absolute',
-        bottom: -50, // Adjusted to accommodate text
+        bottom: -50,
         width: '100%',
         alignItems: 'center',
     },
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
     },
-    // Form Section Styles
+
     formSection: {
         paddingHorizontal: 20,
         marginBottom: 20,
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontStyle: 'italic',
     },
-    // Update Button Styles
+
     updateButton: {
         marginHorizontal: 20,
         borderRadius: 25,

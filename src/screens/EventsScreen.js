@@ -32,7 +32,7 @@ const EventsScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const response = await getVenueEventsApi(token);
-      // Filter active events if your API doesn't filter them already
+
       setEvents(response.events);
       setError(null);
     } catch (err) {
@@ -114,7 +114,7 @@ const EventsScreen = ({ navigation }) => {
             <EventCard
               key={event._id}
               event={event}
-              variant="vertical" // Specify the vertical variant
+              variant="vertical"
             />
           ))}
 

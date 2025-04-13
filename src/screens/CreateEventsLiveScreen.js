@@ -26,7 +26,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
   const [isInterested, setIsInterested] = useState(false);
   const token = useAuth().token;
 
-  // const route=useRoute()
+
 
   const id = route.params.id;
 
@@ -39,7 +39,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
     try {
       const result = await getEventByIdApi(token, id);
       setEvent(result.event);
-      // console.log(result.event)
+
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {
@@ -55,7 +55,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
     setIsInterested(!isInterested);
   };
 
-  // Return loading state
+
   if (loading || !event) {
     return (
       <LinearGradient
@@ -67,17 +67,17 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
     );
   }
 
-  // Format date for display
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
-  // Default placeholder image for organizer avatar
+
   const placeholderAvatar = require('../../assets/images/organizer-avatar.png');
-  // Default placeholder for event cover
+
   const placeholderCover = require('../../assets/images/fashion-event.jpg');
-  // Placeholder attendees (since API doesn't include this info)
+
   const placeholderAttendees = [
     require('../../assets/images/attendee1.png'),
     require('../../assets/images/attendee2.png'),
@@ -98,7 +98,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
           {/* Event Cover Image */}
           <View style={styles.coverImageContainer}>
             <Image
-              source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }} // Using placeholder since API provides photo URLs but not actual images
+              source={{ uri: `${apiURL}/uploads/${event.event_photos[0]}` }}
               style={styles.coverImage}
               resizeMode="cover"
             />
@@ -135,7 +135,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
           <View style={styles.organizerContainer}>
             <View style={styles.organizerInfo}>
               <Image
-                source={placeholderAvatar} // Using placeholder since we don't have actual image
+                source={placeholderAvatar}
                 style={styles.organizerSmallAvatar}
               />
               <View>
