@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,10 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { useAuth } from '../store/context/authContext';
+import { getUserByIdApi } from '../apis/user';
+import apiURL from '../apis/apiURL';
+import { ActivityIndicator } from 'react-native-web';
 
 const { width } = Dimensions.get('window');
 
@@ -27,25 +31,48 @@ const colors = {
 };
 
 const UserShortProfileScreen = ({ navigation, route }) => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [userData, setUserData] = useState(null);
     // We would normally receive the user data from route params in a real app
-    // const { userData } = route.params;
+    const { influencerId } = route.params;
+    const { token } = useAuth()
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                setLoading(true);
+                const data = await getUserByIdApi(token, influencerId);
+                setUserData(data.user);
+                // console.log(data)
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching user data:', err);
+                setError('Failed to load profile data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [token]);
 
     // For demo purposes, we'll use hardcoded data
-    const userData = {
-        name: 'Alex Johnson',
-        posts: '27.8k',
-        following: '243',
-        followers: '31.5k',
-        isFollowing: false,
-        socialMedia: {
-            instagram: '@alex_johnson',
-            facebook: 'Alex Johnson',
-            tiktok: 'alexjohnson',
-            youtube: 'AlexJohnsonOfficial'
-        }
-    };
+    // const userData = {
+    //     name: 'Alex Johnson',
+    //     posts: '27.8k',
+    //     following: '243',
+    //     followers: '31.5k',
+    //     isFollowing: false,
+    //     socialMedia: {
+    //         instagram: '@alex_johnson',
+    //         facebook: 'Alex Johnson',
+    //         tiktok: 'alexjohnson',
+    //         youtube: 'AlexJohnsonOfficial'
+    //     }
+    // };
 
-    const [isFollowing, setIsFollowing] = useState(userData.isFollowing);
+    // const [isFollowing, setIsFollowing] = useState(userData.isFollowing);
 
     const handleFollowToggle = () => {
         setIsFollowing(!isFollowing);
@@ -62,20 +89,27 @@ const UserShortProfileScreen = ({ navigation, route }) => {
         // console.log('Message button pressed');
     };
 
+    if (loading) {
+        return (
+            <LinearGradient
+                colors={[colors.background, colors.mapOverlay]}
+                style={styles.loadingContainer}
+            >
+                {/* <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={colors.accent} />
+                </View> */}
+                <Text style={styles.loadingText}>Loading influencer details...</Text>
+            </LinearGradient>
+        );
+    }
+
     return (
         <LinearGradient
             colors={[colors.background, colors.mapOverlay]}
             style={styles.container}
         >
             <SafeAreaView style={styles.safeArea}>
-                {/* Header with back button */}
-                {/* <View style={styles.header}>
-                    <Pressable onPress={handleBackPress} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-                    </Pressable>
-                    <Text style={styles.headerTitle}>Profile</Text>
-                    <View style={styles.placeholderRight} />
-                </View> */}
+
 
                 <ScrollView
                     contentContainerStyle={styles.scrollContent}
@@ -85,31 +119,31 @@ const UserShortProfileScreen = ({ navigation, route }) => {
                     <View style={styles.profileInfoContainer}>
                         <View style={styles.profileImageContainer}>
                             <Image
-                                source={require('../../assets/images/company-image.png')}
+                                source={{ uri: `${apiURL}/uploads/${userData.profile_picture}` }}
                                 style={styles.profileImage}
                             />
                         </View>
-                        <Text style={styles.profileName}>{userData.name}</Text>
+                        <Text style={styles.profileName}>{userData.first_name} {userData.last_name}</Text>
                         <View style={styles.statsContainer}>
                             <View style={styles.statItem}>
-                                <Text style={styles.statNumber}>{userData.posts}</Text>
+                                <Text style={styles.statNumber}>{userData.posts || 0}</Text>
                                 <Text style={styles.statLabel}>Posts</Text>
                             </View>
                             <View style={styles.statDivider} />
                             <View style={styles.statItem}>
-                                <Text style={styles.statNumber}>{userData.following}</Text>
+                                <Text style={styles.statNumber}>{userData.following || 0}</Text>
                                 <Text style={styles.statLabel}>Following</Text>
                             </View>
                             <View style={styles.statDivider} />
                             <View style={styles.statItem}>
-                                <Text style={styles.statNumber}>{userData.followers}</Text>
+                                <Text style={styles.statNumber}>{userData.followers || 0}</Text>
                                 <Text style={styles.statLabel}>Followers</Text>
                             </View>
                         </View>
                     </View>
 
                     {/* Follow and Message Buttons */}
-                    <View style={styles.actionButtonsContainer}>
+                    {/* <View style={styles.actionButtonsContainer}>
                         <Pressable onPress={handleFollowToggle} style={styles.followButton}>
                             <LinearGradient
                                 colors={isFollowing ? ['#2C4141', '#153B3B'] : [colors.accent, '#034946']}
@@ -129,22 +163,22 @@ const UserShortProfileScreen = ({ navigation, route }) => {
                                 <Text style={styles.messageText}>Message</Text>
                             </View>
                         </Pressable>
-                    </View>
+                    </View> */}
 
                     {/* Photos Section */}
                     <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Photos</Text>
                         <View style={styles.photosGrid}>
                             <Image
-                                source={require('../../assets/images/photo1.jpg')}
+                                source={{ uri: `${apiURL}/uploads/${userData.professional_photos[0]}` }}
                                 style={styles.photoItem}
                             />
                             <Image
-                                source={require('../../assets/images/photo2.jpg')}
+                                source={{ uri: `${apiURL}/uploads/${userData.professional_photos[1]}` }}
                                 style={styles.photoItem}
                             />
                             <Image
-                                source={require('../../assets/images/photo3.jpg')}
+                                source={{ uri: `${apiURL}/uploads/${userData.professional_photos[2]}` }}
                                 style={styles.photoItem}
                             />
                         </View>
@@ -159,28 +193,28 @@ const UserShortProfileScreen = ({ navigation, route }) => {
                                 <View style={styles.socialIconContainer}>
                                     <Ionicons name="logo-instagram" size={20} color={colors.textPrimary} />
                                 </View>
-                                <Text style={styles.socialText}>{userData.socialMedia.instagram}</Text>
+                                <Text style={styles.socialText}>{userData.social_links.instagram}</Text>
                             </View>
 
                             <View style={styles.socialItem}>
                                 <View style={styles.socialIconContainer}>
                                     <Ionicons name="logo-facebook" size={20} color={colors.textPrimary} />
                                 </View>
-                                <Text style={styles.socialText}>{userData.socialMedia.facebook}</Text>
+                                <Text style={styles.socialText}>{userData.social_links.facebook}</Text>
                             </View>
 
                             <View style={styles.socialItem}>
                                 <View style={styles.socialIconContainer}>
                                     <Ionicons name="logo-tiktok" size={20} color={colors.textPrimary} />
                                 </View>
-                                <Text style={styles.socialText}>{userData.socialMedia.tiktok}</Text>
+                                <Text style={styles.socialText}>{userData.social_links.tiktok}</Text>
                             </View>
 
                             <View style={styles.socialItem}>
                                 <View style={styles.socialIconContainer}>
                                     <Ionicons name="logo-youtube" size={20} color={colors.textPrimary} />
                                 </View>
-                                <Text style={styles.socialText}>{userData.socialMedia.youtube}</Text>
+                                <Text style={styles.socialText}>{userData.social_links.youtube}</Text>
                             </View>
                         </View>
                     </View>
@@ -210,6 +244,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
+    }, loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        color: colors.textPrimary,
+        fontSize: 16,
     },
     safeArea: {
         flex: 1,

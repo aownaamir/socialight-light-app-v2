@@ -89,6 +89,7 @@ export const getEventByIdApi = async (token, eventId) => {
   setAuthToken(token);
   try {
     const response = await api.get(`events/${eventId}`);
+    // console.log('response done', response.data)
     return response.data;
   } catch (error) {
     throw handleApiError(error);

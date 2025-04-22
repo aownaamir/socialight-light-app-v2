@@ -11,12 +11,13 @@ import VenueApplicationsScreen from "../screens/VenueApplicationsScreen";
 import UserShortProfileScreen from "../screens/UserShortProfileScreen";
 import EditVenueProfileScreen from "../screens/EditVenueProfileScreen";
 import SubscriptionScreen from "../screens/SubscriptionScreen";
+import CustomHeader from "../components/CustomHeader";
 
 const Stack = createNativeStackNavigator();
 
 const ProfileVenueNavigator = () => {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="ProfileMain">
+        <Stack.Navigator screenOptions={{ header: (props) => <CustomHeader {...props} /> }} initialRouteName="ProfileMain">
             <Stack.Screen name="ProfileMain" component={VenueProfileScreen} />
             <Stack.Screen name="ProfileEvents" component={MyEventsVenueScreen} />
             <Stack.Screen name="ProfileEventsDetails" component={MyVenueEventDetailsScreen} />

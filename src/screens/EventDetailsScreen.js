@@ -15,7 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../store/context/authContext';
 import { getEventByIdApi } from '../apis/events';
-import { applyToEventApi, checkApplicationStatusApi } from '../apis/application';
+import { applyToEventApi, checkApplicationStatusApi, getApplicationStatusApi } from '../apis/application';
 import { useRoute } from '@react-navigation/native';
 import { getCurrentUserApi } from '../apis/user';
 import apiURL from '../apis/apiURL';
@@ -25,22 +25,33 @@ const { width, height } = Dimensions.get('window');
 const EventDetailsScreen = ({ navigation, route }) => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('unapplied');
   const [isFavorite, setIsFavorite] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
   const [applying, setApplying] = useState(false);
   const { token, user } = useAuth();
 
   const eventId = route.params.id;
+  // let statusButtonText = 'Apply'
   useEffect(() => {
     fetchEventDetails();
 
   }, []);
+
+  function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
 
   const fetchEventDetails = async () => {
     setLoading(true);
     try {
       const result = await getEventByIdApi(token, eventId);
       setEvent(result.event);
+      const resultStatus = await getApplicationStatusApi(token, user.id, eventId);
+      setStatus(resultStatus.status);
+      setHasApplied(resultStatus.applied)
     } catch (error) {
       console.error('Error fetching events:', error);
       Alert.alert('Error', 'Failed to load event details');
@@ -65,15 +76,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
 
   const handleApply = async () => {
 
-
-
-
-
-
-
-
-
-
+    if (hasApplied) return
 
     if (user.role !== 'influencer') {
       Alert.alert(
@@ -86,19 +89,22 @@ const EventDetailsScreen = ({ navigation, route }) => {
 
     setApplying(true);
     try {
-      const me = await getCurrentUserApi(token)
-      await applyToEventApi(token, eventId, me._id);
+      // const me = await getCurrentUserApi(token)
+      await applyToEventApi(token, eventId, user.id);
       setHasApplied(true);
+      setStatus('pending')
       Alert.alert(
         'Success!',
         'Your application has been submitted successfully.',
         [{ text: 'OK' }]
       );
+      // statusButtonText = 'Pending'
     } catch (error) {
       console.error('Error applying to event:', error);
 
       if (error.status === 400 && error.message.includes('already applied')) {
         setHasApplied(true);
+
         Alert.alert(
           'Already Applied',
           'You have already applied to this event.',
@@ -328,16 +334,18 @@ const EventDetailsScreen = ({ navigation, route }) => {
               >
                 <Text style={[
                   styles.interestedButtonText,
-                  hasApplied ? styles.interestedActiveButtonText : null
+                  // hasApplied ? 
+                  styles.interestedActiveButtonText
+                  //  : null
                 ]}>
-                  {applying ? 'Applying...' : hasApplied ? 'Applied' : 'Apply to Event'}
+                  {applying ? 'Applying' : (hasApplied ? capitalize(status) : 'Apply')}
                 </Text>
               </Pressable>
             </View>
           </View>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </LinearGradient >
   );
 };
 

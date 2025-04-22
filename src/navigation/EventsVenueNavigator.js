@@ -5,12 +5,13 @@ import CreateEventScreen from "../screens/CreateEventsScreen";
 import VenueRequestScreen from "../screens/VenueRequestScreen";
 import EventAnalyticsScreen from "../screens/EventAnalyticsScreen";
 import UpdateEventScreen from "../screens/UpdateEventScreen";
+import CustomHeader from "../components/CustomHeader";
 
 const Stack = createNativeStackNavigator();
 
 const EventsVenueNavigator = () => {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="EventsCreate">
+        <Stack.Navigator screenOptions={{ header: (props) => <CustomHeader {...props} /> }} initialRouteName="EventsCreate">
             <Stack.Screen name="EventsCreate" component={CreateEventScreen} />
             <Stack.Screen name="EventsUpdate" component={UpdateEventScreen} />
             <Stack.Screen name="EventsAnalytics" component={EventAnalyticsScreen} />

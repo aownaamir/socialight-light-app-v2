@@ -72,9 +72,10 @@ export const getApplicationStatusApi = async (token, influencerId, eventId) => {
   setAuthToken(token);
   try {
     // From Image 4, we see that the controller expects influencerId and eventId as query parameters
-    const response = await api.get('/applications/status', {
+    const response = await api.get('/application/status', {
       params: { influencerId, eventId }
     });
+    console.log('getApplicationStatusApi response:', response.data);
     return response.data;
   } catch (error) {
     throw handleApiError(error);

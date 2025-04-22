@@ -34,6 +34,15 @@ export const getCurrentUserApi = async (token) => {
         throw handleApiError(error);
     }
 };
+export const getUserByIdApi = async (token, id) => {
+    setAuthToken(token);
+    try {
+        const response = await api.get(`/users/${id}`);
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error);
+    }
+};
 
 export const updateInfluencerProfileApi = async (token, userData, profileFormData, photosFormData) => {
     setAuthToken(token);

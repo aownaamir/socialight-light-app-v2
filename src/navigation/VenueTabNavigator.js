@@ -68,7 +68,7 @@ const VenueTabNavigator = () => {
             elevation: 0,
             shadowOpacity: 0,
           },
-          header: (props) => <CustomHeader {...props} />,
+          headerShown: false,
         })}
         initialRouteName="HomeTab"
       >
