@@ -19,6 +19,7 @@ import { applyToEventApi, checkApplicationStatusApi, getApplicationStatusApi } f
 import { useRoute } from '@react-navigation/native';
 import { getCurrentUserApi } from '../apis/user';
 import apiURL from '../apis/apiURL';
+import { formatDate } from '../lib/helpers';
 
 const { width, height } = Dimensions.get('window');
 
@@ -135,10 +136,10 @@ const EventDetailsScreen = ({ navigation, route }) => {
   }
 
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-  };
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  // };
 
 
   const placeholderAvatar = require('../../assets/images/organizer-avatar.png');

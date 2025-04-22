@@ -1,3 +1,5 @@
+// import { format, parseISO } from 'date-fns';
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -17,6 +19,7 @@ import EventCard from '../components/EventCard';
 import ContactSection from '../components/ContactSection';
 import { getEventsApi } from '../apis/events';
 import { useAuth } from '../store/context/authContext';
+import { formatDate } from '../lib/helpers';
 
 const AllEventsScreen = ({ navigation }) => {
   const [events, setEvents] = useState([]);
@@ -41,6 +44,7 @@ const AllEventsScreen = ({ navigation }) => {
         page: pagination.page,
         limit: pagination.limit,
       });
+
       setEvents(result.events);
 
       setPagination(result.pagination);
