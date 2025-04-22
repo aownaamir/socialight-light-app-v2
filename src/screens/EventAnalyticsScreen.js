@@ -65,7 +65,7 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
             <Text style={styles.eventTime}>{event.time} • {event.location}</Text>
           </View>
 
-          <Pressable
+          {/* <Pressable
             style={styles.favoriteButton}
             onPress={toggleFavorite}
           >
@@ -74,7 +74,7 @@ const EventAnalyticsScreen = ({ navigation, route }) => {
               size={24}
               color={isFavorite ? "#FF4d4d" : colors.textPrimary}
             />
-          </Pressable>
+          </Pressable> */}
         </View>
 
 

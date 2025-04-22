@@ -88,9 +88,9 @@ const VenueEventCard = ({ event, variant = 'horizontal' }) => {
                         </View>
                     </View>
 
-                    <Pressable style={styles.favoriteButton}>
+                    {/* <Pressable style={styles.favoriteButton}>
                         <Ionicons name="heart-outline" size={18} color={colors.textPrimary} />
-                    </Pressable>
+                    </Pressable> */}
                 </ImageBackground>
             </View>
         );

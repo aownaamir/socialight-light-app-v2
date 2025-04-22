@@ -118,7 +118,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
                 <Text style={styles.eventTime}>{event.start_time} - {event.end_time}</Text>
               </View>
 
-              <Pressable
+              {/* <Pressable
                 style={styles.favoriteButton}
                 onPress={toggleFavorite}
               >
@@ -127,7 +127,7 @@ const CreateEventsLiveScreen = ({ navigation, route }) => {
                   size={24}
                   color={isFavorite ? "#FF4d4d" : colors.textPrimary}
                 />
-              </Pressable>
+              </Pressable> */}
             </View>
           </View>
 

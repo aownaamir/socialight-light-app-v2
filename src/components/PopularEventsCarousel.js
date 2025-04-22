@@ -171,9 +171,9 @@ const PopularEventsCarousel = ({ events, navigation }) => {
                     )}
                   </View>
 
-                  <Pressable style={styles.favoriteButton}>
+                  {/* <Pressable style={styles.favoriteButton}>
                     <Ionicons name="heart-outline" size={18} color={colors.textPrimary} />
-                  </Pressable>
+                  </Pressable> */}
                 </ImageBackground>
               </Pressable>
             </Animated.View>
