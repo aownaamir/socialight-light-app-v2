@@ -23,6 +23,7 @@ import { logoutApi } from '../apis/auth';
 import { getCurrentUserApi } from '../apis/user';
 import { useAuth } from '../store/context/authContext';
 import apiURL from '../apis/apiURL';
+import SwipeWrapper from '../navigation/SwipeWrapper';
 
 
 const { width, height } = Dimensions.get('window');
@@ -119,6 +120,7 @@ const VenueProfileScreen = ({ navigation }) => {
   }
 
   return (
+    // <SwipeWrapper>
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
@@ -305,6 +307,7 @@ const VenueProfileScreen = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
+    // </SwipeWrapper>
   );
 };
 

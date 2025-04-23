@@ -20,6 +20,7 @@ import { useAuth } from '../store/context/authContext';
 import { colors } from '../theme';
 import { getCurrentUserApi } from '../apis/user';
 import apiURL from '../apis/apiURL';
+import SwipeWrapper from '../navigation/SwipeWrapper';
 
 const { width } = Dimensions.get('window');
 
@@ -94,6 +95,7 @@ const UserProfileScreen = ({ navigation }) => {
   }
 
   return (
+    // <SwipeWrapper>
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
@@ -256,6 +258,7 @@ const UserProfileScreen = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
+    // </SwipeWrapper> 
   );
 };
 

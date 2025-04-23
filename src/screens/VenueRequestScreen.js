@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { colors } from '../theme/index';
 import { LinearGradient } from "expo-linear-gradient";
+import SwipeWrapper from '../navigation/SwipeWrapper';
 
 const { width, height } = Dimensions.get('window');
 
@@ -30,13 +31,14 @@ const VenueRequestScreen = ({ navigation }) => {
   };
 
   return (
+    // <SwipeWrapper>
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
     >
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -93,7 +95,7 @@ const VenueRequestScreen = ({ navigation }) => {
             </View>
 
             {/* Send request button */}
-            <Pressable 
+            <Pressable
               style={styles.requestButton}
               onPress={handleSendRequest}
             >
@@ -103,6 +105,7 @@ const VenueRequestScreen = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
+    // </SwipeWrapper> 
   );
 };
 

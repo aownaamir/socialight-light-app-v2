@@ -10,6 +10,7 @@ import LoadingScreen from '../screens/LoadingScreen';
 import InfluencerTabNavigator from './InfluencerTabNavigator';
 import VenueTabNavigator from './VenueTabNavigator';
 import CreateEventsLiveScreen from '../screens/CreateEventsLiveScreen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
 
@@ -27,9 +28,11 @@ const RootNavigator = () => {
   // }
 
   return (
+    // <GestureHandlerRootView style={{ flex: 1 }}>
     <NavigationContainer>
       {!isAuthenticated ? <AuthNavigator /> : <TabNavigator />}
     </NavigationContainer>
+    // </GestureHandlerRootView>
 
   )
 };

@@ -22,6 +22,7 @@ import PopularEventsCarousel from '../components/PopularEventsCarousel';
 import { getEventsApi } from '../apis/events';
 import { useAuth } from '../store/context/authContext';
 import ContactSection from '../components/ContactSection';
+import SwipeWrapper from '../navigation/SwipeWrapper';
 
 const { width, height } = Dimensions.get('window');
 
@@ -74,10 +75,13 @@ const HomeInfluencerScreen = ({ navigation }) => {
   );
 
   return (
+    // <SwipeWrapper>
+
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
     >
+
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -207,6 +211,7 @@ const HomeInfluencerScreen = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
+    // </SwipeWrapper> 
   );
 };
 
