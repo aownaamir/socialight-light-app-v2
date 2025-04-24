@@ -42,10 +42,11 @@ export const createEventApi = async (token, eventData, formData) => {
 };
 
 
-export const getEventsApi = async (token, filters = {}) => {
+export const getEventsApi = async (token, filters) => {
   try {
     setAuthToken(token);
-    const response = await api.get('/events');
+    const response = await api.get(`/events${filters.search ? `?search=${filters.search}` : ''}`)
+    console.log(`/events${filters.search ? `?search=${filters.search}` : ''}`)
 
     response.data.events.map((event) => {
       const newDate = formatDate(event.date.toString())

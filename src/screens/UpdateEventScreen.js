@@ -21,6 +21,7 @@ import { updateEventApi } from '../apis/events';
 import { useAuth } from '../store/context/authContext';
 import { colors } from '../theme';
 import apiURL from '../apis/apiURL';
+import LocationSelector from '../components/LocationSelector';
 
 const UpdateEventScreen = ({ navigation, route }) => {
     const { event } = route.params;
@@ -95,6 +96,12 @@ const UpdateEventScreen = ({ navigation, route }) => {
         (async () => {
             const { status } = await Location.requestForegroundPermissionsAsync();
             setLocationPermission(status);
+            // console.log('Initial location data:', {
+            //     location,
+            //     coordinates: locationData.coordinates,
+            //     address: locationData.address,
+            //     mapRegion
+            // });
         })();
     }, []);
 
@@ -184,85 +191,6 @@ const UpdateEventScreen = ({ navigation, route }) => {
         }
     };
 
-    const getCurrentLocation = async () => {
-        try {
-            const location = await Location.getCurrentPositionAsync({
-                accuracy: Location.Accuracy.High
-            });
-
-            const { latitude, longitude } = location.coords;
-
-            // Update map region
-            setMapRegion({
-                latitude,
-                longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            });
-
-            // Reverse geocode to get address
-            const addressResponse = await Location.reverseGeocodeAsync({
-                latitude,
-                longitude
-            });
-
-            if (addressResponse && addressResponse.length > 0) {
-                const address = addressResponse[0];
-                const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
-
-                // Set location data in the format your API expects
-                setLocationData({
-                    coordinates: [longitude, latitude], // Note: GeoJSON format uses [longitude, latitude]
-                    address: formattedAddress
-                });
-
-                // Also update the display value for the input field
-                setLocation({
-                    coordinates: [longitude, latitude],
-                    address: formattedAddress
-                });
-            }
-        } catch (error) {
-            console.error('Error getting location:', error);
-            Alert.alert('Error', 'Failed to get your current location.');
-        }
-    };
-
-    const handleMapPress = async (event) => {
-        const { coordinate } = event.nativeEvent;
-        const { latitude, longitude } = coordinate;
-
-        // Update marker position
-        setMapRegion({
-            ...mapRegion,
-            latitude,
-            longitude
-        });
-
-        // Reverse geocode to get address
-        const addressResponse = await Location.reverseGeocodeAsync({
-            latitude,
-            longitude
-        });
-
-        if (addressResponse && addressResponse.length > 0) {
-            const address = addressResponse[0];
-            const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
-
-            // Set location data in the format your API expects
-            setLocationData({
-                coordinates: [longitude, latitude], // GeoJSON format: [longitude, latitude]
-                address: formattedAddress
-            });
-
-            // Update location consistently as an object
-            setLocation({
-                coordinates: [longitude, latitude],
-                address: formattedAddress
-            });
-        }
-    };
-
     const handleSubmit = async () => {
         try {
             // Prepare updated data
@@ -325,51 +253,6 @@ const UpdateEventScreen = ({ navigation, route }) => {
         return '';
     };
 
-    // Render photo item
-    const renderPhotoItem = ({ item, index }) => (
-        <View style={styles.photoItemContainer}>
-            <Pressable
-                style={styles.photoItem}
-                onPress={() => pickImage(index)}
-            >
-                {item.uri ? (
-                    <>
-                        <Image
-                            source={{ uri: item.uri }}
-                            style={styles.photoImage}
-                            resizeMode="cover"
-                        />
-                        <Pressable
-                            style={styles.removePhotoButton}
-                            onPress={() => removePhoto(index)}
-                        >
-                            <Ionicons name="close-circle" size={22} color={colors.textPrimary} />
-                        </Pressable>
-                    </>
-                ) : (
-                    <>
-                        <Ionicons name="add" size={28} color={colors.textPrimary} />
-                        <Text style={styles.addPhotoText}>Upload photo</Text>
-                    </>
-                )}
-            </Pressable>
-        </View>
-    );
-
-    // Add empty slot function for photo upload
-    const renderEmptyPhotoSlot = () => {
-        if (eventPhotos.length >= 3) return null;
-
-        return (
-            <Pressable
-                style={[styles.photoItem, styles.emptyPhotoSlot]}
-                onPress={() => pickImage()}
-            >
-                <Ionicons name="add" size={28} color={colors.textPrimary} />
-                <Text style={styles.addPhotoText}>Upload photo</Text>
-            </Pressable>
-        );
-    };
 
     return (
         <LinearGradient
@@ -381,19 +264,7 @@ const UpdateEventScreen = ({ navigation, route }) => {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* Header with back button */}
-                    {/* <View style={styles.header}>
-                        <Pressable
-                            style={styles.backButton}
-                            onPress={() => navigation.goBack()}
-                        >
-                            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-                        </Pressable>
-                        <Text style={styles.headerTitle}>Update Event</Text>
-                        <View style={{ width: 24 }} /> {/* Empty view for spacing                             
-                    </View> */}
 
-                    {/* Event Photos Section */}
                     <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Event Photos</Text>
                         <View style={styles.photosContainer}>
@@ -672,7 +543,7 @@ const UpdateEventScreen = ({ navigation, route }) => {
                             <Text style={styles.radioText}>Table with drinks & food</Text>
                         </View>
 
-                        <View style={styles.inputWrapper}>
+                        {/* <View style={styles.inputWrapper}>
                             <TextInput
                                 style={[styles.input, styles.inputWithIcon]}
                                 placeholder="Location"
@@ -693,34 +564,18 @@ const UpdateEventScreen = ({ navigation, route }) => {
                             >
                                 <Ionicons name="location-outline" size={18} color={colors.textSecondary} />
                             </Pressable>
-                        </View>
+                        </View> */}
                     </View>
 
                     {/* Map */}
-                    <View style={styles.mapContainer}>
-                        {locationPermission === 'granted' ? (
-                            <MapView
-                                style={styles.map}
-                                region={mapRegion}
-                                onPress={handleMapPress}
-                            >
-                                <Marker
-                                    coordinate={{
-                                        latitude: mapRegion.latitude,
-                                        longitude: mapRegion.longitude
-                                    }}
-                                />
-                            </MapView>
-                        ) : (
-                            <Pressable
-                                style={styles.mapPlaceholder}
-                                onPress={requestLocationPermission}
-                            >
-                                <Ionicons name="map-outline" size={36} color={colors.textSecondary} />
-                                <Text style={styles.mapPlaceholderText}>Tap to enable map</Text>
-                            </Pressable>
-                        )}
-                    </View>
+                    <LocationSelector
+                        location={location}
+                        setLocation={setLocation}
+                        locationData={locationData}
+                        setLocationData={setLocationData}
+                        mapRegion={mapRegion}
+                        setMapRegion={setMapRegion}
+                    />
 
                     {/* Update Event Button */}
                     <Pressable

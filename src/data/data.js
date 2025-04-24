@@ -210,3 +210,283 @@ export const eventsArray = [
     }
   },
 ]
+
+
+
+// map functions in earlier create events screen
+// const getCurrentLocation = async () => {
+//   try {
+//     const location = await Location.getCurrentPositionAsync({
+//       accuracy: Location.Accuracy.High
+//     });
+
+//     const { latitude, longitude } = location.coords;
+
+
+//     setMapRegion({
+//       latitude,
+//       longitude,
+//       latitudeDelta: 0.0922,
+//       longitudeDelta: 0.0421,
+//     });
+
+
+//     const addressResponse = await Location.reverseGeocodeAsync({
+//       latitude,
+//       longitude
+//     });
+
+//     if (addressResponse && addressResponse.length > 0) {
+//       const address = addressResponse[0];
+//       const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
+
+
+//       setLocationData({
+//         coordinates: [longitude, latitude],
+//         address: formattedAddress
+//       });
+
+
+//       setLocation(formattedAddress);
+//     }
+//   } catch (error) {
+//     console.error('Error getting location:', error);
+//     Alert.alert('Error', 'Failed to get your current location.');
+//   }
+// };
+
+// const requestLocationPermission = async () => {
+//   const { status } = await Location.requestForegroundPermissionsAsync();
+//   setLocationPermission(status);
+
+//   if (status === 'granted') {
+//     getCurrentLocation();
+//   } else {
+//     Alert.alert('Permission denied', 'Location permission is required to select a venue location.');
+//   }
+// };
+
+// const handleMapPress = async (event) => {
+//   const { coordinate } = event.nativeEvent;
+//   const { latitude, longitude } = coordinate;
+
+
+//   // setMapRegion({
+//   //   ...mapRegion,
+//   //   latitude,
+//   //   longitude
+//   // });
+//   setMapRegion({
+//     ...mapRegion,
+//     latitude,
+//     longitude
+//   });
+
+
+//   const addressResponse = await Location.reverseGeocodeAsync({
+//     latitude,
+//     longitude
+//   });
+
+//   if (addressResponse && addressResponse.length > 0) {
+//     const address = addressResponse[0];
+//     const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
+
+
+//     setLocationData({
+//       coordinates: [longitude, latitude],
+//       address: formattedAddress
+//     });
+
+
+//     setLocation(formattedAddress);
+//   }
+// };
+
+// const searchLocation = async () => {
+//   if (searchQuery.trim() === '') return;
+
+//   try {
+//     const searchResults = await Location.geocodeAsync(searchQuery);
+
+//     if (searchResults && searchResults.length > 0) {
+//       const { latitude, longitude } = searchResults[0];
+
+//       // Update map region
+//       const newRegion = {
+//         latitude,
+//         longitude,
+//         latitudeDelta: 0.0922,
+//         longitudeDelta: 0.0421,
+//       };
+
+//       setMapRegion(newRegion);
+
+//       // Animate map to the new location
+//       mapRef.current?.animateToRegion(newRegion, 1000);
+
+//       // Get address for the selected location
+//       const addressResponse = await Location.reverseGeocodeAsync({
+//         latitude,
+//         longitude
+//       });
+
+//       if (addressResponse && addressResponse.length > 0) {
+//         const address = addressResponse[0];
+//         const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
+
+//         setLocationData({
+//           coordinates: [longitude, latitude],
+//           address: formattedAddress
+//         });
+
+//         setLocation(formattedAddress);
+//       }
+//     } else {
+//       Alert.alert('Location not found', 'Please try a different search term.');
+//     }
+//   } catch (error) {
+//     console.error('Error searching location:', error);
+//     Alert.alert('Error', 'Failed to search for the location.');
+//   }
+// };
+
+// const openLocationPicker = async () => {
+//   // If permission not granted yet, request it
+//   if (locationPermission !== 'granted') {
+//     const { status } = await Location.requestForegroundPermissionsAsync();
+//     setLocationPermission(status);
+
+//     if (status !== 'granted') {
+//       Alert.alert('Permission denied', 'Location permission is required to select a venue location.');
+//       return;
+//     }
+//   }
+
+//   // Set search query to current location text
+//   if (location) {
+//     setSearchQuery(location);
+//   }
+
+//   // Check if we already have coordinates for the current location
+//   if (locationData.coordinates[0] !== 0 && locationData.coordinates[1] !== 0) {
+//     // Use existing coordinates to set map region
+//     setMapRegion({
+//       latitude: locationData.coordinates[1],  // Note: locationData is [lng, lat]
+//       longitude: locationData.coordinates[0], // So we swap them here
+//       latitudeDelta: 0.0922,
+//       longitudeDelta: 0.0421,
+//     });
+//   } else if (location && location.trim() !== '') {
+//     // Try to geocode the current text input value
+//     try {
+//       const results = await Location.geocodeAsync(location);
+
+//       if (results && results.length > 0) {
+//         const { latitude, longitude } = results[0];
+
+//         // Update map region to this location
+//         setMapRegion({
+//           latitude,
+//           longitude,
+//           latitudeDelta: 0.0922,
+//           longitudeDelta: 0.0421,
+//         });
+
+//         // Also update locationData with these coordinates
+//         setLocationData({
+//           coordinates: [longitude, latitude],
+//           address: location
+//         });
+//       } else {
+//         // If geocoding fails, fall back to current location
+//         getCurrentLocation();
+//       }
+//     } catch (error) {
+//       console.error('Error geocoding address for map:', error);
+//       // Fall back to current location
+//       getCurrentLocation();
+//     }
+//   } else {
+//     // No location set yet, use current location
+//     getCurrentLocation();
+//   }
+
+//   // Show modal
+//   setMapModalVisible(true);
+// };
+
+// const confirmLocation = async () => {
+//   try {
+//     const { latitude, longitude } = mapRegion;
+
+//     // Get address for the selected location
+//     const addressResponse = await Location.reverseGeocodeAsync({
+//       latitude,
+//       longitude
+//     });
+
+//     if (addressResponse && addressResponse.length > 0) {
+//       const address = addressResponse[0];
+//       const formattedAddress = `${address.name || ''} ${address.street || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`.trim();
+
+//       setLocationData({
+//         coordinates: [longitude, latitude],
+//         address: formattedAddress
+//       });
+
+//       setLocation(formattedAddress);
+//     }
+
+//     // Close the modal
+//     setMapModalVisible(false);
+//   } catch (error) {
+//     console.error('Error confirming location:', error);
+//     Alert.alert('Error', 'Failed to get address for the selected location.');
+//   }
+// };
+
+// const handleLocationInputChange = (text) => {
+//   setLocation(text);
+// };
+
+// const handleLocationInputSubmit = async () => {
+//   if (!location.trim()) return;
+
+//   try {
+//     const results = await Location.geocodeAsync(location);
+
+//     if (results && results.length > 0) {
+//       const { latitude, longitude } = results[0];
+
+//       // Update locationData with coordinates
+//       setLocationData({
+//         coordinates: [longitude, latitude],
+//         address: location
+//       });
+
+//       // Update map region (useful if the map is opened later)
+//       setMapRegion({
+//         latitude,
+//         longitude,
+//         latitudeDelta: 0.0922,
+//         longitudeDelta: 0.0421,
+//       });
+//     } else {
+//       // Keep the text but ask if they want to pick on map
+//       Alert.alert(
+//         'Address Not Found',
+//         'Could not find this address on the map. Would you like to pick the location manually?',
+//         [
+//           { text: 'No, keep as is' },
+//           {
+//             text: 'Pick on Map',
+//             // onPress: openLocationPicker
+//           }
+//         ]
+//       );
+//     }
+//   } catch (error) {
+//     console.error('Error geocoding manual address:', error);
+//   }
+// };

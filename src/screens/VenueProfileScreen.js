@@ -279,7 +279,7 @@ const VenueProfileScreen = ({ navigation }) => {
           </View>
 
           {/* Add Photos Section */}
-          <View style={styles.photosSection}>
+          {/* <View style={styles.photosSection}>
             <Text style={styles.sectionTitle}>Add photos</Text>
             <View style={styles.photosGrid}>
               <Pressable style={styles.addPhotoButton}>
@@ -295,7 +295,7 @@ const VenueProfileScreen = ({ navigation }) => {
                 <Ionicons name="add" size={20} color={colors.textPrimary} />
               </Pressable>
             </View>
-          </View>
+          </View> */}
 
           {/* Logout Button */}
           <Pressable style={styles.logoutButton} onPress={handleLogout}>

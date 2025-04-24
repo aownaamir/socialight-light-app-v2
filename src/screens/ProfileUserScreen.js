@@ -51,7 +51,6 @@ const UserProfileScreen = ({ navigation }) => {
 
   const handleMyEvents = () => {
     navigation.navigate('ProfileEvents');
-
   };
 
   const handleLogout = () => {
@@ -62,7 +61,34 @@ const UserProfileScreen = ({ navigation }) => {
 
   const handleEditProfile = () => {
     navigation.navigate('ProfileUpdate');
+  };
 
+  const handleConnectInstagram = () => {
+    // Implement Meta Instagram connection flow here
+    Alert.alert(
+      "Connect Instagram",
+      "You'll be redirected to Instagram to authorize access to your account.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Continue",
+          onPress: () => {
+            // Here you would initiate the Instagram OAuth flow
+            console.log("Starting Instagram connection flow");
+            // You would implement the actual Meta authentication flow here
+          }
+        }
+      ]
+    );
+  };
+
+  // Check if any stats are zero
+  const shouldShowInstagramConnect = () => {
+    if (!userData) return false;
+    return (userData.likes === 0 || userData.event_count === 0 || userData.followers === 0);
   };
 
   if (loading) {
@@ -95,7 +121,6 @@ const UserProfileScreen = ({ navigation }) => {
   }
 
   return (
-    // <SwipeWrapper>
     <LinearGradient
       colors={[colors.background, colors.mapOverlay]}
       style={styles.container}
@@ -120,25 +145,42 @@ const UserProfileScreen = ({ navigation }) => {
               {userData ? `${userData.first_name} ${userData.last_name}` : 'Loading...'}
             </Text>
 
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{userData?.likes || 0}</Text>
-                <Text style={styles.statLabel}>Posts</Text>
+            {shouldShowInstagramConnect() ? (
+              <View style={styles.instagramConnectContainer}>
+                <Pressable onPress={handleConnectInstagram} style={styles.instagramConnectButton}>
+                  <LinearGradient
+                    colors={['#833AB4', '#C13584', '#E1306C', '#FD1D1D']}
+                    style={styles.instagramConnectGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                  >
+                    <Ionicons name="logo-instagram" size={18} color={colors.textPrimary} />
+                    <Text style={styles.instagramConnectText}>Connect with Instagram</Text>
+                  </LinearGradient>
+                </Pressable>
+                <Text style={styles.instagramConnectSubtext}>Import your posts and followers</Text>
               </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{userData?.event_count || 0}</Text>
-                <Text style={styles.statLabel}>Following</Text>
+            ) : (
+              <View style={styles.statsContainer}>
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>{userData?.likes || 0}</Text>
+                  <Text style={styles.statLabel}>Posts</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>{userData?.event_count || 0}</Text>
+                  <Text style={styles.statLabel}>Following</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>{userData?.followers || 0}</Text>
+                  <Text style={styles.statLabel}>Followers</Text>
+                </View>
               </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{userData?.followers || 0}</Text>
-                <Text style={styles.statLabel}>Followers</Text>
-              </View>
-            </View>
+            )}
           </View>
 
-          {/* Action Buttons - Edit Profile and My Events side by side */}
+          {/* Action Buttons - Edit Profile */}
           <View style={styles.actionButtonsContainer}>
             {/* Edit Profile Button */}
             <Pressable onPress={handleEditProfile} style={styles.actionButton}>
@@ -150,19 +192,6 @@ const UserProfileScreen = ({ navigation }) => {
               >
                 <Ionicons name="pencil-outline" size={16} color={colors.textPrimary} />
                 <Text style={styles.actionButtonText}>Edit Profile</Text>
-              </LinearGradient>
-            </Pressable>
-
-            {/* My Events Button */}
-            <Pressable onPress={handleMyEvents} style={styles.actionButton}>
-              <LinearGradient
-                colors={[colors.accent, '#034946']}
-                style={styles.actionButtonGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <Ionicons name="calendar" size={16} color={colors.textPrimary} />
-                <Text style={styles.actionButtonText}>My Events</Text>
               </LinearGradient>
             </Pressable>
           </View>
@@ -246,19 +275,16 @@ const UserProfileScreen = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Logout Button */}
-          <View style={styles.logoutContainer}>
-            <Pressable onPress={handleLogout} style={styles.logoutButton}>
-              <View style={styles.logoutContent}>
-                <Ionicons name="log-out-outline" size={20} color={colors.textPrimary} />
-                <Text style={styles.logoutText}>Logout</Text>
-              </View>
-            </Pressable>
-          </View>
+          {/* Logout Button - Updated to match VenueProfileScreen */}
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </Pressable>
+
+          {/* Support Text */}
+          <Text style={styles.supportText}>Need help? Contact support</Text>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
-    // </SwipeWrapper> 
   );
 };
 
@@ -368,17 +394,50 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-
+  instagramConnectContainer: {
+    alignItems: 'center',
+    marginTop: 15,
+    width: '80%',
+  },
+  instagramConnectButton: {
+    width: '100%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#FD1D1D',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    marginBottom: 5,
+  },
+  instagramConnectGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  instagramConnectText: {
+    color: colors.textPrimary,
+    fontWeight: '500',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  instagramConnectSubtext: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    marginTop: 5,
+  },
   actionButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 25,
-    gap: 15,
   },
   actionButton: {
-    flex: 1,
+    width: '50%', // Adjusted width for the Edit Profile button
     borderRadius: 20,
     overflow: 'hidden',
     elevation: 3,
@@ -461,32 +520,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
   },
-
-  logoutContainer: {
+  // Updated logout button to match VenueProfileScreen style
+  logoutButton: {
+    backgroundColor: colors.accent,
+    marginHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 25,
     alignItems: 'center',
     marginTop: 30,
-    paddingHorizontal: 20,
-  },
-  logoutButton: {
-    width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    overflow: 'hidden',
-  },
-  logoutContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
+    marginBottom: 15,
   },
   logoutText: {
     color: colors.textPrimary,
-    fontWeight: '600',
     fontSize: 16,
-    marginLeft: 8,
+    fontWeight: '500',
   },
+  supportText: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    textAlign: 'center',
+  }
 });
 
 export default UserProfileScreen;
