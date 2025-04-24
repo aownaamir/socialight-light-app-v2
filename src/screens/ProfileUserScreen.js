@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { AppState, Linking } from 'react-native';
 import {
   View,
   Text,
@@ -21,6 +23,7 @@ import { colors } from '../theme';
 import { getCurrentUserApi } from '../apis/user';
 import apiURL from '../apis/apiURL';
 import SwipeWrapper from '../navigation/SwipeWrapper';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -31,11 +34,32 @@ const UserProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  const appState = useRef(AppState.currentState);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          console.log('App has come to the foreground!');
+          fetchUserData();
+        }
+        appState.current = nextAppState;
+      });
+      return () => {
+        subscription.remove();
+      };
+    }, [])
+  );
+
+
 
   const fetchUserData = async () => {
+
     setLoading(true);
     try {
       const data = await getCurrentUserApi(token);
@@ -63,8 +87,10 @@ const UserProfileScreen = ({ navigation }) => {
     navigation.navigate('ProfileUpdate');
   };
 
+
   const handleConnectInstagram = () => {
-    // Implement Meta Instagram connection flow here
+    const instagramAuthUrl = "https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1176217787528720&redirect_uri=https://1c4b-51-21-252-84.ngrok-free.app/auth/insta/callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights";
+
     Alert.alert(
       "Connect Instagram",
       "You'll be redirected to Instagram to authorize access to your account.",
@@ -75,20 +101,30 @@ const UserProfileScreen = ({ navigation }) => {
         },
         {
           text: "Continue",
-          onPress: () => {
-            // Here you would initiate the Instagram OAuth flow
-            console.log("Starting Instagram connection flow");
-            // You would implement the actual Meta authentication flow here
+          onPress: async () => {
+            try {
+
+              const result = await WebBrowser.openBrowserAsync(instagramAuthUrl);
+
+              if (result.type === 'dismiss') {
+                console.log("Browser was dismissed");
+              }
+
+              fetchUserData()
+            } catch (error) {
+              console.error("Error opening Instagram auth URL:", error);
+              Alert.alert("Error", "Something went wrong. Please try again later.");
+            }
           }
         }
       ]
     );
+
   };
 
-  // Check if any stats are zero
   const shouldShowInstagramConnect = () => {
     if (!userData) return false;
-    return (userData.likes === 0 || userData.event_count === 0 || userData.followers === 0);
+    return (userData.followers === 0);
   };
 
   if (loading) {
@@ -162,7 +198,7 @@ const UserProfileScreen = ({ navigation }) => {
               </View>
             ) : (
               <View style={styles.statsContainer}>
-                <View style={styles.statItem}>
+                {/* <View style={styles.statItem}>
                   <Text style={styles.statNumber}>{userData?.likes || 0}</Text>
                   <Text style={styles.statLabel}>Posts</Text>
                 </View>
@@ -170,7 +206,7 @@ const UserProfileScreen = ({ navigation }) => {
                 <View style={styles.statItem}>
                   <Text style={styles.statNumber}>{userData?.event_count || 0}</Text>
                   <Text style={styles.statLabel}>Following</Text>
-                </View>
+                </View> */}
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
                   <Text style={styles.statNumber}>{userData?.followers || 0}</Text>
@@ -389,11 +425,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 3,
   },
-  statDivider: {
-    width: 1,
-    height: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
+  // statDivider: {
+  //   width: 1,
+  //   height: 25,
+  //   backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  // },
   instagramConnectContainer: {
     alignItems: 'center',
     marginTop: 15,
